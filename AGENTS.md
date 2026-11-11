@@ -4,6 +4,14 @@ Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin reposi
 
 `gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` stdio + Streamable HTTP on `127.0.0.1:8087`) and CLI built on `slimr-cpp` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
 
+
+## Documentation Upkeep
+
+When a change conflicts with `README.md`, update the affected README and its
+linked user/developer documentation in the same change. Keep examples,
+configuration, install/build commands and compatibility claims consistent
+with implemented behavior; do not claim unverified release or client support.
+
 ## Commands
 
 | Task | Command |
