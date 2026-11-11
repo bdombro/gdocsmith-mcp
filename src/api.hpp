@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -22,6 +23,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 extern char** environ;
@@ -67,53 +69,105 @@ inline HttpCallResponse default_curl_transport(const HttpCall& req) {
     };
 }
 
+namespace detail {
+
+struct UniqueFd {
+    int fd = -1;
+    UniqueFd() = default;
+    explicit UniqueFd(int f) noexcept : fd(f) {}
+    ~UniqueFd() { reset(); }
+    UniqueFd(const UniqueFd&) = delete;
+    UniqueFd& operator=(const UniqueFd&) = delete;
+    UniqueFd(UniqueFd&& other) noexcept : fd(std::exchange(other.fd, -1)) {}
+    UniqueFd& operator=(UniqueFd&& other) noexcept {
+        if (this != &other) {
+            reset();
+            fd = std::exchange(other.fd, -1);
+        }
+        return *this;
+    }
+    void reset(int next = -1) noexcept {
+        if (fd >= 0) {
+            close(fd);
+        }
+        fd = next;
+    }
+    int get() const noexcept { return fd; }
+    explicit operator bool() const noexcept { return fd >= 0; }
+};
+
+struct SpawnActionsGuard {
+    posix_spawn_file_actions_t actions{};
+    bool active = false;
+    SpawnActionsGuard() {
+        if (posix_spawn_file_actions_init(&actions) != 0) {
+            throw std::runtime_error("posix_spawn_file_actions_init failed");
+        }
+        active = true;
+    }
+    ~SpawnActionsGuard() {
+        if (active) {
+            posix_spawn_file_actions_destroy(&actions);
+        }
+    }
+    SpawnActionsGuard(const SpawnActionsGuard&) = delete;
+    SpawnActionsGuard& operator=(const SpawnActionsGuard&) = delete;
+};
+
+} // namespace detail
+
 inline std::string exec_gws(const std::vector<std::string>& args) {
     const char* bin_env = getenv("GWS_BIN");
     std::string bin = (bin_env && *bin_env) ? bin_env : "gws";
 
-    int stdout_pipe[2];
-    int stderr_pipe[2];
-    if (pipe(stdout_pipe) != 0 || pipe(stderr_pipe) != 0) {
+    int stdout_raw[2]{-1, -1};
+    int stderr_raw[2]{-1, -1};
+    if (pipe(stdout_raw) != 0) {
         throw std::runtime_error("pipe failed: " + std::string(strerror(errno)));
     }
+    detail::UniqueFd stdout_read(stdout_raw[0]);
+    detail::UniqueFd stdout_write(stdout_raw[1]);
 
-    posix_spawn_file_actions_t actions;
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_addclose(&actions, stdout_pipe[0]);
-    posix_spawn_file_actions_adddup2(&actions, stdout_pipe[1], STDOUT_FILENO);
-    posix_spawn_file_actions_addclose(&actions, stdout_pipe[1]);
+    if (pipe(stderr_raw) != 0) {
+        throw std::runtime_error("pipe failed: " + std::string(strerror(errno)));
+    }
+    detail::UniqueFd stderr_read(stderr_raw[0]);
+    detail::UniqueFd stderr_write(stderr_raw[1]);
 
-    posix_spawn_file_actions_addclose(&actions, stderr_pipe[0]);
-    posix_spawn_file_actions_adddup2(&actions, stderr_pipe[1], STDERR_FILENO);
-    posix_spawn_file_actions_addclose(&actions, stderr_pipe[1]);
+    detail::SpawnActionsGuard actions;
+    posix_spawn_file_actions_addclose(&actions.actions, stdout_read.get());
+    posix_spawn_file_actions_adddup2(&actions.actions, stdout_write.get(), STDOUT_FILENO);
+    posix_spawn_file_actions_addclose(&actions.actions, stdout_write.get());
+
+    posix_spawn_file_actions_addclose(&actions.actions, stderr_read.get());
+    posix_spawn_file_actions_adddup2(&actions.actions, stderr_write.get(), STDERR_FILENO);
+    posix_spawn_file_actions_addclose(&actions.actions, stderr_write.get());
 
     std::vector<char*> argv_ptrs;
+    argv_ptrs.reserve(args.size() + 2);
     argv_ptrs.push_back(const_cast<char*>(bin.c_str()));
     for (const auto& a : args) {
         argv_ptrs.push_back(const_cast<char*>(a.c_str()));
     }
     argv_ptrs.push_back(nullptr);
 
-    pid_t pid;
-    int spawn_ret = posix_spawnp(&pid, bin.c_str(), &actions, nullptr, argv_ptrs.data(), environ);
-    posix_spawn_file_actions_destroy(&actions);
+    pid_t pid = -1;
+    int spawn_ret = posix_spawnp(&pid, bin.c_str(), &actions.actions, nullptr, argv_ptrs.data(), environ);
 
-    close(stdout_pipe[1]);
-    close(stderr_pipe[1]);
+    stdout_write.reset();
+    stderr_write.reset();
 
     if (spawn_ret != 0) {
-        close(stdout_pipe[0]);
-        close(stderr_pipe[0]);
         std::string hint = (spawn_ret == ENOENT) ? (" (is " + bin + " installed and on PATH? set GWS_BIN to override)") : "";
         throw std::runtime_error("Could not run " + bin + ": " + strerror(spawn_ret) + hint);
     }
 
     std::string stdout_str;
     std::string stderr_str;
-    struct pollfd fds[2];
-    fds[0].fd = stdout_pipe[0];
+    struct pollfd fds[2]{};
+    fds[0].fd = stdout_read.get();
     fds[0].events = POLLIN;
-    fds[1].fd = stderr_pipe[0];
+    fds[1].fd = stderr_read.get();
     fds[1].events = POLLIN;
 
     char buf[16384];
@@ -128,10 +182,13 @@ inline std::string exec_gws(const std::vector<std::string>& args) {
             if (fds[i].fd >= 0 && (fds[i].revents & (POLLIN | POLLHUP | POLLERR))) {
                 ssize_t n = read(fds[i].fd, buf, sizeof(buf));
                 if (n > 0) {
-                    if (i == 0) stdout_str.append(buf, n);
-                    else stderr_str.append(buf, n);
+                    if (i == 0) stdout_str.append(buf, static_cast<size_t>(n));
+                    else stderr_str.append(buf, static_cast<size_t>(n));
+                } else if (n < 0 && errno == EINTR) {
+                    continue;
                 } else {
-                    close(fds[i].fd);
+                    if (i == 0) stdout_read.reset();
+                    else stderr_read.reset();
                     fds[i].fd = -1;
                     open_fds--;
                 }
@@ -140,7 +197,13 @@ inline std::string exec_gws(const std::vector<std::string>& args) {
     }
 
     int status = 0;
-    waitpid(pid, &status, 0);
+    pid_t waited = -1;
+    do {
+        waited = waitpid(pid, &status, 0);
+    } while (waited < 0 && errno == EINTR);
+    if (waited < 0) {
+        throw std::runtime_error("waitpid failed: " + std::string(strerror(errno)));
+    }
 
     if (WIFEXITED(status)) {
         int exitCode = WEXITSTATUS(status);

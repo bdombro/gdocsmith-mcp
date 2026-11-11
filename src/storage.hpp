@@ -214,32 +214,39 @@ inline FileInputSnapshot input_file_read(const std::string& path) {
         throw std::runtime_error("import path must be absolute");
     }
 
-    int fd = open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
-    if (fd < 0) {
+    int rawFd = open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
+    if (rawFd < 0) {
         throw std::runtime_error("Failed to open file " + path + ": " + strerror(errno));
     }
+    struct FdGuard {
+        int fd = -1;
+        explicit FdGuard(int f) noexcept : fd(f) {}
+        ~FdGuard() {
+            if (fd >= 0) close(fd);
+        }
+        FdGuard(const FdGuard&) = delete;
+        FdGuard& operator=(const FdGuard&) = delete;
+    } fdGuard(rawFd);
 
     struct stat before{};
-    if (fstat(fd, &before) != 0) {
-        close(fd);
+    if (fstat(fdGuard.fd, &before) != 0) {
         throw std::runtime_error("Failed to stat " + path + ": " + strerror(errno));
     }
 
-    if (!S_ISREG(before.st_mode) || before.st_size > static_cast<off_t>(DOCUMENT_FILE_BYTES_MAX)) {
-        close(fd);
+    if (!S_ISREG(before.st_mode) || before.st_size < 0 ||
+        before.st_size > static_cast<off_t>(DOCUMENT_FILE_BYTES_MAX)) {
         throw std::runtime_error("import requires a regular file no larger than 16 MiB");
     }
 
+    const size_t expectedSize = static_cast<size_t>(before.st_size);
     std::string text;
-    text.resize(before.st_size);
+    text.resize(expectedSize);
     size_t totalRead = 0;
-    while (totalRead < static_cast<size_t>(before.st_size)) {
-        ssize_t n = read(fd, text.data() + totalRead, before.st_size - totalRead);
+    while (totalRead < expectedSize) {
+        ssize_t n = read(fdGuard.fd, text.data() + totalRead, expectedSize - totalRead);
         if (n < 0) {
             if (errno == EINTR) continue;
-            int err = errno;
-            close(fd);
-            throw std::runtime_error("Failed to read " + path + ": " + strerror(err));
+            throw std::runtime_error("Failed to read " + path + ": " + strerror(errno));
         }
         if (n == 0) break;
         totalRead += static_cast<size_t>(n);
@@ -247,11 +254,9 @@ inline FileInputSnapshot input_file_read(const std::string& path) {
     text.resize(totalRead);
 
     struct stat after{};
-    if (fstat(fd, &after) != 0) {
-        close(fd);
+    if (fstat(fdGuard.fd, &after) != 0) {
         throw std::runtime_error("Failed to re-stat " + path + ": " + strerror(errno));
     }
-    close(fd);
 
     if (before.st_mtime != after.st_mtime || before.st_size != after.st_size || text.size() > DOCUMENT_FILE_BYTES_MAX) {
         throw std::runtime_error("the import file changed while it was being read");
@@ -304,15 +309,8 @@ inline std::string file_replace(const std::string& path, std::string_view markdo
         std::filesystem::create_directories(p.parent_path(), ec);
     }
 
-    mode_t targetMode = 0666;
-    if (exists) {
-        targetMode = st.st_mode & 0777;
-    } else {
-        mode_t curUmask = umask(0);
-        umask(curUmask);
-        targetMode = defaultMode & ~curUmask;
-    }
-
+    mode_t targetMode = exists ? (st.st_mode & 0777) : defaultMode;
+    // open(..., O_CREAT, targetMode) applies process umask atomically in the kernel without a umask(0) race.
     detail::atomic_write(path, markdown, targetMode);
     return path;
 }

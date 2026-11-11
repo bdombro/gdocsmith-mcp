@@ -12,6 +12,14 @@
 #define GDOCSMITH_HAS_ENGINE 0
 #endif
 
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#endif
+
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -96,12 +104,38 @@ auto document_serialized(const std::string& doc, Func&& task) {
     return task();
 }
 
+inline std::optional<std::filesystem::path> executable_dir() {
+#if defined(__APPLE__)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    if (size == 0) return std::nullopt;
+    std::string buf(size, '\0');
+    if (_NSGetExecutablePath(buf.data(), &size) != 0) return std::nullopt;
+    std::error_code ec;
+    auto canonical = std::filesystem::weakly_canonical(std::filesystem::path(buf.c_str()), ec);
+    if (ec) return std::filesystem::path(buf.c_str()).parent_path();
+    return canonical.parent_path();
+#elif defined(__linux__)
+    char buf[4096];
+    ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (len <= 0) return std::nullopt;
+    buf[len] = '\0';
+    return std::filesystem::path(buf).parent_path();
+#else
+    return std::nullopt;
+#endif
+}
+
 inline std::string load_guide_content() {
-    std::vector<std::string> candidates = {
+    std::vector<std::filesystem::path> candidates = {
         "docs/agent-guide.md",
         "../docs/agent-guide.md",
         "../../plugins/gdocsmith-mcp/docs/agent-guide.md",
     };
+    if (auto exeDir = executable_dir()) {
+        candidates.push_back(*exeDir / "../share/gdocsmith-mcp/docs/agent-guide.md");
+        candidates.push_back(*exeDir / "../../docs/agent-guide.md");
+    }
     for (const auto& path : candidates) {
         std::ifstream f(path, std::ios::binary);
         if (f.is_open()) {

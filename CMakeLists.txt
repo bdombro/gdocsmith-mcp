@@ -47,7 +47,7 @@ endif()
 
 add_executable(gdocsmith-mcp src/main.cpp)
 target_include_directories(gdocsmith-mcp PRIVATE src)
-target_link_libraries(gdocsmith-mcp PRIVATE slimr::mcp slimr::yaml OpenSSL::Crypto app_options)
+target_link_libraries(gdocsmith-mcp PRIVATE slimr::mcp_http slimr::yaml OpenSSL::Crypto app_options)
 set_target_properties(gdocsmith-mcp PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/build/bin")
@@ -57,7 +57,7 @@ if(BUILD_TESTING)
     add_executable(gdocsmith_mcp_test tests/test_main.cpp)
     target_include_directories(gdocsmith_mcp_test PRIVATE src)
     target_link_libraries(gdocsmith_mcp_test PRIVATE
-        slimr::mcp slimr::yaml slimr::test OpenSSL::Crypto app_options)
+        slimr::mcp_http slimr::yaml slimr::test OpenSSL::Crypto app_options)
     set_target_properties(gdocsmith_mcp_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
     add_test(NAME gdocsmith_mcp COMMAND gdocsmith_mcp_test)
     set_tests_properties(gdocsmith_mcp PROPERTIES TIMEOUT 120

@@ -4,10 +4,15 @@
 #include "api.hpp"
 #include "test.hpp"
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
 #include <filesystem>
+#include <thread>
+#include <vector>
 
 TEST_CASE("SHA-256 snapshots use portable byte-exact hashing") {
     CHECK(gdocsmith::detail::sha256_hex("") ==
@@ -420,6 +425,7 @@ TEST_CASE("mock DriveClient operations") {
 
 
 #include "app.hpp"
+#include "mcp_http.hpp"
 
 TEST_CASE("make_gdocsmith_app metadata and status tool") {
     auto app = gdocsmith::make_gdocsmith_app();
@@ -443,7 +449,7 @@ TEST_CASE("make_gdocsmith_app metadata and status tool") {
     CHECK(tools.contains("file"));
 
     // status invocation
-    auto res = tools.at("status").handler(slimr::Json::object_t{});
+    auto res = tools.at("status").handler(slimr::Json::object_t{}, slimr::RequestContext{});
     CHECK_FALSE(res.isError);
     auto parsed = slimr::parse_json<slimr::Json>(res.content[0].text);
     REQUIRE(parsed.has_value());
@@ -511,7 +517,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"action", "permissions"},
             {"doc", "doc123"},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK_FALSE(res.isError);
         auto j = *slimr::parse_json<slimr::Json>(res.content[0].text);
         CHECK(j["status"].get<std::string>() == "unchanged");
@@ -525,7 +531,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"doc", "doc123"},
             {"title", "My Copy"},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK_FALSE(res.isError);
         auto j = *slimr::parse_json<slimr::Json>(res.content[0].text);
         CHECK(j["status"].get<std::string>() == "applied");
@@ -539,7 +545,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"action", "delete"},
             {"doc", "doc123"},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK(res.isError);
         CHECK(res.content[0].text.find("File delete needs the user's explicit approval") != std::string::npos);
     }
@@ -551,7 +557,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"doc", "doc123"},
             {"allow", slimr::Json::array_t{"delete"}},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK_FALSE(res.isError);
         auto j = *slimr::parse_json<slimr::Json>(res.content[0].text);
         CHECK(j["status"].get<std::string>() == "applied");
@@ -566,7 +572,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"role", "reader"},
             {"allow", slimr::Json::array_t{"share"}},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK(res.isError);
         CHECK(res.content[0].text.find("Granting anyone access is never done by this tool") != std::string::npos);
     }
@@ -581,7 +587,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"email", "owner@example.com"},
             {"allow", slimr::Json::array_t{"share"}},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK(res.isError);
         CHECK(res.content[0].text.find("Ownership transfer is never done by this tool") != std::string::npos);
     }
@@ -595,7 +601,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"role", "writer"},
             {"email", "collaborator@example.com"},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK(res.isError);
         CHECK(res.content[0].text.find("File grant needs the user's explicit approval") != std::string::npos);
     }
@@ -610,7 +616,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"email", "collaborator@example.com"},
             {"allow", slimr::Json::array_t{"share"}},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK_FALSE(res.isError);
         auto j = *slimr::parse_json<slimr::Json>(res.content[0].text);
         CHECK(j["status"].get<std::string>() == "applied");
@@ -623,7 +629,7 @@ TEST_CASE("make_gdocsmith_app file lifecycle and guards") {
             {"doc", "doc123"},
             {"permissionId", "p1"},
         };
-        auto res = fileTool.handler(args);
+        auto res = fileTool.handler(args, slimr::RequestContext{});
         CHECK_FALSE(res.isError);
         auto j = *slimr::parse_json<slimr::Json>(res.content[0].text);
         CHECK(j["status"].get<std::string>() == "applied");
@@ -679,7 +685,7 @@ TEST_CASE("make_gdocsmith_app export and import workflow") {
     slimr::Json expArgs = slimr::Json::object_t{
         {"doc", "doc_export_test"},
     };
-    auto expRes = app.tools().at("export").handler(expArgs);
+    auto expRes = app.tools().at("export").handler(expArgs, slimr::RequestContext{});
     CHECK_FALSE(expRes.isError);
     auto expJson = *slimr::parse_json<slimr::Json>(expRes.content[0].text);
     std::string exportPath = expJson["exportPath"].get<std::string>();
@@ -697,11 +703,290 @@ TEST_CASE("make_gdocsmith_app export and import workflow") {
     slimr::Json impArgs = slimr::Json::object_t{
         {"path", exportPath},
     };
-    auto impRes = app.tools().at("import").handler(impArgs);
+    auto impRes = app.tools().at("import").handler(impArgs, slimr::RequestContext{});
     CHECK_FALSE(impRes.isError);
     auto impJson = *slimr::parse_json<slimr::Json>(impRes.content[0].text);
     CHECK(impJson["status"].get<std::string>() == "unchanged");
     CHECK(impJson["verification"].get<std::string>() == "match");
 
     unsetenv("GDOCSMITH_WORK_DIR");
+}
+
+namespace gdocsmith_test_http {
+
+struct RawHttpReply {
+    int statusCode = 0;
+    std::string body;
+};
+
+inline RawHttpReply send_http_request(
+    uint16_t port,
+    const std::string& method,
+    const std::string& path,
+    const std::string& hostHeader,
+    const std::string& body,
+    const std::string& extraHeaders = ""
+) {
+    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        throw std::runtime_error("socket() failed");
+    }
+    struct Guard {
+        int fd;
+        ~Guard() {
+            if (fd >= 0) close(fd);
+        }
+    } guard{fd};
+
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    if (inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr) != 1) {
+        throw std::runtime_error("inet_pton failed");
+    }
+    if (connect(fd, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)) != 0) {
+        throw std::runtime_error("connect() failed");
+    }
+
+    std::string req = method + " " + path + " HTTP/1.1\r\n"
+        "Host: " + hostHeader + "\r\n"
+        "Accept: application/json, text/event-stream\r\n"
+        "Content-Type: application/json\r\n"
+        + extraHeaders +
+        "Content-Length: " + std::to_string(body.size()) + "\r\n"
+        "Connection: close\r\n\r\n" + body;
+
+    size_t sent = 0;
+    while (sent < req.size()) {
+        ssize_t n = send(fd, req.data() + sent, req.size() - sent, 0);
+        if (n < 0) {
+            if (errno == EINTR) continue;
+            throw std::runtime_error("send() failed");
+        }
+        sent += static_cast<size_t>(n);
+    }
+
+    std::string raw;
+    char buf[4096];
+    for (;;) {
+        ssize_t n = recv(fd, buf, sizeof(buf), 0);
+        if (n < 0) {
+            if (errno == EINTR) continue;
+            throw std::runtime_error("recv() failed");
+        }
+        if (n == 0) break;
+        raw.append(buf, static_cast<size_t>(n));
+    }
+
+    auto headerEnd = raw.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        throw std::runtime_error("malformed HTTP reply");
+    }
+    auto lineEnd = raw.find("\r\n");
+    std::string statusLine = raw.substr(0, lineEnd);
+    auto sp1 = statusLine.find(' ');
+    int code = std::stoi(statusLine.substr(sp1 + 1, 3));
+    return RawHttpReply{.statusCode = code, .body = raw.substr(headerEnd + 4)};
+}
+
+} // namespace gdocsmith_test_http
+
+TEST_CASE("gdocsmith MCP 2026-07-28 dispatch and CLI flag validation") {
+    auto app = gdocsmith::make_gdocsmith_app();
+    slimr::enable_http(app, slimr::HttpServerOptions{.host = "127.0.0.1", .port = 8087});
+
+    const std::string meta =
+        R"("_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}})";
+
+    const auto parseReq = [](const std::string& raw) -> slimr::Json {
+        auto parsed = slimr::parse_json<slimr::Json>(raw);
+        REQUIRE(parsed.has_value());
+        return *parsed;
+    };
+
+    // server/discover
+    {
+        auto j = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":1,"method":"server/discover","params":{)" + meta + "}}"));
+        CHECK(j["result"]["resultType"].get<std::string>() == "complete");
+        REQUIRE(j["result"]["supportedVersions"].get<slimr::Json::array_t>().size() == 1);
+        CHECK(j["result"]["supportedVersions"][0].get<std::string>() == "2026-07-28");
+        CHECK(j["result"]["_meta"]["io.modelcontextprotocol/serverInfo"]["name"].get<std::string>() == "gdocsmith-mcp");
+    }
+
+    // initialize is unsupported in 2026-07-28
+    {
+        auto j = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":2,"method":"initialize","params":{}})"));
+        CHECK(j["error"]["code"].get<int64_t>() == -32601);
+    }
+
+    // tools/list, resources/list, and resources/read
+    {
+        auto listJson = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":3,"method":"tools/list","params":{)" + meta + "}}"));
+        // 4 app tools + auto-registered mcp_resource_read fallback
+        CHECK(listJson["result"]["tools"].get<slimr::Json::array_t>().size() == 5);
+
+        auto resListJson = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":4,"method":"resources/list","params":{)" + meta + "}}"));
+        REQUIRE(resListJson["result"]["resources"].get<slimr::Json::array_t>().size() == 1);
+        CHECK(resListJson["result"]["resources"][0]["uri"].get<std::string>() == "gdocsmith://guide");
+
+        auto resJson = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":5,"method":"resources/read","params":{"uri":"gdocsmith://guide",)" + meta + "}}"));
+        REQUIRE(resJson["result"]["contents"].get<slimr::Json::array_t>().size() == 1);
+        CHECK(resJson["result"]["contents"][0]["uri"].get<std::string>() == "gdocsmith://guide");
+    }
+
+    // tools/call with _meta + progressToken
+    {
+        auto callJson = app.dispatchMcpJson(parseReq(
+            R"({"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"status","arguments":{},"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{},"progressToken":"p1"}}})"));
+        CHECK_FALSE(callJson["result"]["isError"].get<bool>());
+    }
+
+    // CLI invocation & HTTP flag validation
+    {
+        char arg0[] = "gdocsmith-mcp";
+        char arg1[] = "status";
+        char* argv[] = {arg0, arg1};
+        CHECK(app.run(2, argv) == 0);
+    }
+    {
+        char arg0[] = "gdocsmith-mcp";
+        char arg1[] = "http";
+        char arg2[] = "--port";
+        char arg3[] = "0";
+        char* argv[] = {arg0, arg1, arg2, arg3};
+        CHECK(app.run(4, argv) == 1);
+    }
+    {
+        char arg0[] = "gdocsmith-mcp";
+        char arg1[] = "http";
+        char arg2[] = "--host";
+        char arg3[] = "";
+        char* argv[] = {arg0, arg1, arg2, arg3};
+        CHECK(app.run(4, argv) == 1);
+    }
+    {
+        char arg0[] = "gdocsmith-mcp";
+        char arg1[] = "http";
+        char arg2[] = "--port";
+        char arg3[] = "not-a-number";
+        char* argv[] = {arg0, arg1, arg2, arg3};
+        CHECK(app.run(4, argv) == 2);
+    }
+}
+
+TEST_CASE("gdocsmith McpHttpServer serves MCP 2026-07-28 and concurrent tool calls") {
+    gdocsmith::token_cache_reset();
+
+    gdocsmith::HttpTransport mockTransport = [](const gdocsmith::HttpCall& req) -> gdocsmith::HttpCallResponse {
+        if (req.url == "https://oauth2.googleapis.com/token") {
+            return gdocsmith::HttpCallResponse{
+                .status = 200,
+                .headers = {},
+                .body = R"({"access_token": "mock_tok", "expires_in": 3600, "token_type": "Bearer"})",
+            };
+        }
+        if (req.url.find("/permissions") != std::string::npos && req.method == "GET") {
+            return gdocsmith::HttpCallResponse{
+                .status = 200,
+                .headers = {},
+                .body = R"({"permissions": [{"id": "p1", "role": "reader", "type": "user", "emailAddress": "user@example.com"}]})",
+            };
+        }
+        return gdocsmith::HttpCallResponse{.status = 404, .headers = {}, .body = "Not found"};
+    };
+
+    gdocsmith::GwsRunner mockRunner = [](const std::vector<std::string>&) -> std::string {
+        return R"({"client_id": "test_id", "client_secret": "test_secret", "refresh_token": "test_refresh"})";
+    };
+
+    auto app = gdocsmith::make_gdocsmith_app(mockTransport, mockRunner);
+    slimr::HttpServerOptions opts{
+        .host = "127.0.0.1",
+        .port = 0,
+        .allowEphemeralPort = true,
+        .workerThreads = 4,
+    };
+    slimr::McpHttpServer server(app, opts);
+    std::string err;
+    REQUIRE(server.start(&err));
+    struct StopGuard {
+        slimr::McpHttpServer& s;
+        ~StopGuard() { s.stop(); }
+    } stopGuard{server};
+
+    const uint16_t port = server.boundPort();
+    REQUIRE(port != 0);
+    const std::string hostHdr = "127.0.0.1:" + std::to_string(port);
+    const std::string meta =
+        R"("_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}})";
+
+    // server/discover
+    {
+        auto reply = gdocsmith_test_http::send_http_request(
+            port, "POST", "/mcp", hostHdr,
+            R"({"jsonrpc":"2.0","id":1,"method":"server/discover","params":{)" + meta + "}}",
+            "MCP-Protocol-Version: 2026-07-28\r\nMcp-Method: server/discover\r\n");
+        CHECK(reply.statusCode == 200);
+        auto j = *slimr::parse_json<slimr::Json>(reply.body);
+        CHECK(j["result"]["resultType"].get<std::string>() == "complete");
+        REQUIRE(j["result"]["supportedVersions"].get<slimr::Json::array_t>().size() == 1);
+        CHECK(j["result"]["supportedVersions"][0].get<std::string>() == "2026-07-28");
+        CHECK(j["result"]["_meta"]["io.modelcontextprotocol/serverInfo"]["name"].get<std::string>() == "gdocsmith-mcp");
+    }
+
+    // Reject missing MCP-Protocol-Version and non-loopback Host
+    {
+        auto missingVer = gdocsmith_test_http::send_http_request(
+            port, "POST", "/mcp", hostHdr,
+            R"({"jsonrpc":"2.0","id":2,"method":"tools/list","params":{)" + meta + "}}",
+            "Mcp-Method: tools/list\r\n");
+        CHECK(missingVer.statusCode == 400);
+
+        auto badHost = gdocsmith_test_http::send_http_request(
+            port, "POST", "/mcp", "evil.example:" + std::to_string(port),
+            R"({"jsonrpc":"2.0","id":3,"method":"tools/list","params":{)" + meta + "}}",
+            "MCP-Protocol-Version: 2026-07-28\r\nMcp-Method: tools/list\r\n");
+        CHECK(badHost.statusCode == 403);
+    }
+
+    // initialize rejected over HTTP with 404 + -32601
+    {
+        auto reply = gdocsmith_test_http::send_http_request(
+            port, "POST", "/mcp", hostHdr,
+            R"({"jsonrpc":"2.0","id":4,"method":"initialize","params":{}})",
+            "MCP-Protocol-Version: 2026-07-28\r\nMcp-Method: initialize\r\n");
+        CHECK(reply.statusCode == 404);
+        auto j = *slimr::parse_json<slimr::Json>(reply.body);
+        CHECK(j["error"]["code"].get<int64_t>() == -32601);
+    }
+
+    // Concurrent tools/call execution (status + file permissions)
+    std::vector<std::thread> threads;
+    std::vector<int> statuses(4, 0);
+    std::vector<int> ok(4, 0);
+    for (int i = 0; i < 4; ++i) {
+        threads.emplace_back([&, i]() {
+            const bool callFile = (i % 2 == 1);
+            const std::string body = callFile
+                ? R"({"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"file","arguments":{"action":"permissions","doc":"doc123"},)" + meta + "}}"
+                : R"({"jsonrpc":"2.0","id":11,"method":"tools/call","params":{"name":"status","arguments":{},)" + meta + "}}";
+            const std::string hdrs = std::string("MCP-Protocol-Version: 2026-07-28\r\nMcp-Method: tools/call\r\nMcp-Name: ") +
+                (callFile ? "file" : "status") + "\r\n";
+            auto reply = gdocsmith_test_http::send_http_request(port, "POST", "/mcp", hostHdr, body, hdrs);
+            statuses[static_cast<size_t>(i)] = reply.statusCode;
+            auto parsed = slimr::parse_json<slimr::Json>(reply.body);
+            ok[static_cast<size_t>(i)] = (parsed.has_value() && parsed->contains("result") &&
+                !(*parsed)["result"]["isError"].get<bool>()) ? 1 : 0;
+        });
+    }
+    for (auto& t : threads) t.join();
+    for (int i = 0; i < 4; ++i) {
+        CHECK(statuses[static_cast<size_t>(i)] == 200);
+        CHECK(ok[static_cast<size_t>(i)] == 1);
+    }
 }

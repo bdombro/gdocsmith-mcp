@@ -3,7 +3,10 @@
   "version": "2.0.0",
   "dependencies": [
     "openssl",
-    "slimr-mcp",
+    {
+      "name": "slimr-mcp",
+      "features": ["http"]
+    },
     "slimr-yaml",
     "slimr-test"
   ]

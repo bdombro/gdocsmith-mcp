@@ -2,28 +2,33 @@
 
 Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin repository.
 
-`gdocsmith-mcp` is a C++26 MCP plugin and CLI built on `slimr-cpp` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
+`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` stdio + Streamable HTTP on `127.0.0.1:8087`) and CLI built on `slimr-cpp` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
 
 ## Commands
 
 | Task | Command |
 | --- | --- |
-| Run unit & mock-API tests (ASan + UBSan, no network) | `just test` |
+| Run unit, mock-API, MCP `2026-07-28` & HTTP tests (ASan + UBSan, no network) | `just test` |
 | Build and test release binary (`build/bin/gdocsmith-mcp`) | `just build` |
-| Analyze app and test translation units | `just lint` |
-| Verify isolated MCP initialization and tool discovery | `just test-mcp` |
+| Analyze app and test translation units (`CLANG_TIDY` respected) | `just lint` |
+| Verify isolated MCP `2026-07-28` stdio + ephemeral HTTP discovery | `just test-mcp` |
+| Validate Homebrew formula Ruby syntax | `just check-formula` |
+| Manage local Homebrew service lifecycle (`127.0.0.1:8087`) | `just install-local` / `start` / `stop` / `status` / `uninstall` |
 | Clean build artifacts | `just clean` |
 
 ## Module Boundaries
 
 | Path | Owns | Must Not |
 | --- | --- | --- |
-| `src/main.cpp` | Entrypoint calling `gdocsmith::make_gdocsmith_app().run(argc, argv)` | Business logic |
-| `src/app.hpp` | `make_gdocsmith_app()`, per-document FIFO queue, `export`, `import`, `file`, `status` tool handlers, and `gdocsmith://guide` resource | Direct `curl` calls |
+| `src/main.cpp` | Entrypoint calling `slimr::enable_http(app, {.host = "127.0.0.1", .port = 8087})` + `app.run(argc, argv)` | Business logic |
+| `src/app.hpp` | `make_gdocsmith_app()`, per-document FIFO queue, `export`, `import`, `file`, `status` tool handlers, and `gdocsmith://guide` resource (including executable-relative `pkgshare` lookup) | Direct `curl` calls |
 | `src/engine.hpp` | `DocModel` AST, `parse_doc_json`, `export_artifacts` (Markdown + `comments.yaml`/`suggestions.yaml` via `yaml.hpp`), `parse_markdown`, O(ND) Myers diff (`diff_myers`), and reverse-index `reconcile_json` | Network or filesystem I/O |
 | `src/storage.hpp` | Work-root precedence (`GDOCSMITH_WORK_DIR` -> `<ws>/.gdocsmith` -> `/tmp/gdocsmith-<uid>`), `0700` dir / `0600` `.gitignore`, atomic `file_replace`, SHA-256 snapshot checks, preserving unimported `next.md` edits | API calls |
-| `src/api.hpp` | `DocsClient` & `DriveClient` over `curl.hpp`, in-memory OAuth token exchange via `gws auth export --unmasked`, `WriteTracker` | Persist OAuth tokens to disk |
-| `tests/` | `test_engine.hpp` (AST/diff) and `test_storage.hpp` (storage/API mocks/guards) | Hit live Google Docs APIs in `just test` |
+| `src/api.hpp` | `DocsClient` & `DriveClient` over `curl.hpp`, `exec_gws` RAII fd/spawn handling, in-memory OAuth token exchange via `gws auth export --unmasked`, `WriteTracker` | Persist OAuth tokens to disk |
+| `tests/` | `test_engine.hpp` (AST/diff) and `test_storage.hpp` (storage/API mocks/guards, MCP `2026-07-28`, concurrent `McpHttpServer`) | Hit live Google Docs APIs in `just test` |
+| `scripts/test-mcp.mjs` | Isolated stdio (`mcp`) + ephemeral HTTP (`http --port 0 --allow-ephemeral-port`) MCP `2026-07-28` test | Hit live Google APIs |
+| `Formula/gdocsmith-mcp.rb` & `scripts/dev-formula.mjs` | Homebrew formula (`service do` on `127.0.0.1:8087`, `pkgshare` docs, Homebrew `PATH`) and local formula staging | Embed secrets or run `git add -A` |
+| `.cursor-plugin/` & `.claude-plugin/` | Cursor and Claude HTTP plugin manifests (`http://127.0.0.1:8087/mcp`) | Include shell scripts or credentials |
 
 ## Safety & App Conventions
 
@@ -31,6 +36,7 @@ Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin reposi
 2. **Revision locking:** `import` must compare the frontmatter `revision` against the live document's `revisionId` (and `base.md`). If stale (`staleBase`), refuse the write and export the fresh remote revision.
 3. **Sharing & deletion guards:** `file` action `delete` requires `allow: ["delete"]`. `file` action `grant` requires `allow: ["share"]`, and must unconditionally refuse `anyone` (public), `domain`, or `owner` permission grants.
 4. **Preserve local edits on re-export:** If `exports/<docId>/<revId>/next.md` already exists and differs from `base.md`, `export` must not clobber the user/agent's unimported edits in `next.md`.
+5. **Loopback auth boundary:** Keep `oauth.enabled = false` (`127.0.0.1:8087` loopback single-user mode); never add a persistent HTTP Google token broker database or mix MCP bearer tokens with Google access tokens.
 
 ## C++ Memory Safety
 

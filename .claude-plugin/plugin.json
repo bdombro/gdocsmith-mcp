@@ -1,0 +1,16 @@
+{
+  "name": "gdocsmith-mcp",
+  "version": "4.0.0",
+  "description": "Google Docs file editing and review workflows over MCP",
+  "author": {
+    "name": "Brian Dombrowski"
+  },
+  "homepage": "https://github.com/bdombro/gdocsmith-mcp",
+  "repository": "https://github.com/bdombro/gdocsmith-mcp",
+  "mcpServers": {
+    "gdocsmith-mcp": {
+      "type": "http",
+      "url": "http://127.0.0.1:8087/mcp"
+    }
+  }
+}
