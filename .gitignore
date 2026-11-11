@@ -1,0 +1,7 @@
+build/
+/.ci/
+bin/
+dist/
+*.o
+*.gch
+.gdocsmith/
