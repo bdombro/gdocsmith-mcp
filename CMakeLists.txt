@@ -55,11 +55,12 @@ set_target_properties(gdocsmith-mcp PROPERTIES
 if(BUILD_TESTING)
     find_package(slimr-test CONFIG REQUIRED)
     add_executable(gdocsmith_mcp_test tests/test_main.cpp)
-    target_include_directories(gdocsmith_mcp_test PRIVATE src)
+    target_include_directories(gdocsmith_mcp_test PRIVATE src tests tests/emulator tests/lens tests/model tests/diff)
     target_link_libraries(gdocsmith_mcp_test PRIVATE
         slimr::mcp_http slimr::yaml slimr::test OpenSSL::Crypto app_options)
     set_target_properties(gdocsmith_mcp_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
     add_test(NAME gdocsmith_mcp COMMAND gdocsmith_mcp_test)
     set_tests_properties(gdocsmith_mcp PROPERTIES TIMEOUT 120
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         ENVIRONMENT "BUGSINK_DSN=;TMPDIR=${CMAKE_BINARY_DIR}")
 endif()
