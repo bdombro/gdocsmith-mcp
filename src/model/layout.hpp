@@ -1,5 +1,6 @@
 #pragma once
 
+#include "model/symbols.hpp"
 #include "model/types.hpp"
 
 #include <numeric>
@@ -18,7 +19,7 @@ struct Layout {
 inline int paragraphLength(const ParagraphBlock& p) {
     int len = 1;
     for (const auto& inlineItem : p.inlines) {
-        len += inlineItem.is_text() ? static_cast<int>(inlineItem.text.size()) : inlineItem.length;
+        len += inlineItem.is_text() ? utf16CodeUnitLength(inlineItem.text) : inlineItem.length;
     }
     return len;
 }

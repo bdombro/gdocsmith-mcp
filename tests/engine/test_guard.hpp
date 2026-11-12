@@ -49,18 +49,20 @@ TEST_CASE("guard - deleting commented text or editing part of it blocks") {
     // Delete "gone text"
     blocksDelete(target, {finalDoc.tabs[0].blocks[1].key});
 
-    // Mock plan with deletedRange for the second paragraph: [7, 18]
+    // Mock plan with deletedRange for the second paragraph: [6, 16]
+    // (section break is [0,1); "keep" is [1,6); "gone text" is [6,16);
+    //  the comment quote "gone" anchors to doc indices [6,10)).
     DocPlan plan;
     plan.docId = "d";
     plan.deletedRanges.push_back(RangeWithTab{
-        .range = Range{.end = 18, .start = 7},
+        .range = Range{.end = 16, .start = 6},
         .tabId = "t.0",
     });
     plan.contentRequests.push_back(slimr::Json::object_t{
         {"deleteContentRange", slimr::Json::object_t{
             {"range", slimr::Json::object_t{
-                {"startIndex", static_cast<int64_t>(7)},
-                {"endIndex", static_cast<int64_t>(18)},
+                {"startIndex", static_cast<int64_t>(6)},
+                {"endIndex", static_cast<int64_t>(16)},
                 {"tabId", "t.0"}
             }}
         }}

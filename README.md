@@ -172,11 +172,11 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
   - `brokenLink`, `namedRangeDamage`, `lossyImageMove`, `lossyListRebuild`
   - `delete` (on `file` permanent deletion) and `share` (on `file` permission grants; `anyone`/`domain`/`owner` grants are always blocked)
 - **Revision locking (`staleBase`):** If the remote Google Doc revision has advanced since `base.md` was exported, `import` refuses to overwrite concurrent changes and exports the latest remote revision so edits can be cleanly reapplied.
-- **Work directory precedence (`src/storage.hpp`):**
+- **Work directory precedence (`src/engine/artifacts.hpp`):**
   1. `$GDOCSMITH_WORK_DIR` if set
   2. `<workspace>/.gdocsmith` (created `0700` with a `0600` `.gitignore` containing `*\n`)
   3. `/tmp/gdocsmith-<uid>` (`0700`)
-  All file writes use atomic temporary-file-and-rename (`file_replace`) and verify regular-file ownership and SHA-256 integrity.
+  All file writes use atomic temporary-file-and-rename (`atomic_write`/`fileReplace`), file snapshots are checked with SHA-256, and a locally edited `export.md` is kept (with a warning) instead of overwritten on re-export.
 - **Per-document FIFO serialization:** Concurrent tool calls targeting the same `docId` are serialized in-process while different documents run in parallel.
 
 ## Authentication & Security Boundary

@@ -620,7 +620,7 @@ inline FileWriteResult fileImport(
     CoreSession session;
     std::shared_ptr<DocHandle> handle;
     if (creating) {
-        handle = session.docCreate(file.frontmatter.title, "import");
+        handle = session.docCreate("import", file.frontmatter.title);
     } else {
         handle = session.docOpen(docId);
     }

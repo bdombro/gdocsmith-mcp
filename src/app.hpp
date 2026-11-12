@@ -321,7 +321,6 @@ inline engine::FileWriteResult lifecycle_failure(
     bool complete = false
 ) {
     const auto* core = dynamic_cast<const model::CoreError*>(&error);
-    const auto* legacy = dynamic_cast<const CoreError*>(&error);
     std::string writeState = operation ? operation->writeState(complete) : "none";
     std::string message = error.what();
 
@@ -340,13 +339,13 @@ inline engine::FileWriteResult lifecycle_failure(
         }
     } else {
         engine::ResultError re;
-        re.code = core ? core->code : (legacy ? legacy->code : "operationFailed");
+        re.code = core ? core->code : "operationFailed";
         re.message = message;
         errors.push_back(std::move(re));
     }
     result.errors = std::move(errors);
 
-    const bool refused = writeState == "none" && (core != nullptr || legacy != nullptr);
+    const bool refused = writeState == "none" && core != nullptr;
     result.status = refused ? "refused" : "failed";
     result.summary = writeState == "none"
         ? "No cloud mutation was confirmed."
@@ -488,10 +487,10 @@ inline std::string permission_string(const std::optional<std::string>& primary, 
 inline void file_allow_check(const std::string& action, const std::vector<std::string>& allows) {
     auto has = [&](std::string_view k) { return std::find(allows.begin(), allows.end(), k) != allows.end(); };
     if (action == "delete" && !has("delete")) {
-        throw CoreError("guardRefused", "File delete needs the user's explicit approval; ask the user, then retry with allow: [\"delete\"].");
+        throw model::CoreError("guardRefused", "File delete needs the user's explicit approval; ask the user, then retry with allow: [\"delete\"].");
     }
     if (action == "grant" && !has("share")) {
-        throw CoreError("guardRefused", "File grant needs the user's explicit approval; ask the user, then retry with allow: [\"share\"].");
+        throw model::CoreError("guardRefused", "File grant needs the user's explicit approval; ask the user, then retry with allow: [\"share\"].");
     }
 }
 
@@ -512,12 +511,12 @@ inline slimr::Json file_operate(
         if (action == "copy") {
             const std::string title = in.title.get().value_or("");
             if (title.find_first_not_of(" \t\r\n") == std::string::npos) {
-                throw CoreError("unsupportedSyntax", "title must not be empty");
+                throw model::CoreError("unsupportedSyntax", "title must not be empty");
             }
         }
         if (action != "copy" && action != "permissions" && action != "trash" && action != "delete" &&
             action != "grant" && action != "revoke") {
-            throw CoreError("unsupportedSyntax", "Unknown action: " + action);
+            throw model::CoreError("unsupportedSyntax", "Unknown action: " + action);
         }
         file_allow_check(action, in.allow.get().value_or(std::vector<std::string>{}));
 
@@ -538,23 +537,23 @@ inline slimr::Json file_operate(
                 grantOptions = std::move(opts);
             }
             if (grantee.type != "anyone" && grantee.type != "domain" && grantee.type != "group" && grantee.type != "user") {
-                throw CoreError("unsupportedSyntax", "permission.type must be anyone, domain, group or user");
+                throw model::CoreError("unsupportedSyntax", "permission.type must be anyone, domain, group or user");
             }
             if (grantee.role != "commenter" && grantee.role != "owner" && grantee.role != "reader" && grantee.role != "writer") {
-                throw CoreError("unsupportedSyntax", "permission.role must be commenter, owner, reader or writer");
+                throw model::CoreError("unsupportedSyntax", "permission.role must be commenter, owner, reader or writer");
             }
             if (grantee.type == "anyone" || grantee.type == "domain") {
-                throw CoreError("guardRefused", "Granting " + grantee.type + " access is never done by this tool, even with allow; ask Brian to do it in Drive.");
+                throw model::CoreError("guardRefused", "Granting " + grantee.type + " access is never done by this tool, even with allow; ask Brian to do it in Drive.");
             }
             if (grantee.role == "owner" || (grantOptions && grantOptions->transferOwnership.value_or(false))) {
-                throw CoreError("guardRefused", "Ownership transfer is never done by this tool, even with allow; ask Brian to do it in Drive.");
+                throw model::CoreError("guardRefused", "Ownership transfer is never done by this tool, even with allow; ask Brian to do it in Drive.");
             }
             if (!grantee.emailAddress || grantee.emailAddress->find('@') == std::string::npos) {
-                throw CoreError("unsupportedSyntax", "user/group permissions require an email address");
+                throw model::CoreError("unsupportedSyntax", "user/group permissions require an email address");
             }
         }
         if (action == "revoke" && in.permissionId.get().value_or("").empty()) {
-            throw CoreError("unsupportedSyntax", "permissionId required for revoke");
+            throw model::CoreError("unsupportedSyntax", "permissionId required for revoke");
         }
 
         DriveClient drive(transport, runner);
@@ -621,7 +620,7 @@ inline slimr::Json file_operate(
     } catch (const std::exception& e) {
         if (began && !tracker.writes.empty() && tracker.writes.back().outcome == "pending") {
             // The request was sent but its outcome is not known to have failed before reaching Google.
-            const bool refusedLocally = dynamic_cast<const CoreError*>(&e) != nullptr;
+            const bool refusedLocally = dynamic_cast<const model::CoreError*>(&e) != nullptr;
             tracker.writes.back().outcome = refusedLocally ? "rejected" : "unknown";
         }
         return file_write_result_json(lifecycle_failure(e, doc, began ? &tracker : nullptr, complete));

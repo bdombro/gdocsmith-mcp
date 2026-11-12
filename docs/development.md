@@ -26,15 +26,49 @@ plugins/gdocsmith-mcp/
 ├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:8087/mcp)
 ├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:8087/mcp)
 ├── src/
-│   ├── engine.hpp                  # Google Docs JSON AST <-> Extended Markdown/YAML converter & Myers diff (`reconcile_json`)
-│   ├── api.hpp                     # Docs v1 & Drive v3 REST client over `curl.hpp`, in-memory OAuth token manager, `WriteTracker`
-│   ├── storage.hpp                 # Work-root resolution, `0700` dir / `0600` `.gitignore`, atomic `file_replace`, SHA-256 snapshot checks
-│   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, per-doc FIFO queue, `gdocsmith://guide` resource, Bugsink DSN
-│   └── main.cpp                    # Standalone CLI, stdio (`mcp`), and Streamable HTTP (`http`) entrypoint
+│   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), and Streamable HTTP (`http`) entrypoint
+│   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
+│   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `curl.hpp`, in-memory OAuth token manager
+│   ├── model/                      # Google Docs JSON <-> DocModel AST
+│   │   ├── from_json.hpp           # Docs JSON -> `DocModel` (`docModelParse`)
+│   │   ├── to_json.hpp             # `RequestBuilder` batchUpdate object builders
+│   │   ├── document.hpp            # Top-level model re-exports
+│   │   └── …                       # element, tab, table, paragraph, style, lists, comments, suggestions,
+│   │                               # equivalence, invariants, layout, object IDs, keys, walk, errors
+│   ├── diff/                       # Myers diff and unified output
+│   │   ├── myers.hpp               # O(ND) shortest edit script (`Hunk`)
+│   │   ├── patch.hpp               # Applies hunks to reproduce the target sequence
+│   │   ├── tree_diff.hpp           # Structural / tree-sequence diffing
+│   │   ├── unified.hpp             # Unified-diff formatting
+│   │   └── match.hpp, slice.hpp, types.hpp
+│   ├── lens/                       # Extended Markdown envelope
+│   │   ├── parse.hpp / render.hpp  # Inline parser and renderer
+│   │   ├── markdown.hpp            # Parse + render umbrella
+│   │   ├── document.hpp            # `DocumentFile` tab projection (`documentFileExport`)
+│   │   ├── project.hpp / put.hpp   # Projection into and out of the model
+│   │   └── …                       # frontmatter, directives, tables, cell refs/styles, images, links,
+│   │                               # named ranges/styles, comments & suggestions serializers, tokens
+│   ├── reconcile/                  # Model/lens intent -> back-to-front batchUpdate requests
+│   │   ├── reconcile.hpp           # Plan structures, segment/footnote request handling, self-check
+│   │   ├── requests.hpp            # Request-object helpers
+│   │   └── container.hpp, context.hpp, lists.hpp, paragraph.hpp, tables.hpp
+│   ├── emulator/                   # In-memory batchUpdate simulator and conformance runner
+│   │   ├── document_state.hpp / document_mutator.hpp / document_emulator.hpp
+│   │   ├── google_docs_emulator.hpp / fake_google.hpp
+│   │   ├── field_mask.hpp / emulate.hpp / emulate_tables.hpp / types.hpp
+│   │   └── conformance.hpp         # Fixture-driven conformance checks
+│   └── engine/                     # Orchestration (no direct network I/O)
+│       ├── artifacts.hpp           # Work-root resolution, atomic writes, SHA-256 snapshots, `WriteTracker`
+│       ├── load.hpp, guard.hpp, plan.hpp
+│       ├── session.hpp, transaction.hpp, flush.hpp
+│       └── export.hpp, import.hpp
 ├── tests/
-│   ├── test_engine.hpp             # AST, Markdown, YAML, and Myers diff test cases
-│   ├── test_storage.hpp            # Hashing, storage, permissions, CLI/MCP 2026-07-28, and HTTP concurrency test cases
-│   └── test_main.cpp               # Combined test runner
+│   ├── test_main.cpp               # Combined doctest runner (the CMake test target)
+│   ├── model/, diff/, lens/, reconcile/, emulator/, engine/, api/
+│   │                               # Header-only suites, one directory per `src/` module
+│   ├── emulator/test_emulator_main.cpp   # Focused emulator-only runner
+│   ├── reconcile/test_reconcile_main.cpp # Focused reconciler-only runner
+│   └── fixtures/conformance/       # JSON conformance fixtures (C01a … M8, N1 … X7)
 └── build/bin/
     └── gdocsmith-mcp               # Standalone release binary
 ```

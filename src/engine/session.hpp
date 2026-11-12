@@ -369,7 +369,7 @@ public:
             return handle;
         }
 
-        std::string docId = "new:" + alias;
+        std::string docId = "new_" + alias;
         if (docs.contains(docId)) {
             throw model::CoreError(std::string(model::error_codes::INTERNAL), "alias \"" + alias + "\" is already used");
         }
@@ -606,7 +606,7 @@ inline TabHandle DocHandleImpl::tabCreate(
     }
 
     state->tabCounter++;
-    std::string tabId = "new:tab:" + std::to_string(state->tabCounter);
+    std::string tabId = "new_tab_" + std::to_string(state->tabCounter);
     model::TabModel tab{
         .tabId = tabId,
         .title = title,

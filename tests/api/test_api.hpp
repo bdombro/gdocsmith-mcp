@@ -18,8 +18,8 @@ TEST_SUITE("api::document_id") {
               "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms");
         CHECK(document_id("https://docs.google.com/document/d/my-doc-id_123?usp=sharing") == "my-doc-id_123");
 
-        CHECK_THROWS_AS(document_id("invalid url / with / slashes"), CoreError);
-        CHECK_THROWS_AS(document_id("not an id!"), CoreError);
+        CHECK_THROWS_AS(document_id("invalid url / with / slashes"), model::CoreError);
+        CHECK_THROWS_AS(document_id("not an id!"), model::CoreError);
     }
 }
 

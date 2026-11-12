@@ -33,7 +33,7 @@ build: (configure "Release")
     ctest --test-dir build/cmake/Release --output-on-failure --no-tests=error
 
 lint: (configure "Debug")
-    "${CLANG_TIDY:-clang-tidy}" -p build/cmake/Debug src/main.cpp tests/test_main.cpp
+    "${CLANG_TIDY:-clang-tidy}" -p build/cmake/Debug src/main.cpp
 
 test-mcp: build
     node scripts/test-mcp.mjs build/bin/gdocsmith-mcp export,import,file,status

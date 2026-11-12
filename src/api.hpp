@@ -2,6 +2,7 @@
 
 #include "curl.hpp"
 #include "json.hpp"
+#include "model/errors.hpp"
 
 #include <poll.h>
 #include <spawn.h>
@@ -30,13 +31,6 @@
 extern char** environ;
 
 namespace gdocsmith {
-
-class CoreError : public std::runtime_error {
-public:
-    std::string code;
-    CoreError(std::string_view c, std::string_view msg)
-        : std::runtime_error(std::string(msg)), code(c) {}
-};
 
 struct HttpCall {
     std::string method = "GET";
@@ -532,7 +526,7 @@ inline std::string document_id(std::string_view reference) {
     if (std::regex_match(s, idRegex)) {
         return s;
     }
-    throw CoreError("unsupportedSyntax", "invalid document ID or URL: " + s);
+    throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "invalid document ID or URL: " + s);
 }
 
 // Drive Permission Types

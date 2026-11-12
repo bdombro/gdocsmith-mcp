@@ -729,12 +729,13 @@ inline DifferentialResult differentialRun(
         .listsRebuilt = listsRebuilt
     });
 
+    std::vector<JsonObject> requests = std::move(ctx.requests);
     return DifferentialResult{
         .compare = std::move(compare),
         .ctx = std::move(ctx),
         .final = std::move(final),
         .json = std::move(res.json),
-        .requests = ctx.requests
+        .requests = std::move(requests)
     };
 }
 

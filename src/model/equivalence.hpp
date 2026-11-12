@@ -182,6 +182,13 @@ inline JsonObject paragraphStyleDefaulted(const JsonObject& style) {
     return out;
 }
 
+inline JsonObject cellStyleDefaulted(const JsonObject& style) {
+    JsonObject out = style;
+    if (!out.contains("columnSpan")) out["columnSpan"] = static_cast<int64_t>(1);
+    if (!out.contains("rowSpan")) out["rowSpan"] = static_cast<int64_t>(1);
+    return out;
+}
+
 inline bool atomCreateMatches(const AtomCreate& create, const Atom& actual) {
     if (actual.create.has_value()) {
         return create == *actual.create;
@@ -395,7 +402,7 @@ inline void cellCompare(
     const TabCompareOptions& opts,
     std::vector<std::string>& diffs
 ) {
-    styleCompare(path, "style", expected.style, actual.style, diffs);
+    styleCompare(path, "style", cellStyleDefaulted(expected.style), cellStyleDefaulted(actual.style), diffs);
     marksCompare(path, "cell",
         SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
         SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},

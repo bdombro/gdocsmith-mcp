@@ -195,7 +195,7 @@ inline JsonObject textStylesEmit(
 
     for (size_t i = 0; i < fSyms.size(); ++i) {
         const auto& sym = fSyms[i];
-        int length = sym.is_atom() && sym.atom ? sym.atom->length : static_cast<int>(sym.ch.length());
+        int length = sym.is_atom() && sym.atom ? sym.atom->length : codePointUtf16Units(sym.ch);
         JsonObject style = (sym.is_atom() && sym.atom && sym.atom->style) ? *sym.atom->style : sym.style;
 
         std::optional<JsonObject> link;
@@ -452,7 +452,10 @@ inline void paragraphReconcile(
         std::optional<int> at;
         if (!inserted.empty()) {
             std::vector<Range> checkRanges = region ? std::vector<Range>{*region} : ctx.carryRanges;
-            at = carryPosition(checkRanges, pos, end, oSyms[h.aStart]);
+            std::optional<Sym> first = h.aStart < static_cast<int>(oSyms.size())
+                ? std::optional<Sym>(oSyms[h.aStart])
+                : std::nullopt;
+            at = carryPosition(checkRanges, pos, end, first);
         }
         if (region && !at) {
             throw CoreError("internal", "a suggestion can't be carried through a one-character region");

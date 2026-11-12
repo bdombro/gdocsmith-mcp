@@ -507,6 +507,7 @@ inline TabModel tabParse(
     tab.namedRanges = std::move(namedRanges);
 
     if (dt.contains("documentStyle")) tab.documentStyle = styleCanonical(dt["documentStyle"]);
+    else tab.documentStyle = make_json_object();
     if (dt.contains("namedStyles")) tab.namedStyles = styleCanonical(dt["namedStyles"]);
     if (dt.contains("dropdownDefinitions") && dt["dropdownDefinitions"].holds<slimr::Json::object_t>()) {
         for (const auto& [k, v] : dt["dropdownDefinitions"].get<slimr::Json::object_t>()) tab.dropdownDefinitions[k] = v;

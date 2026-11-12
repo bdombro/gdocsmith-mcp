@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model/raw_json.hpp"
+#include "model/symbols.hpp"
 #include "model/types.hpp"
 
 #include <cstdint>
@@ -152,7 +153,7 @@ inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
         if (std::holds_alternative<std::string>(item)) {
             const auto& str = std::get<std::string>(item);
             if (str.empty()) continue;
-            int end = index + static_cast<int>(str.size());
+            int end = index + utf16CodeUnitLength(str);
             elements.push_back(slimr::Json::object_t{
                 {"startIndex", static_cast<int64_t>(index)},
                 {"endIndex", static_cast<int64_t>(end)},
@@ -165,7 +166,7 @@ inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
         } else if (std::holds_alternative<ParagraphTextSpec>(item)) {
             const auto& t = std::get<ParagraphTextSpec>(item);
             if (t.text.empty()) continue;
-            int end = index + static_cast<int>(t.text.size());
+            int end = index + utf16CodeUnitLength(t.text);
             slimr::Json::object_t tr{
                 {"content", t.text},
                 {"textStyle", t.style.value_or(make_json_object())}

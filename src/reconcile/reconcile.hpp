@@ -798,7 +798,7 @@ inline int rangeEdgeIndex(const TabModel& tab, const Layout& layout, std::string
     int limit = std::min(offset, static_cast<int>(visible.size()));
     for (int i = 0; i < limit; ++i) {
         if (visible[i].is_char()) {
-            sum += static_cast<int>(visible[i].ch.size());
+            sum += codePointUtf16Units(visible[i].ch);
         } else if (visible[i].is_atom()) {
             sum += visible[i].atom->length;
         }

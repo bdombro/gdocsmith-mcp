@@ -55,7 +55,7 @@ set_target_properties(gdocsmith-mcp PROPERTIES
 if(BUILD_TESTING)
     find_package(slimr-test CONFIG REQUIRED)
     add_executable(gdocsmith_mcp_test tests/test_main.cpp)
-    target_include_directories(gdocsmith_mcp_test PRIVATE src tests tests/emulator tests/lens tests/model tests/diff)
+    target_include_directories(gdocsmith_mcp_test PRIVATE src tests tests/emulator tests/lens tests/model tests/diff tests/reconcile tests/engine tests/api)
     target_link_libraries(gdocsmith_mcp_test PRIVATE
         slimr::mcp_http slimr::yaml slimr::test OpenSSL::Crypto app_options)
     set_target_properties(gdocsmith_mcp_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)

@@ -6,16 +6,6 @@
 
 namespace gdocsmith::reconcile::test {
 
-inline std::vector<std::string> requestKinds(const std::vector<JsonObject>& reqs) {
-    std::vector<std::string> res;
-    for (const auto& r : reqs) {
-        if (r.holds<slimr::Json::object_t>() && !r.get<slimr::Json::object_t>().empty()) {
-            res.push_back(r.get<slimr::Json::object_t>().begin()->first);
-        }
-    }
-    return res;
-}
-
 inline DifferentialResult roundTripParagraph(
     const std::vector<BlockSpec>& blocks,
     std::function<void(EditTarget& target, const std::vector<std::string>& keys)> mutate
@@ -60,12 +50,13 @@ inline DifferentialResult roundTripParagraph(
     auto emulated = emulator::requestsEmulate(json, ctx.requests).json;
     CompareResult comp = docModelsCompare(final, docModelParse(emulated, DocModelParseOptions{.docId = "d", .keys = KeyAllocator{}}));
 
+    std::vector<JsonObject> requests = std::move(ctx.requests);
     return DifferentialResult{
         .compare = std::move(comp),
         .ctx = std::move(ctx),
         .final = std::move(final),
         .json = std::move(emulated),
-        .requests = ctx.requests
+        .requests = std::move(requests)
     };
 }
 

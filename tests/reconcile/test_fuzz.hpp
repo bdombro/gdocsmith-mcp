@@ -177,7 +177,7 @@ inline void fuzzRowsInsert(EditTarget& target, std::string_view tableKey, int at
         for (const auto& cell : refRow.cells) {
             CellModel newCell;
             newCell.key = target.ctx.keys.next("n");
-            newCell.style = make_table_cell_style_default();
+            newCell.style = cell.style;
             auto p = paragraphEmptyCreate(target.ctx.keys, make_table_cell_paragraph_style_default(), target.ctx.stamp);
             newCell.blocks.push_back(Block(std::move(p)));
             newRow.cells.push_back(std::move(newCell));
@@ -220,11 +220,12 @@ inline void fuzzColumnsInsert(EditTarget& target, std::string_view tableKey, int
     table.columns.insert(table.columns.begin() + at, newCols.begin(), newCols.end());
 
     for (auto& row : table.rows) {
+        auto refStyle = row.cells[refIndex].style;
         std::vector<CellModel> newCells;
         for (int i = 0; i < count; ++i) {
             CellModel cell;
             cell.key = target.ctx.keys.next("n");
-            cell.style = make_table_cell_style_default();
+            cell.style = refStyle;
             auto p = paragraphEmptyCreate(target.ctx.keys, make_table_cell_paragraph_style_default(), target.ctx.stamp);
             cell.blocks.push_back(Block(std::move(p)));
             newCells.push_back(std::move(cell));

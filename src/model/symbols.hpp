@@ -105,6 +105,13 @@ inline int codePointUtf16Units(std::string_view cp) {
     return 1;
 }
 
+/** UTF-16 code unit length of a UTF-8 string (Docs indices are UTF-16 code units). */
+inline int utf16CodeUnitLength(std::string_view s) {
+    int n = 0;
+    for (const auto& cp : utf8CodePoints(s)) n += codePointUtf16Units(cp);
+    return n;
+}
+
 /** A paragraph's inlines as symbols, in order. */
 inline std::vector<Sym> paragraphSymbols(const ParagraphBlock& paragraph) {
     std::vector<Sym> out;
