@@ -17,7 +17,7 @@ class GdocsmithMcp < Formula
   end
 
   service do
-    run [opt_bin/"gdocsmith-mcp", "http", "--host", "127.0.0.1", "--port", "8087"]
+    run [opt_bin/"gdocsmith-mcp", "http", "--host", "127.0.0.1", "--port", "10007"]
     keep_alive true
     working_dir var/"gdocsmith-mcp"
     log_path var/"log/gdocsmith-mcp.log"

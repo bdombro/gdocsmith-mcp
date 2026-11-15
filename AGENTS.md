@@ -2,7 +2,7 @@
 
 Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin repository.
 
-`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` stdio + Streamable HTTP on `127.0.0.1:8087`) and CLI built on `slimr-cpp` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
+`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` stdio + Streamable HTTP on `127.0.0.1:10007`) and CLI built on `slimr-cpp` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
 
 
 ## Documentation Upkeep
@@ -22,14 +22,14 @@ with implemented behavior; do not claim unverified release or client support.
 | Verify isolated MCP `2026-07-28` stdio + ephemeral HTTP discovery | `just test-mcp` |
 | Offline Node-vs-C++ engine parity with a prebuilt ParityChecks adapter, a fresh run ID and an explicit Node; raw differences exit 1 | `just parity <run_id> <node>` |
 | Validate Homebrew formula Ruby syntax | `just check-formula` |
-| Manage local Homebrew service lifecycle (`127.0.0.1:8087`) | `just install-local` / `start` / `stop` / `status` / `uninstall` |
+| Manage local Homebrew service lifecycle (`127.0.0.1:10007`) | `just install-local` / `start` / `stop` / `status` / `uninstall` |
 | Clean build artifacts | `just clean` |
 
 ## Module Boundaries
 
 | Path | Owns | Must Not |
 | --- | --- | --- |
-| `src/main.cpp` | Entrypoint calling `slimr::enable_http(app, {.host = "127.0.0.1", .port = 8087})` + `app.run(argc, argv)` | Business logic |
+| `src/main.cpp` | Entrypoint calling `slimr::enable_http(app, {.host = "127.0.0.1", .port = 10007})` + `app.run(argc, argv)` | Business logic |
 | `src/app.hpp` | `make_gdocsmith_app()`, per-document FIFO queue, `export`, `import`, `file`, `status` tool handlers, and `gdocsmith://guide` resource (including executable-relative `pkgshare` lookup) | Direct `curl` calls |
 | `src/model/` | `DocModel` AST (`document`, `tab`, `table`, `paragraph`, `element`, `style`, `comments`, `suggestions`), Google Docs JSON parsing (`from_json.hpp`), `batchUpdate` object builders (`to_json.hpp` `RequestBuilder`), plus equivalence, invariants, layout, object-ID, key and error helpers | Network or filesystem I/O |
 | `src/diff/` | O(ND) Myers shortest edit script (`myers.hpp`), hunk application (`patch.hpp`), tree-sequence diffing (`tree_diff.hpp`), and unified-diff formatting (`unified.hpp`) | Know about Google Docs JSON or Markdown envelopes |
@@ -43,8 +43,8 @@ with implemented behavior; do not claim unverified release or client support.
 | `src/api.hpp` | `DocsClient` & `DriveClient` over `curl.hpp`, `exec_gws` RAII fd/spawn handling, in-memory OAuth token exchange via `gws auth export --unmasked` | Persist OAuth tokens to disk |
 | `tests/` | Header-only suites under `tests/{model,diff,lens,reconcile,emulator,engine,api}/` combined by `tests/test_main.cpp`; conformance fixtures live in `tests/fixtures/conformance/` | Hit live Google Docs APIs in `just test` |
 | `scripts/test-mcp.mjs` | Isolated stdio (`mcp`) + ephemeral HTTP (`http --port 0 --allow-ephemeral-port`) MCP `2026-07-28` test | Hit live Google APIs |
-| `Formula/gdocsmith-mcp.rb` & `scripts/dev-formula.mjs` | Homebrew formula (`service do` on `127.0.0.1:8087`, `pkgshare` docs, Homebrew `PATH`) and local formula staging | Embed secrets or run `git add -A` |
-| `.cursor-plugin/` & `.claude-plugin/` | Cursor and Claude HTTP plugin manifests (`http://127.0.0.1:8087/mcp`) | Include shell scripts or credentials |
+| `Formula/gdocsmith-mcp.rb` & `scripts/dev-formula.mjs` | Homebrew formula (`service do` on `127.0.0.1:10007`, `pkgshare` docs, Homebrew `PATH`) and local formula staging | Embed secrets or run `git add -A` |
+| `.cursor-plugin/` & `.claude-plugin/` | Cursor and Claude HTTP plugin manifests (`http://127.0.0.1:10007/mcp`) | Include shell scripts or credentials |
 
 ## Safety & App Conventions
 
@@ -52,7 +52,7 @@ with implemented behavior; do not claim unverified release or client support.
 2. **Revision locking:** `import` must compare frontmatter `revision` against the live document's `revisionId` and validate `export.orig.md` when present. If stale (`staleBase`), refuse writes and export fresh remote state. The public factory defaults to `remoteImportEnabled=true`; scoped reviews and final runtime gates are parent-accepted. The synthetic live smoke covered create/body-edit/export/no-op/stale refusal/delete, not every rich-content or review capability.
 3. **Sharing & deletion guards:** `file` action `delete` requires `allow: ["delete"]`. `file` action `grant` requires `allow: ["share"]`, and must unconditionally refuse `anyone` (public), `domain`, or `owner` permission grants.
 4. **Preserve local edits on re-export:** The canonical files are `exports/<docId>/<revId>/export.md` (working copy) and `export.orig.md` (recorded original), matching the available read-only `../gdocsmith-node` reference. Re-export must not clobber edited `export.md`. Recovery must return fresh remote content, not relabel an edited working copy as authoritative. No migration or cleanup of user files.
-5. **Loopback auth boundary:** Keep `oauth.enabled = false` (`127.0.0.1:8087` loopback single-user mode); never add a persistent HTTP Google token broker database or mix MCP bearer tokens with Google access tokens.
+5. **Loopback auth boundary:** Keep `oauth.enabled = false` (`127.0.0.1:10007` loopback single-user mode); never add a persistent HTTP Google token broker database or mix MCP bearer tokens with Google access tokens.
 6. **Capability boundary:** Supported body-rich edits, tab operations, `namedStyleSets` / `cellStyles` declaration edits, and Drive comment actions do not imply atom mutation, merged/resized-table editing, non-body editing, or protected review edits. Preserve unchanged metadata and refuse unsupported changes before sends. `allow` cannot override an unsupported operation.
 7. **Unknown outcomes:** Never replay creates, copies or comments blindly. Preserve edited inputs, report confirmed/partial/unknown writes honestly, and require authoritative readback before verified success. Offline tests are not live Google proof or full-parity evidence.
 

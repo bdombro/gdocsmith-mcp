@@ -8,7 +8,7 @@
 
 /* Entry point. One binary, three surfaces (all share make_gdocsmith_app):
  *   gdocsmith-mcp mcp                         stdio MCP server (NDJSON)
- *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 127.0.0.1:8087)
+ *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 127.0.0.1:10007)
  *   gdocsmith-mcp <tool> ['{"doc":"..."}']    narrow JSON CLI (export, import, file, status)
  */
 int main(int argc, char* argv[]) {
@@ -21,6 +21,6 @@ int main(int argc, char* argv[]) {
     }
 
     auto app = gdocsmith::make_gdocsmith_app();
-    slimr::enable_http(app, slimr::HttpServerOptions{.host = "127.0.0.1", .port = 8087});
+    slimr::enable_http(app, slimr::HttpServerOptions{.host = "127.0.0.1", .port = 10007});
     return app.run(argc, argv);
 }

@@ -10,7 +10,7 @@
   "repository": "https://github.com/bdombro/gdocsmith-mcp",
   "mcpServers": {
     "gdocsmith-mcp": {
-      "url": "http://127.0.0.1:8087/mcp"
+      "url": "http://127.0.0.1:10007/mcp"
     }
   }
 }

@@ -56,7 +56,7 @@ After setup, ask your agent:
 - Export rich Markdown with identities and review context; edit supported rich intent with explicit guards and unsupported-operation refusals.
 - Import supported changes through revision-locked, guarded transactions and authoritative readback; preserve intended edits during failure recovery.
 - Copy complex documents losslessly when unsupported objects must be preserved.
-- Small footprint: a standalone ARM64/x64 binary exposing CLI, stdio MCP, and Streamable HTTP (`127.0.0.1:8087`); no Node/V8 runtime.
+- Small footprint: a standalone ARM64/x64 binary exposing CLI, stdio MCP, and Streamable HTTP (`127.0.0.1:10007`); no Node/V8 runtime.
 
 ## Installation
 
@@ -98,7 +98,7 @@ brew services restart bdombro/gdocsmith-mcp/gdocsmith-mcp
 brew services stop bdombro/gdocsmith-mcp/gdocsmith-mcp
 ```
 
-The endpoint is `http://127.0.0.1:8087/mcp`; logs are under
+The endpoint is `http://127.0.0.1:10007/mcp`; logs are under
 `/opt/homebrew/var/log/`. To run in the foreground instead, use
 `gdocsmith-mcp http` (or `./build/bin/gdocsmith-mcp http` from a source checkout).
 Do not run the foreground server and service on the same port.
@@ -116,7 +116,7 @@ After starting the service, add this server to OpenCode v2.2.6's
     "servers": {
       "gdocsmith-mcp": {
         "type": "remote",
-        "url": "http://127.0.0.1:8087/mcp",
+        "url": "http://127.0.0.1:10007/mcp",
         "protocol": "2026-07-28"
       }
     }
@@ -212,7 +212,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 
 ## Authentication & Security Boundary
 
-`gdocsmith-mcp` runs in **loopback single-user mode** (`127.0.0.1:8087`) protected by loopback binding plus `Host`/`Origin` DNS-rebinding checks in `slimr::mcp_http`:
+`gdocsmith-mcp` runs in **loopback single-user mode** (`127.0.0.1:10007`) protected by loopback binding plus `Host`/`Origin` DNS-rebinding checks in `slimr::mcp_http`:
 
 - Credentials are obtained locally via `gws auth export --unmasked` (using your host `gws` CLI profile) and exchanged in memory against `https://oauth2.googleapis.com/token` over `slimr::curl`. Access tokens stay in process memory and are never written to disk.
 - `gdocsmith-mcp` does **not** run a persistent HTTP Google token broker database, does **not** accept external Google OAuth tokens over HTTP, and does **not** enable or claim standard MCP OAuth (`oauth.enabled = false`).

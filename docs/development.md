@@ -19,12 +19,12 @@ plugins/gdocsmith-mcp/
 ├── vcpkg.json                      # Independently resolved dependencies (slimr-mcp[http])
 ├── CMakeLists.txt                  # App/test targets and transitive dependency linking (slimr::mcp_http)
 ├── justfile                        # CMake/Ninja, lint, test-mcp, and Homebrew service lifecycle
-├── Formula/gdocsmith-mcp.rb        # Homebrew formula + launchd service definition (127.0.0.1:8087)
+├── Formula/gdocsmith-mcp.rb        # Homebrew formula + launchd service definition (127.0.0.1:10007)
 ├── scripts/
 │   ├── dev-formula.mjs             # Local tarball formula staging helper (binary + docs)
 │   └── test-mcp.mjs                # Stdio + ephemeral HTTP MCP 2026-07-28 conformance check
-├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:8087/mcp)
-├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:8087/mcp)
+├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:10007/mcp)
+├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:10007/mcp)
 ├── src/
 │   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), and Streamable HTTP (`http`) entrypoint
 │   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
@@ -75,7 +75,7 @@ plugins/gdocsmith-mcp/
 
 ### Libraries Used
 
-- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>`:** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (`127.0.0.1:8087`), `gdocsmith://guide` resource registration, and narrow JSON CLI.
+- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>`:** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (`127.0.0.1:10007`), `gdocsmith://guide` resource registration, and narrow JSON CLI.
 - **`<yaml.hpp>` (`rapidyaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
 - **`<curl.hpp>` (`-lcurl`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
 - **`<json.hpp>` (`glaze`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
@@ -88,10 +88,10 @@ plugins/gdocsmith-mcp/
 `gdocsmith-mcp` implements the MCP **`2026-07-28`** specification over both stdio and Streamable HTTP:
 
 - **Breaking change (`2026-07-28`):** Session initialization (`initialize`), `notifications/initialized`, `MCP-Session-Id` headers, and SSE `GET`/`DELETE` streams are removed. Clients discover capabilities via `server/discover`, list tools via `tools/list`, read `gdocsmith://guide` via `resources/read` (or the fallback `mcp_resource_read` tool), and invoke tools via `tools/call`. On HTTP `POST /mcp`, callers must send `MCP-Protocol-Version: 2026-07-28` (and `Accept: application/json`), plus `Mcp-Method` (and `Mcp-Name` on `tools/call`). Calling `initialize` returns `-32601 Method not found`.
-- **Streamable HTTP (default port `8087`):**
+- **Streamable HTTP (default port `10007`):**
   ```bash
-  ./build/bin/gdocsmith-mcp http --host 127.0.0.1 --port 8087
-  # Endpoint: http://127.0.0.1:8087/mcp
+  ./build/bin/gdocsmith-mcp http --host 127.0.0.1 --port 10007
+  # Endpoint: http://127.0.0.1:10007/mcp
   ```
 - **Stdio MCP (`mcp`):**
   ```json
@@ -113,12 +113,12 @@ plugins/gdocsmith-mcp/
     "mcpServers": {
       "gdocsmith-mcp": {
         "type": "http",
-        "url": "http://127.0.0.1:8087/mcp"
+        "url": "http://127.0.0.1:10007/mcp"
       }
     }
   }
   ```
-- **Cursor / Claude plugins:** `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` configure the HTTP server at `http://127.0.0.1:8087/mcp`. Note that host clients using these manifests must support MCP `2026-07-28` Streamable HTTP.
+- **Cursor / Claude plugins:** `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` configure the HTTP server at `http://127.0.0.1:10007/mcp`. Note that host clients using these manifests must support MCP `2026-07-28` Streamable HTTP.
 
 ## Building & Testing
 
