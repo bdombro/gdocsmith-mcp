@@ -91,9 +91,12 @@ jobs:
             target="x64-linux"
           fi
           if [ "$kind" = "formula" ]; then
-            if [ "${{ runner.os }}" = "Linux" ] && ldd build/bin/* | grep -q 'libc++\.so'; then
-              echo "::error::Linux release binary must not dynamically link libc++.so"
-              exit 1
+            if [ "${{ runner.os }}" = "Linux" ]; then
+              if ldd build/bin/* | grep -q 'libc++\.so'; then
+                echo "::error::Linux release binary must not dynamically link libc++.so"
+                exit 1
+              fi
+              "build/bin/$name" --version
             fi
             if [ ! -f "dist/${name}-${target}.tar.gz" ]; then
               mkdir -p dist
