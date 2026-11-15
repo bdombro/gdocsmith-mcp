@@ -28,7 +28,7 @@ struct TempDir {
 TEST_CASE("artifacts - artifactRoot precedence") {
     using namespace gdocsmith::engine;
     TempDir tmp;
-    const char* prevEnv = getenv("GDOCSMITH_WORK_DIR");
+    const char *prevEnv = getenv("GDOCSMITH_WORK_DIR");
     std::string prevEnvStr = prevEnv ? prevEnv : "";
     unsetenv("GDOCSMITH_WORK_DIR");
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/images.hpp"
 #include "lens/atom_put.hpp"
+#include "lens/images.hpp"
 #include "reconcile/paragraph.hpp"
 #include "test.hpp"
 
@@ -11,16 +11,13 @@ TEST_CASE("image recreation reports crop and alt text without treating neutral a
     model::JsonObject image = slimr::Json::object_t{
         {"description", "alt text"},
         {"imageProperties", slimr::Json::object_t{
-            {"contentUri", "https://example.invalid/bearer"},
-            {"brightness", 0.0},
-            {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.2}}}
-        }}
-    };
+                                {"contentUri", "https://example.invalid/bearer"},
+                                {"brightness", 0.0},
+                                {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.2}}}}}};
     const auto losses = imageRecreationLosses(image);
     CHECK(losses == std::vector<std::string>({"description", "cropProperties"}));
     image = slimr::Json::object_t{{"imageProperties", slimr::Json::object_t{
-        {"brightness", 0.0}, {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.0}}}
-    }}};
+                                                          {"brightness", 0.0}, {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.0}}}}}};
     CHECK(imageRecreationLosses(image).empty());
 }
 
@@ -34,7 +31,7 @@ TEST_CASE("imageUriResolve for remote, upload and local paths") {
     bool threw = false;
     try {
         imageUriResolve("images/pic.png", std::nullopt);
-    } catch (const CoreError& err) {
+    } catch (const CoreError &err) {
         threw = true;
         CHECK(err.code == "unsupportedSyntax");
     }
@@ -43,7 +40,7 @@ TEST_CASE("imageUriResolve for remote, upload and local paths") {
     bool scheme_threw = false;
     try {
         imageUriResolve("ftp://example.com/pic.png", std::nullopt);
-    } catch (const CoreError& err) {
+    } catch (const CoreError &err) {
         scheme_threw = true;
         CHECK(err.code == "unsupportedSyntax");
     }
@@ -55,21 +52,17 @@ TEST_CASE("source image recreation uses fresh content URI dimensions and reports
     doc.docId = "doc";
     model::TabModel tab;
     tab.tabId = "tab";
-    model::Atom original{.key = "old-image", .type = "image", .raw = slimr::Json::object_t{
-        {"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "provider-image"}, {"suggestedDeletionIds", slimr::Json::array_t{"s1"}}}}
-    }};
+    model::Atom original{.key = "old-image", .type = "image", .raw = slimr::Json::object_t{{"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "provider-image"}, {"suggestedDeletionIds", slimr::Json::array_t{"s1"}}}}}};
     tab.inlineObjects["provider-image"] = slimr::Json::object_t{
         {"inlineObjectProperties", slimr::Json::object_t{{"embeddedObject", slimr::Json::object_t{
-            {"title", "Logo"},
-            {"size", slimr::Json::object_t{{"height", slimr::Json::object_t{{"magnitude", 90.5}}},
-                                          {"width", slimr::Json::object_t{{"magnitude", 240}}}}},
-            {"imageProperties", slimr::Json::object_t{
-                {"contentUri", "https://example.invalid/fresh-image"},
-                {"sourceUri", "https://example.invalid/original-image"},
-                {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.1}}},
-                {"brightness", 0}}}
-        }}}}
-    };
+                                                                                {"title", "Logo"},
+                                                                                {"size", slimr::Json::object_t{{"height", slimr::Json::object_t{{"magnitude", 90.5}}},
+                                                                                                               {"width", slimr::Json::object_t{{"magnitude", 240}}}}},
+                                                                                {"imageProperties", slimr::Json::object_t{
+                                                                                                        {"contentUri", "https://example.invalid/fresh-image"},
+                                                                                                        {"sourceUri", "https://example.invalid/original-image"},
+                                                                                                        {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.1}}},
+                                                                                                        {"brightness", 0}}}}}}}};
     model::EditContext context;
     model::EditTarget target{context, tab};
     AtomPutReport report;
@@ -108,7 +101,7 @@ TEST_CASE("source sized image creation replacement and invalid dimensions reach 
     kept.attrs = directiveAttrsParse("src=http://example.invalid/replacement");
     atomTokenKeep(image, token, kept, tab, {});
     CHECK(image.replaceUri == "gdocsmith-upload:http://example.invalid/replacement");
-    for (const auto* size : {"0", "-1", "nan", "inf", "2px"}) {
+    for (const auto *size : {"0", "-1", "nan", "inf", "2px"}) {
         token.attrs = directiveAttrsParse(std::string("src=https://example.invalid/image width=") + size);
         CHECK_THROWS_AS(atomTokenCreate(target, token, {}, report), model::CoreError);
     }
@@ -120,8 +113,9 @@ TEST_CASE("source image resolver copy cannot override source dimensions and unkn
     model::EditTarget target{context, tab};
     AtomPutReport report;
     AtomPutOptions options;
-    options.images = [](const std::string& reference) -> std::optional<ImageSource> {
-        if (reference != "gdoc:source/picture") return std::nullopt;
+    options.images = [](const std::string &reference) -> std::optional<ImageSource> {
+        if (reference != "gdoc:source/picture")
+            return std::nullopt;
         ImageSource source;
         source.create = {.type = "image", .heightPt = 50, .uri = "https://example.invalid/fresh", .widthPt = 100};
         return source;
@@ -143,18 +137,11 @@ TEST_CASE("created atom intents reach real back-to-front request emission withou
     tab.tabId = "tab";
     model::EditTarget target{context, tab};
     AtomPutReport report;
-    const auto image = atomTokenCreate(target, TokenRef{
-        .kind = "image", .attrs = directiveAttrsParse("src=https://example.invalid/image width=240 height=90.5")
-    }, {}, report);
-    const auto person = atomTokenCreate(target, TokenRef{
-        .kind = "person", .attrs = directiveAttrsParse("email=person@example.invalid")
-    }, {}, report);
+    const auto image = atomTokenCreate(target, TokenRef{.kind = "image", .attrs = directiveAttrsParse("src=https://example.invalid/image width=240 height=90.5")}, {}, report);
+    const auto person = atomTokenCreate(target, TokenRef{.kind = "person", .attrs = directiveAttrsParse("email=person@example.invalid")}, {}, report);
     reconcile::ReconcileContext requests;
     requests.tabId = "tab";
-    reconcile::symbolsInsertEmit(6, {
-        model::Sym(model::CharSym{.ch = "a"}), model::Sym(image),
-        model::Sym(model::CharSym{.ch = "b"}), model::Sym(person)
-    }, requests, {});
+    reconcile::symbolsInsertEmit(6, {model::Sym(model::CharSym{.ch = "a"}), model::Sym(image), model::Sym(model::CharSym{.ch = "b"}), model::Sym(person)}, requests, {});
     REQUIRE(requests.requests.size() == 4);
     CHECK(requests.requests[0]["insertPerson"]["personProperties"]["email"] == slimr::Json("person@example.invalid"));
     CHECK(requests.requests[1]["insertText"]["text"] == slimr::Json("b"));
@@ -162,8 +149,8 @@ TEST_CASE("created atom intents reach real back-to-front request emission withou
     CHECK(requests.requests[2]["insertInlineImage"]["objectSize"]["width"]["magnitude"].as<double>() == 240);
     CHECK(requests.requests[2]["insertInlineImage"]["objectSize"]["height"]["magnitude"].as<double>() == 90.5);
     CHECK(requests.requests[3]["insertText"]["text"] == slimr::Json("a"));
-    for (const auto& request : requests.requests) {
-        const auto& body = request.get<slimr::Json::object_t>().begin()->second;
+    for (const auto &request : requests.requests) {
+        const auto &body = request.get<slimr::Json::object_t>().begin()->second;
         CHECK(body["location"]["index"].as<int>() == 6);
         CHECK(body["location"]["tabId"] == slimr::Json("tab"));
         CHECK_FALSE(body.contains("inlineObjectId"));
@@ -176,18 +163,14 @@ TEST_CASE("source put fallback uses only authoritative HTTPS source URI without 
     doc.docId = "doc";
     model::TabModel tab;
     tab.tabId = "tab";
-    model::Atom original{.key = "old-image", .type = "image", .raw = slimr::Json::object_t{
-        {"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "provider-image"}}}
-    }};
+    model::Atom original{.key = "old-image", .type = "image", .raw = slimr::Json::object_t{{"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "provider-image"}}}}};
     tab.inlineObjects["provider-image"] = slimr::Json::object_t{
         {"inlineObjectProperties", slimr::Json::object_t{{"embeddedObject", slimr::Json::object_t{
-            {"title", "Logo"},
-            {"size", slimr::Json::object_t{{"width", slimr::Json::object_t{{"magnitude", 240}}}}},
-            {"imageProperties", slimr::Json::object_t{
-                {"sourceUri", "https://example.invalid/original"},
-                {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.1}}}}}
-        }}}}
-    };
+                                                                                {"title", "Logo"},
+                                                                                {"size", slimr::Json::object_t{{"width", slimr::Json::object_t{{"magnitude", 240}}}}},
+                                                                                {"imageProperties", slimr::Json::object_t{
+                                                                                                        {"sourceUri", "https://example.invalid/original"},
+                                                                                                        {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.1}}}}}}}}}};
     model::ParagraphBlock paragraph;
     paragraph.inlines = {model::Inline::from_atom(original)};
     tab.blocks.emplace_back(paragraph);
@@ -210,24 +193,28 @@ TEST_CASE("source put fallback uses only authoritative HTTPS source URI without 
     CHECK(atomTokenProject(original, tab).label == "Logo");
     CHECK_FALSE(imageSourceOf(doc, tab, original));
     CHECK_FALSE(imageResolverBuild({doc})("provider-image"));
-    auto& embedded = tab.inlineObjects["provider-image"]["inlineObjectProperties"]["embeddedObject"];
+    auto &embedded = tab.inlineObjects["provider-image"]["inlineObjectProperties"]["embeddedObject"];
     embedded["imageProperties"]["contentUri"] = "https://example.invalid/fresh";
     const auto preferred = imageRecreationSourceOf(doc, tab, original);
     REQUIRE(preferred);
     CHECK(preferred->create.uri == "https://example.invalid/fresh");
     CHECK(preferred->create.widthPt == 240);
     CHECK_FALSE(preferred->sourceUriFallback);
-    for (const auto* invalid : {"", "http://example.invalid/fresh"}) {
+    for (const auto *invalid : {"", "http://example.invalid/fresh"}) {
         embedded["imageProperties"]["contentUri"] = invalid;
-        try { (void)atomRecreate(target, original, doc, report); FAIL("expected invalid fresh source refusal"); }
-        catch (const model::CoreError& error) { CHECK(error.code == "invalidAtom"); }
+        try {
+            (void)atomRecreate(target, original, doc, report);
+            FAIL("expected invalid fresh source refusal");
+        } catch (const model::CoreError &error) {
+            CHECK(error.code == "invalidAtom");
+        }
     }
     embedded["imageProperties"] = slimr::Json::object_t{};
     CHECK_THROWS_AS(atomRecreate(target, original, doc, report), model::CoreError);
     embedded["imageProperties"]["sourceUri"] = "http://example.invalid/original";
     CHECK_THROWS_AS(atomRecreate(target, original, doc, report), model::CoreError);
     embedded["imageProperties"]["sourceUri"] = "https://example.invalid/original";
-    for (const auto* field : {"embeddedDrawingProperties", "linkedContentReference"}) {
+    for (const auto *field : {"embeddedDrawingProperties", "linkedContentReference"}) {
         embedded[field] = slimr::Json::object_t{};
         CHECK_THROWS_AS(atomRecreate(target, original, doc, report), model::CoreError);
         embedded.get<slimr::Json::object_t>().erase(field);

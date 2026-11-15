@@ -22,18 +22,18 @@
 
 namespace gdocsmith::engine {
 
-using reconcile::RequestOrigin;
-using reconcile::PendingLink;
-using reconcile::TabToAdd;
-using reconcile::SegmentToAdd;
 using reconcile::FootnoteBody;
+using reconcile::PendingLink;
+using reconcile::RequestOrigin;
+using reconcile::SegmentToAdd;
+using reconcile::TabToAdd;
 using FootnoteBodyPlan = reconcile::FootnoteBody;
 using RangeWithTab = reconcile::DeletedRange;
 using PlanSummary = reconcile::DocPlanSummary;
 using ListRebuild = reconcile::ListRebuildWithTab;
 using reconcile::DocPlan;
 
-inline const std::vector<std::string>& allowKinds() {
+inline const std::vector<std::string> &allowKinds() {
     static const std::vector<std::string> kinds = {
         "brokenLink",
         "commentChanges",
@@ -55,7 +55,7 @@ struct GuardFinding {
     std::optional<int> tabIndex;
     bool waived = false;
 
-    bool operator==(const GuardFinding&) const = default;
+    bool operator==(const GuardFinding &) const = default;
 };
 
 struct GuardDoc {
@@ -83,10 +83,11 @@ struct InboundLinksResult {
     std::set<std::string> tabs;
 };
 
-inline void visitLink(const std::string& docId, const slimr::Json& link, InboundLinksResult& res) {
-    if (!link.is_object()) return;
+inline void visitLink(const std::string &docId, const slimr::Json &link, InboundLinksResult &res) {
+    if (!link.is_object())
+        return;
     if (link.contains("heading") && link["heading"].is_object()) {
-        const auto& h = link["heading"];
+        const auto &h = link["heading"];
         if (h.contains("id") && h["id"].is_string()) {
             res.headings.insert(docId + '\0' + h["id"].get<std::string>());
         }
@@ -119,13 +120,13 @@ inline void visitLink(const std::string& docId, const slimr::Json& link, Inbound
     }
 }
 
-inline void walkRawLinks(const std::string& docId, const slimr::Json& node, InboundLinksResult& res) {
+inline void walkRawLinks(const std::string &docId, const slimr::Json &node, InboundLinksResult &res) {
     if (node.is_array()) {
-        for (const auto& item : node.get<slimr::Json::array_t>()) {
+        for (const auto &item : node.get<slimr::Json::array_t>()) {
             walkRawLinks(docId, item, res);
         }
     } else if (node.is_object()) {
-        for (const auto& [key, value] : node.get<slimr::Json::object_t>()) {
+        for (const auto &[key, value] : node.get<slimr::Json::object_t>()) {
             if (key == "link" && value.is_object()) {
                 visitLink(docId, value, res);
             } else {
@@ -135,13 +136,13 @@ inline void walkRawLinks(const std::string& docId, const slimr::Json& node, Inbo
     }
 }
 
-inline InboundLinksResult inboundLinks(const std::vector<model::DocModel>& docs) {
+inline InboundLinksResult inboundLinks(const std::vector<model::DocModel> &docs) {
     InboundLinksResult res;
-    for (const auto& doc : docs) {
-        for (const auto& tab : doc.tabs) {
-            for (const auto& block : model::blocksDeep(tab.blocks)) {
+    for (const auto &doc : docs) {
+        for (const auto &tab : doc.tabs) {
+            for (const auto &block : model::blocksDeep(tab.blocks)) {
                 if (block.kind == "paragraph" && block.paragraph) {
-                    for (const auto& inlineItem : block.paragraph->inlines) {
+                    for (const auto &inlineItem : block.paragraph->inlines) {
                         if (inlineItem.style.contains("link") && inlineItem.style["link"].is_object()) {
                             visitLink(doc.docId, inlineItem.style["link"], res);
                         }
@@ -163,17 +164,17 @@ struct DeletionWithTab {
     std::string tabId;
 };
 
-inline std::vector<DeletionWithTab> deletionsWithTabs(const GuardDoc& doc) {
+inline std::vector<DeletionWithTab> deletionsWithTabs(const GuardDoc &doc) {
     std::vector<DeletionWithTab> res;
-    const auto& plan = doc.plan;
-    for (const auto& del : plan.deletedRanges) {
+    const auto &plan = doc.plan;
+    for (const auto &del : plan.deletedRanges) {
         std::optional<int> tabIndex;
         for (size_t i = 0; i < plan.contentRequests.size(); ++i) {
-            const auto& req = plan.contentRequests[i];
+            const auto &req = plan.contentRequests[i];
             if (req.contains("deleteContentRange") && req["deleteContentRange"].is_object()) {
-                const auto& dcr = req["deleteContentRange"];
+                const auto &dcr = req["deleteContentRange"];
                 if (dcr.contains("range") && dcr["range"].is_object()) {
-                    const auto& r = dcr["range"];
+                    const auto &r = dcr["range"];
                     int start = r.contains("startIndex") && r["startIndex"].is_number() ? static_cast<int>(r["startIndex"].get<int64_t>()) : 0;
                     int end = r.contains("endIndex") && r["endIndex"].is_number() ? static_cast<int>(r["endIndex"].get<int64_t>()) : 0;
                     std::string rTabId = r.contains("tabId") && r["tabId"].is_string() ? r["tabId"].get<std::string>() : del.tabId;
@@ -188,8 +189,8 @@ inline std::vector<DeletionWithTab> deletionsWithTabs(const GuardDoc& doc) {
         }
 
         if (!tabIndex.has_value()) {
-            const model::TabModel* originalTab = nullptr;
-            for (const auto& t : doc.original.tabs) {
+            const model::TabModel *originalTab = nullptr;
+            for (const auto &t : doc.original.tabs) {
                 if (t.tabId == del.tabId) {
                     originalTab = &t;
                     break;
@@ -197,12 +198,12 @@ inline std::vector<DeletionWithTab> deletionsWithTabs(const GuardDoc& doc) {
             }
             if (originalTab) {
                 std::vector<std::string> coveredKeys;
-                for (const auto& b : model::blocksDeep(originalTab->blocks)) {
+                for (const auto &b : model::blocksDeep(originalTab->blocks)) {
                     if (b.origin.has_value() && b.origin->start < del.range.end && b.origin->end > del.range.start) {
                         coveredKeys.push_back(b.key);
                     }
                 }
-                for (const auto& t : doc.tombstones) {
+                for (const auto &t : doc.tombstones) {
                     if (t.tabId == del.tabId) {
                         if (std::find(coveredKeys.begin(), coveredKeys.end(), t.key) != coveredKeys.end()) {
                             tabIndex = t.stamp.tabIndex;
@@ -222,13 +223,13 @@ struct InsertionEntry {
     std::string tabId;
 };
 
-inline std::vector<InsertionEntry> insertionsOf(const GuardDoc& doc) {
+inline std::vector<InsertionEntry> insertionsOf(const GuardDoc &doc) {
     std::vector<InsertionEntry> res;
-    for (const auto& req : doc.plan.contentRequests) {
+    for (const auto &req : doc.plan.contentRequests) {
         if (req.contains("insertText") && req["insertText"].is_object()) {
-            const auto& it = req["insertText"];
+            const auto &it = req["insertText"];
             if (it.contains("location") && it["location"].is_object()) {
-                const auto& loc = it["location"];
+                const auto &loc = it["location"];
                 if (loc.contains("index") && loc["index"].is_number()) {
                     std::string tabId = loc.contains("tabId") && loc["tabId"].is_string() ? loc["tabId"].get<std::string>() : "";
                     res.push_back(InsertionEntry{.index = static_cast<int>(loc["index"].get<int64_t>()), .tabId = tabId});
@@ -245,90 +246,103 @@ inline std::vector<InsertionEntry> insertionsOf(const GuardDoc& doc) {
  * table row/column deletion need not appear in DocPlan::deletedRanges.
  */
 inline bool namedRangeRequestEffectsUnknown(
-    const model::JsonObject& request, std::string_view tabId, std::string_view namedRangeId,
-    std::optional<int> currentRangeEnd
-) {
-    if (!request.is_object() || request.get<slimr::Json::object_t>().size() != 1) return true;
-    const auto& [kind, operation] = *request.get<slimr::Json::object_t>().begin();
+    const model::JsonObject &request, std::string_view tabId, std::string_view namedRangeId,
+    std::optional<int> currentRangeEnd) {
+    if (!request.is_object() || request.get<slimr::Json::object_t>().size() != 1)
+        return true;
+    const auto &[kind, operation] = *request.get<slimr::Json::object_t>().begin();
     static const std::set<std::string> indexPreserving{
         "updateTextStyle", "updateParagraphStyle", "updateTableCellStyle",
         "updateTableRowStyle", "updateTableColumnProperties", "updateSectionStyle",
         "updateDocumentStyle", "updateNamedStyle", "updateDocumentTabProperties",
-        "pinTableHeaderRows", "replaceImage", "createNamedRange"
-    };
-    if (indexPreserving.contains(kind)) return false;
-    if (!operation.is_object()) return true;
+        "pinTableHeaderRows", "replaceImage", "createNamedRange"};
+    if (indexPreserving.contains(kind))
+        return false;
+    if (!operation.is_object())
+        return true;
     // Only known request coordinate fields establish scope; do not recursively
     // interpret tab IDs in arbitrary payloads (for example text-style links).
-    std::vector<const model::JsonObject*> locations{&operation};
-    for (const char* field : {"location", "range", "tableStartLocation"}) {
+    std::vector<const model::JsonObject *> locations{&operation};
+    for (const char *field : {"location", "range", "tableStartLocation"}) {
         if (operation.contains(field) && operation[field].is_object())
             locations.push_back(&operation[field]);
     }
     if (operation.contains("tableCellLocation") && operation["tableCellLocation"].is_object()) {
-        const auto& cell = operation["tableCellLocation"];
+        const auto &cell = operation["tableCellLocation"];
         if (cell.contains("tableStartLocation") && cell["tableStartLocation"].is_object())
             locations.push_back(&cell["tableStartLocation"]);
     }
     bool explicitlyThisTab = false, explicitlyOtherTab = false;
-    for (const auto* location : locations) {
-        if (!location->contains("tabId")) continue;
-        if (!(*location)["tabId"].is_string()) return true;
-        if ((*location)["tabId"].get<std::string>() == tabId) explicitlyThisTab = true;
-        else explicitlyOtherTab = true;
+    for (const auto *location : locations) {
+        if (!location->contains("tabId"))
+            continue;
+        if (!(*location)["tabId"].is_string())
+            return true;
+        if ((*location)["tabId"].get<std::string>() == tabId)
+            explicitlyThisTab = true;
+        else
+            explicitlyOtherTab = true;
     }
-    if (explicitlyThisTab && explicitlyOtherTab) return true;
+    if (explicitlyThisTab && explicitlyOtherTab)
+        return true;
     static const std::set<std::string> tabScoped{
         "deleteTableRow", "deleteTableColumn", "insertTableRow", "insertTableColumn",
         "insertTable", "mergeTableCells", "unmergeTableCells",
-        "insertText", "deleteContentRange", "deleteNamedRange"
-    };
-    if (explicitlyOtherTab && tabScoped.contains(kind)) return false;
+        "insertText", "deleteContentRange", "deleteNamedRange"};
+    if (explicitlyOtherTab && tabScoped.contains(kind))
+        return false;
     if (explicitlyThisTab && currentRangeEnd &&
         (kind == "deleteTableRow" || kind == "deleteTableColumn" ||
          kind == "insertTableRow" || kind == "insertTableColumn") &&
         operation.contains("tableCellLocation") && operation["tableCellLocation"].is_object()) {
-        const auto& cell = operation["tableCellLocation"];
+        const auto &cell = operation["tableCellLocation"];
         if (cell.contains("tableStartLocation") && cell["tableStartLocation"].is_object()) {
-            const auto& start = cell["tableStartLocation"];
+            const auto &start = cell["tableStartLocation"];
             // Strictly later table starts cannot affect any earlier edge. Equality
             // is not assumed safe: whole-table deletion can involve its boundary.
             if (!start.contains("segmentId") && start.contains("index") && start["index"].is_number() &&
                 start["index"].get<int64_t>() > *currentRangeEnd &&
-                start["index"].get<int64_t>() <= std::numeric_limits<int>::max()) return false;
+                start["index"].get<int64_t>() <= std::numeric_limits<int>::max())
+                return false;
         }
     }
-    if (kind == "insertText" || kind == "deleteContentRange") return !explicitlyThisTab;
+    if (kind == "insertText" || kind == "deleteContentRange")
+        return !explicitlyThisTab;
     if (kind == "deleteNamedRange" && operation.contains("namedRangeId") &&
         operation["namedRangeId"].is_string() &&
-        operation["namedRangeId"].get<std::string>() != namedRangeId) return false;
+        operation["namedRangeId"].get<std::string>() != namedRangeId)
+        return false;
     return true;
 }
 
 inline bool namedRangeEffectsUnknown(
-    const std::vector<model::JsonObject>& requests, std::string_view tabId,
-    const model::NamedRangeDef& range,
-    std::vector<std::optional<model::Range>>* predicted = nullptr
-) {
+    const std::vector<model::JsonObject> &requests, std::string_view tabId,
+    const model::NamedRangeDef &range,
+    std::vector<std::optional<model::Range>> *predicted = nullptr) {
     std::vector<std::optional<model::Range>> current;
-    for (const auto& part : range.ranges) {
-        current.push_back(part.segmentId ? std::nullopt :
-            std::optional<model::Range>(model::Range{.end=part.end, .start=part.start}));
+    for (const auto &part : range.ranges) {
+        current.push_back(part.segmentId ? std::nullopt : std::optional<model::Range>(model::Range{.end = part.end, .start = part.start}));
     }
-    for (const auto& request : requests) {
+    for (const auto &request : requests) {
         std::optional<int> latestEnd;
-        for (const auto& part : current) {
-            if (!part) { latestEnd.reset(); break; }
+        for (const auto &part : current) {
+            if (!part) {
+                latestEnd.reset();
+                break;
+            }
             latestEnd = std::max(latestEnd.value_or(part->end), part->end);
         }
-        if (namedRangeRequestEffectsUnknown(request, tabId, range.namedRangeId, latestEnd)) return true;
+        if (namedRangeRequestEffectsUnknown(request, tabId, range.namedRangeId, latestEnd))
+            return true;
         if (request.contains("insertText") || request.contains("deleteContentRange")) {
-            for (auto& part : current) {
-                if (part) part = lens::namedRangePredict(*part, tabId, {request});
+            for (auto &part : current) {
+                if (part)
+                    part = lens::namedRangePredict(*part, tabId, {request});
             }
         }
     }
-    if (predicted) *predicted = std::move(current);
+    if (predicted)
+        *predicted = std::move(current);
     return false;
 }
 
@@ -346,36 +360,37 @@ inline std::string snippet(std::string_view text) {
             inWs = false;
         }
     }
-    while (!res.empty() && res.back() == ' ') res.pop_back();
+    while (!res.empty() && res.back() == ' ')
+        res.pop_back();
     if (res.size() > 40) {
         return res.substr(0, 37) + "...";
     }
     return res;
 }
 
-inline const model::Block* blockDeep(const model::TabModel& tab, const std::string& key) {
+inline const model::Block *blockDeep(const model::TabModel &tab, const std::string &key) {
     return reconcile::blockFindConst(tab, key);
 }
 
 template <typename AddFn>
 inline void headingLinkCheck(
-    AddFn&& add,
-    const GuardDoc& doc,
-    const model::TabModel& tab,
-    const model::TabModel* finalTab,
-    const model::ParagraphBlock& heading,
-    std::optional<int> deletedBy
-) {
+    AddFn &&add,
+    const GuardDoc &doc,
+    const model::TabModel &tab,
+    const model::TabModel *finalTab,
+    const model::ParagraphBlock &heading,
+    std::optional<int> deletedBy) {
     std::string docId = doc.original.docId;
     std::string textContent;
-    for (const auto& in : heading.inlines) {
-        if (in.kind == "text") textContent += in.text;
+    for (const auto &in : heading.inlines) {
+        if (in.kind == "text")
+            textContent += in.text;
     }
     std::string text = snippet(textContent);
 
-    const model::Block* now = finalTab ? blockDeep(*finalTab, heading.key) : nullptr;
-    const model::IdentityTransfer* moved = nullptr;
-    for (const auto& t : doc.plan.identityTransfers) {
+    const model::Block *now = finalTab ? blockDeep(*finalTab, heading.key) : nullptr;
+    const model::IdentityTransfer *moved = nullptr;
+    for (const auto &t : doc.plan.identityTransfers) {
         if (t.fromKey == heading.key && heading.headingId.has_value() && t.headingId == *heading.headingId && t.toKey != heading.key) {
             moved = &t;
             break;
@@ -447,12 +462,12 @@ inline void headingLinkCheck(
 
 } // namespace detail
 
-inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
+inline std::vector<GuardFinding> guardEvaluate(const GuardInput &input) {
     std::vector<model::DocModel> linkSources;
     if (input.linkSources.has_value()) {
         linkSources = *input.linkSources;
     } else {
-        for (const auto& d : input.docs) {
+        for (const auto &d : input.docs) {
             linkSources.push_back(d.final);
         }
     }
@@ -465,7 +480,7 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
         findings.push_back(std::move(f));
     };
 
-    for (const auto& doc : input.docs) {
+    for (const auto &doc : input.docs) {
         std::string docId = doc.original.docId;
         auto deletions = detail::deletionsWithTabs(doc);
 
@@ -481,35 +496,37 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
         }
 
         auto inserts = detail::insertionsOf(doc);
-        for (const auto& comment : doc.comments) {
-            for (const auto& occurrence : comment.occurrences) {
+        for (const auto &comment : doc.comments) {
+            for (const auto &occurrence : comment.occurrences) {
                 std::vector<detail::DeletionWithTab> overlaps;
-                for (const auto& del : deletions) {
+                for (const auto &del : deletions) {
                     if (del.tabId == occurrence.tabId &&
                         del.range.start < occurrence.range.end &&
                         del.range.end > occurrence.range.start) {
                         overlaps.push_back(del);
                     }
                 }
-                std::sort(overlaps.begin(), overlaps.end(), [](const auto& a, const auto& b) {
+                std::sort(overlaps.begin(), overlaps.end(), [](const auto &a, const auto &b) {
                     return a.range.start < b.range.start;
                 });
 
                 int coveredTo = occurrence.range.start;
-                for (const auto& del : overlaps) {
-                    if (del.range.start > coveredTo) break;
+                for (const auto &del : overlaps) {
+                    if (del.range.start > coveredTo)
+                        break;
                     coveredTo = std::max(coveredTo, del.range.end);
                 }
                 bool removes = !overlaps.empty() && coveredTo >= occurrence.range.end;
                 bool inserted = false;
-                for (const auto& at : inserts) {
+                for (const auto &at : inserts) {
                     if (at.tabId == occurrence.tabId && at.index > occurrence.range.start && at.index < occurrence.range.end) {
                         inserted = true;
                         break;
                     }
                 }
 
-                if (!removes && overlaps.empty() && !inserted) continue;
+                if (!removes && overlaps.empty() && !inserted)
+                    continue;
 
                 bool free = !removes && comment.resolved;
                 GuardFinding finding{
@@ -517,10 +534,10 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
                     .docId = docId,
                     .kind = removes ? "comment" : "commentPartial",
                     .message = removes
-                        ? "removes the anchor of comment " + comment.commentId
-                        : (free
-                            ? "Edited the quoted text of resolved comment " + comment.commentId + "; Google may keep it on part of the new text."
-                            : "edits the quoted text of comment " + comment.commentId),
+                                   ? "removes the anchor of comment " + comment.commentId
+                                   : (free
+                                          ? "Edited the quoted text of resolved comment " + comment.commentId + "; Google may keep it on part of the new text."
+                                          : "edits the quoted text of comment " + comment.commentId),
                     .allowKind = free ? std::nullopt : std::make_optional("commentChanges"),
                     .severity = free ? "warn" : "block",
                     .tabId = occurrence.tabId,
@@ -530,26 +547,27 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
             }
         }
 
-        for (const auto& tab : doc.original.tabs) {
-            const model::TabModel* finalTab = nullptr;
-            for (const auto& t : doc.final.tabs) {
+        for (const auto &tab : doc.original.tabs) {
+            const model::TabModel *finalTab = nullptr;
+            for (const auto &t : doc.final.tabs) {
                 if (t.tabId == tab.tabId) {
                     finalTab = &t;
                     break;
                 }
             }
 
-            auto tombstoneOf = [&](const std::string& key) -> const model::Tombstone* {
-                for (const auto& t : doc.tombstones) {
-                    if (t.key == key && t.tabId == tab.tabId) return &t;
+            auto tombstoneOf = [&](const std::string &key) -> const model::Tombstone * {
+                for (const auto &t : doc.tombstones) {
+                    if (t.key == key && t.tabId == tab.tabId)
+                        return &t;
                 }
                 return nullptr;
             };
 
-            for (const auto& block : model::blocksDeep(tab.blocks)) {
+            for (const auto &block : model::blocksDeep(tab.blocks)) {
                 if (block.kind == "paragraph" && block.paragraph && block.paragraph->headingId.has_value()) {
                     if (links.headings.contains(docId + '\0' + *block.paragraph->headingId)) {
-                        const auto* ts = tombstoneOf(block.key);
+                        const auto *ts = tombstoneOf(block.key);
                         std::optional<int> deletedBy = ts ? std::make_optional(ts->stamp.tabIndex) : std::nullopt;
                         detail::headingLinkCheck(add, doc, tab, finalTab, *block.paragraph, deletedBy);
                     }
@@ -568,37 +586,43 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
             }
 
             const auto layout = model::layoutCompute(tab);
-            for (const auto& paragraph : model::paragraphsDeep(tab.blocks)) {
+            for (const auto &paragraph : model::paragraphsDeep(tab.blocks)) {
                 auto location = layout.blockRanges.find(paragraph.key);
-                if (location == layout.blockRanges.end()) continue;
+                if (location == layout.blockRanges.end())
+                    continue;
                 int position = location->second.start;
-                for (const auto& item : paragraph.inlines) {
+                for (const auto &item : paragraph.inlines) {
                     if (item.is_atom() && item.type == "image") {
                         const auto id = model::googleIdOf(item.to_atom());
-                        const bool deleted = !finalTab || std::any_of(deletions.begin(), deletions.end(), [&](const auto& deletion) {
+                        const bool deleted = !finalTab || std::any_of(deletions.begin(), deletions.end(), [&](const auto &deletion) {
                             return deletion.tabId == tab.tabId &&
                                    deletion.range.start < position + item.length && deletion.range.end > position;
                         });
                         bool kept = false;
-                        for (const auto& target : doc.final.tabs) {
-                            for (const auto& atom : model::atomsDeep(target.blocks)) {
+                        for (const auto &target : doc.final.tabs) {
+                            for (const auto &atom : model::atomsDeep(target.blocks)) {
                                 if (atom.type == "image" &&
-                                    (atom.key == item.key || (id && model::googleIdOf(atom) == id))) kept = true;
+                                    (atom.key == item.key || (id && model::googleIdOf(atom) == id)))
+                                    kept = true;
                             }
-                            for (const auto& source : doc.imageRecreations) {
-                                if (source.source.docId != docId || source.source.tabId != tab.tabId || source.source.key != item.key) continue;
+                            for (const auto &source : doc.imageRecreations) {
+                                if (source.source.docId != docId || source.source.tabId != tab.tabId || source.source.key != item.key)
+                                    continue;
                                 const auto authoritative = lens::imageRecreationSourceOf(doc.original, tab, item.to_atom());
                                 if (!authoritative || authoritative->create != source.create ||
-                                    authoritative->sourceUriFallback != source.sourceUriFallback) continue;
-                                for (const auto& target : doc.final.tabs) for (const auto& atom : model::atomsDeep(target.blocks)) {
-                                    if (atom.type == "image" && atom.create && *atom.create == source.create) kept = true;
-                                }
+                                    authoritative->sourceUriFallback != source.sourceUriFallback)
+                                    continue;
+                                for (const auto &target : doc.final.tabs)
+                                    for (const auto &atom : model::atomsDeep(target.blocks)) {
+                                        if (atom.type == "image" && atom.create && *atom.create == source.create)
+                                            kept = true;
+                                    }
                             }
                         }
                         const bool inserted = std::any_of(doc.plan.contentRequests.begin(), doc.plan.contentRequests.end(),
-                            [](const auto& request) { return request.contains("insertInlineImage"); });
+                                                          [](const auto &request) { return request.contains("insertInlineImage"); });
                         if (deleted && (kept || inserted)) {
-                            const model::JsonObject* embedded = nullptr;
+                            const model::JsonObject *embedded = nullptr;
                             if (id) {
                                 const auto object = tab.inlineObjects.find(*id);
                                 if (object != tab.inlineObjects.end() &&
@@ -610,17 +634,23 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
                             auto lost = embedded ? lens::imageRecreationLosses(*embedded) : std::vector<std::string>{};
                             if (!kept || !embedded || !embedded->contains("imageProperties")) {
                                 add(GuardFinding{
-                                    .anchor = item.key, .docId = docId, .kind = "imageMove",
+                                    .anchor = item.key,
+                                    .docId = docId,
+                                    .kind = "imageMove",
                                     .message = "cannot establish the source or fidelity of this image move; it was not approved",
                                     .tabId = tab.tabId,
                                 });
                             } else if (!lost.empty()) {
                                 std::string fields;
-                                for (const auto& field : lost) fields += (fields.empty() ? "" : ", ") + field;
+                                for (const auto &field : lost)
+                                    fields += (fields.empty() ? "" : ", ") + field;
                                 add(GuardFinding{
-                                    .anchor = item.key, .docId = docId, .kind = "imageMove",
+                                    .anchor = item.key,
+                                    .docId = docId,
+                                    .kind = "imageMove",
                                     .message = "recreating this image loses: " + fields,
-                                    .allowKind = "lossyImageMove", .tabId = tab.tabId,
+                                    .allowKind = "lossyImageMove",
+                                    .tabId = tab.tabId,
                                 });
                             }
                         }
@@ -629,25 +659,30 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
                 }
             }
 
-            for (const auto& range : tab.namedRanges) {
+            for (const auto &range : tab.namedRanges) {
                 const bool retained = finalTab && std::any_of(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
-                    [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; });
-                if (!retained && doc.managedNamedRangeIds.contains(range.namedRangeId)) continue;
+                                                              [&](const auto &kept) { return kept.namedRangeId == range.namedRangeId; });
+                if (!retained && doc.managedNamedRangeIds.contains(range.namedRangeId))
+                    continue;
                 std::vector<std::optional<model::Range>> predictedRanges;
                 if (detail::namedRangeEffectsUnknown(doc.plan.contentRequests, tab.tabId, range, &predictedRanges)) {
                     add(GuardFinding{
-                        .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                        .anchor = range.namedRangeId,
+                        .docId = docId,
+                        .kind = "namedRange",
                         .message = "cannot establish named range effects of a structural or unclassified operation",
                         .tabId = tab.tabId,
                     });
                 }
-                for (const auto& r : range.ranges) {
+                for (const auto &r : range.ranges) {
                     bool damaged = !finalTab;
                     std::optional<int> tabIndex;
                     if (r.segmentId) {
                         if (!doc.plan.contentRequests.empty()) {
                             add(GuardFinding{
-                                .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                                .anchor = range.namedRangeId,
+                                .docId = docId,
+                                .kind = "namedRange",
                                 .message = "cannot establish the effect of this edit on a named range in a non-body segment",
                                 .tabId = tab.tabId,
                             });
@@ -660,48 +695,55 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
                     bool tracked = false;
                     if (finalTab && range.ranges.size() == 1) {
                         const auto retained = std::find_if(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
-                            [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; });
+                                                           [&](const auto &kept) { return kept.namedRangeId == range.namedRangeId; });
                         if (retained != finalTab->namedRanges.end() && retained->expect && !retained->create) {
                             try {
                                 const auto expected = lens::namedRangeExpected(*finalTab, *retained);
-                                const auto predicted = predictedRanges.size() == 1 ?
-                                    predictedRanges[0] : std::nullopt;
+                                const auto predicted = predictedRanges.size() == 1 ? predictedRanges[0] : std::nullopt;
                                 tracked = expected && predicted && expected->start == predicted->start &&
-                                    expected->end == predicted->end;
-                            } catch (const model::CoreError&) {
+                                          expected->end == predicted->end;
+                            } catch (const model::CoreError &) {
                                 add(GuardFinding{
-                                    .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                                    .anchor = range.namedRangeId,
+                                    .docId = docId,
+                                    .kind = "namedRange",
                                     .message = "cannot establish named range edges in unsupported or hidden content",
                                     .tabId = tab.tabId,
                                 });
                             }
                         }
                     }
-                    for (const auto& d : deletions) {
+                    for (const auto &d : deletions) {
                         if (d.tabId == tab.tabId && d.range.start < r.end && d.range.end > r.start) {
-                            if (!tracked || (d.range.start <= r.start && d.range.end >= r.end)) damaged = true;
+                            if (!tracked || (d.range.start <= r.start && d.range.end >= r.end))
+                                damaged = true;
                             tabIndex = d.tabIndex;
                         }
                     }
-                    for (const auto& insertion : inserts) {
+                    for (const auto &insertion : inserts) {
                         if (!tracked && insertion.tabId == tab.tabId && insertion.index >= r.start && insertion.index <= r.end) {
                             damaged = true;
                         }
                     }
                     if (finalTab && std::none_of(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
-                            [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; })) damaged = true;
+                                                 [&](const auto &kept) { return kept.namedRangeId == range.namedRangeId; }))
+                        damaged = true;
                     if (damaged) {
                         add(GuardFinding{
-                            .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                            .anchor = range.namedRangeId,
+                            .docId = docId,
+                            .kind = "namedRange",
                             .message = "this edit may change or remove named range \"" + range.name + "\"; exact edge tracking is unavailable",
-                            .allowKind = "namedRangeDamage", .tabId = tab.tabId, .tabIndex = tabIndex,
+                            .allowKind = "namedRangeDamage",
+                            .tabId = tab.tabId,
+                            .tabIndex = tabIndex,
                         });
                     }
                 }
             }
         }
 
-        for (const auto& rebuild : doc.plan.listRebuilds) {
+        for (const auto &rebuild : doc.plan.listRebuilds) {
             if (rebuild.lossy) {
                 add(GuardFinding{
                     .anchor = rebuild.keys.empty() ? "" : rebuild.keys[0],

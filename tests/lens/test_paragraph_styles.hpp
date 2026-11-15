@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/paragraph_styles.hpp"
 #include "lens/json_helper.hpp"
+#include "lens/paragraph_styles.hpp"
 #include "test.hpp"
 
 namespace gdocsmith::lens::test {
@@ -28,7 +28,7 @@ TEST_CASE("paragraphDeclarationPatch and Export round trip") {
     CHECK(dimensionPt(patch["spaceAbove"]) == 14.0);
     CHECK(dimensionPt(patch["spaceBelow"]) == 6.0);
 
-    const auto& bt = patch["borderTop"];
+    const auto &bt = patch["borderTop"];
     CHECK(bt.is_object());
     CHECK(bt["dashStyle"].get<std::string>() == "DASH");
     CHECK(dimensionPt(bt["padding"]) == 4.0);

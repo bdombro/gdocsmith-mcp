@@ -1,12 +1,12 @@
 #pragma once
 
+#include "directives.hpp"
 #include "model/errors.hpp"
+#include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <optional>
-#include <sstream>
-#include "directives.hpp"
 
 namespace gdocsmith::lens {
 
@@ -19,21 +19,20 @@ struct ReviewMarker {
     std::string name; // "comment", "suggestion"
     int offset{0};
 
-    bool operator==(const ReviewMarker& other) const = default;
+    bool operator==(const ReviewMarker &other) const = default;
 };
 
 struct ReviewMarks {
     std::vector<ReviewMarker> markers;
     std::string text;
 
-    bool operator==(const ReviewMarks& other) const = default;
+    bool operator==(const ReviewMarks &other) const = default;
 };
 
 inline ReviewMarks reviewMarkersStrip(
     std::string_view markdown,
-    std::vector<FileProblem>& problems,
-    int firstLine = 1
-) {
+    std::vector<FileProblem> &problems,
+    int firstLine = 1) {
     std::vector<ReviewMarker> markers;
     std::string out;
     int length = 0;
@@ -47,7 +46,8 @@ inline ReviewMarks reviewMarkersStrip(
     std::string line;
     std::vector<std::string> lines;
     while (std::getline(ss, line)) {
-        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
         lines.push_back(line);
     }
 
@@ -55,8 +55,9 @@ inline ReviewMarks reviewMarkersStrip(
     static const std::unordered_set<std::string> marker_names = {"comment", "suggestion"};
 
     for (size_t index = 0; index < lines.size(); index++) {
-        const auto& cur_line = lines[index];
-        if (index > 0) emit("\n");
+        const auto &cur_line = lines[index];
+        if (index > 0)
+            emit("\n");
 
         // Check code fence opener: ^\s*(`{3,}|~{3,})
         size_t non_ws = cur_line.find_first_not_of(" \t");
@@ -64,7 +65,8 @@ inline ReviewMarks reviewMarkersStrip(
         if (non_ws != std::string::npos && (cur_line[non_ws] == '`' || cur_line[non_ws] == '~')) {
             char fc = cur_line[non_ws];
             size_t end_fence = non_ws;
-            while (end_fence < cur_line.size() && cur_line[end_fence] == fc) end_fence++;
+            while (end_fence < cur_line.size() && cur_line[end_fence] == fc)
+                end_fence++;
             if (end_fence - non_ws >= 3) {
                 opener = cur_line.substr(non_ws, end_fence - non_ws);
             }
@@ -88,7 +90,8 @@ inline ReviewMarks reviewMarkersStrip(
         if (cur_line.starts_with("::comment") || cur_line.starts_with("::suggestion") ||
             cur_line.starts_with(":::comment") || cur_line.starts_with(":::suggestion")) {
             for (size_t k = index; k < lines.size(); k++) {
-                if (k > index) emit("\n");
+                if (k > index)
+                    emit("\n");
                 emit(lines[k]);
             }
             break;
@@ -105,7 +108,8 @@ inline ReviewMarks reviewMarkersStrip(
             }
             if (ch == '`') {
                 size_t run_end = at;
-                while (run_end < cur_line.size() && cur_line[run_end] == '`') run_end++;
+                while (run_end < cur_line.size() && cur_line[run_end] == '`')
+                    run_end++;
                 std::string run = cur_line.substr(at, run_end - at);
                 size_t close = cur_line.find(run, run_end);
                 size_t end = (close == std::string::npos) ? run_end : (close + run.size());
@@ -129,7 +133,7 @@ inline ReviewMarks reviewMarkersStrip(
             plain.clear();
 
             std::string name = match->name;
-            const auto& flags = match->attrs.flags;
+            const auto &flags = match->attrs.flags;
             auto id_val = match->attrs.get_value("id");
 
             std::optional<std::string> edge;
@@ -146,16 +150,14 @@ inline ReviewMarks reviewMarkersStrip(
                     .line = firstLine + static_cast<int>(index),
                     .message = "invalid " + name + " marker " + match->raw +
                                "; keep markers exactly as exported (:" + name + "{id=… start} and :" +
-                               name + "{id=… end}" + (name == "suggestion" ? ", or :suggestion{id=…}" : "") + ")"
-                });
+                               name + "{id=… end}" + (name == "suggestion" ? ", or :suggestion{id=…}" : "") + ")"});
             } else {
                 markers.push_back(ReviewMarker{
                     .edge = *edge,
                     .id = *id_val,
                     .line = firstLine + static_cast<int>(index),
                     .name = name,
-                    .offset = length
-                });
+                    .offset = length});
             }
             at += match->raw.size();
         }
@@ -164,8 +166,7 @@ inline ReviewMarks reviewMarkersStrip(
 
     return ReviewMarks{
         .markers = std::move(markers),
-        .text = std::move(out)
-    };
+        .text = std::move(out)};
 }
 
 } // namespace gdocsmith::lens

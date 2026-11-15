@@ -42,7 +42,7 @@ inline constexpr std::string_view UNSUPPORTED_SYNTAX = "unsupportedSyntax";
 } // namespace error_codes
 
 class CoreError : public std::exception {
-public:
+  public:
     CoreErrorCode code;
     std::string message;
     std::optional<JsonObject> details;
@@ -50,12 +50,12 @@ public:
     explicit CoreError(CoreErrorCode c, std::string msg, std::optional<JsonObject> d = std::nullopt)
         : code(std::move(c)), message(std::move(msg)), details(std::move(d)) {}
 
-    [[nodiscard]] const char* what() const noexcept override {
+    [[nodiscard]] const char *what() const noexcept override {
         return message.c_str();
     }
 };
 
-inline const std::set<std::string>& contentCodes() {
+inline const std::set<std::string> &contentCodes() {
     static const std::set<std::string> codes = {
         std::string(error_codes::ANCHOR_NOT_FOUND),
         std::string(error_codes::INVALID_ATOM),
@@ -78,7 +78,7 @@ struct FileProblem {
 };
 
 class FileProblems : public CoreError {
-public:
+  public:
     std::vector<FileProblem> problems;
 
     explicit FileProblems(std::vector<FileProblem> probs)
@@ -93,21 +93,22 @@ struct FileProblemWhere {
 };
 
 inline bool problemCollect(
-    std::vector<FileProblem>& problems,
-    const FileProblemWhere& where,
-    const std::function<void()>& step
-) {
+    std::vector<FileProblem> &problems,
+    const FileProblemWhere &where,
+    const std::function<void()> &step) {
     try {
         step();
         return true;
-    } catch (const FileProblems& fp) {
+    } catch (const FileProblems &fp) {
         for (auto p : fp.problems) {
-            if (!p.line && where.line) p.line = where.line;
-            if (!p.tab && where.tab) p.tab = where.tab;
+            if (!p.line && where.line)
+                p.line = where.line;
+            if (!p.tab && where.tab)
+                p.tab = where.tab;
             problems.push_back(std::move(p));
         }
         return false;
-    } catch (const CoreError& ce) {
+    } catch (const CoreError &ce) {
         if (contentCodes().contains(ce.code)) {
             problems.push_back(FileProblem{
                 .code = ce.code,
@@ -121,7 +122,7 @@ inline bool problemCollect(
     }
 }
 
-inline void problemsThrow(const std::vector<FileProblem>& problems) {
+inline void problemsThrow(const std::vector<FileProblem> &problems) {
     if (!problems.empty()) {
         throw FileProblems(problems);
     }

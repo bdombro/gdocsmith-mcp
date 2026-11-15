@@ -51,13 +51,12 @@ TEST_CASE("directive_attrs_parse invalid refuses with unsupportedSyntax") {
         "x=a x=b",
         "x x",
         ". a",
-        "=v"
-    };
-    for (const auto& src : bad_inputs) {
+        "=v"};
+    for (const auto &src : bad_inputs) {
         bool threw = false;
         try {
             directiveAttrsParse(src);
-        } catch (const CoreError& err) {
+        } catch (const CoreError &err) {
             threw = true;
             CHECK(err.code == "unsupportedSyntax");
         }
@@ -69,8 +68,7 @@ TEST_CASE("directive_attrs_render round-trips") {
     DirectiveAttrs attrs{
         .classes = {"size9"},
         .flags = {"pageful"},
-        .values = {{"id", "t.0"}, {"title", "Launch Plan"}, {"url", "https://x.test/?a=1"}, {"empty", ""}}
-    };
+        .values = {{"id", "t.0"}, {"title", "Launch Plan"}, {"url", "https://x.test/?a=1"}, {"empty", ""}}};
     std::string rendered = directiveAttrsRender(attrs);
     CHECK(rendered == "{.size9 id=t.0 title=\"Launch Plan\" url=\"https://x.test/?a=1\" empty=\"\" pageful}");
     auto parsed = directiveAttrsParse(rendered.substr(1, rendered.size() - 2));
@@ -80,8 +78,7 @@ TEST_CASE("directive_attrs_render round-trips") {
 
 TEST_CASE("directive matchers inline forms") {
     std::unordered_set<std::string> names = {
-        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"
-    };
+        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"};
     auto m1 = inlineDirectiveMatch(":style[March 1]{.accent} rest", names);
     CHECK(m1.has_value());
     CHECK(m1->name == "style");
@@ -109,12 +106,10 @@ TEST_CASE("directive matchers inline forms") {
 
 TEST_CASE("inline_directive_start finds or ignores prose colons") {
     std::unordered_set<std::string> names = {
-        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"
-    };
+        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"};
     const std::vector<std::string> prose = {
-        "Ratio 3:2", "time 10:00", "see note:this", "mailto:a@b.c", "a::style[x]{.b}", "plain :style text"
-    };
-    for (const auto& text : prose) {
+        "Ratio 3:2", "time 10:00", "see note:this", "mailto:a@b.c", "a::style[x]{.b}", "plain :style text"};
+    for (const auto &text : prose) {
         CHECK(inlineDirectiveStart(text, names) == -1);
     }
     CHECK(inlineDirectiveStart("Ship (:style[x]{.a})", names) == 6);
@@ -123,8 +118,7 @@ TEST_CASE("inline_directive_start finds or ignores prose colons") {
 
 TEST_CASE("directive matchers line forms") {
     std::unordered_set<std::string> names = {
-        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"
-    };
+        "style", "chip", "date", "image", "range", "tab", "section", "reply", "pagebreak"};
     auto l1 = lineDirectiveMatch("::tab{id=t.0 title=\"Plan\" pageful}", names);
     CHECK(l1.has_value());
     CHECK(l1->name == "tab");
@@ -147,7 +141,7 @@ TEST_CASE("directive matchers line forms") {
     bool threw = false;
     try {
         lineDirectiveMatch("::tab{id=t.0} trailing", names);
-    } catch (const CoreError& err) {
+    } catch (const CoreError &err) {
         threw = true;
         CHECK(err.code == "unsupportedSyntax");
     }

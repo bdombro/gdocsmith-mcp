@@ -1,21 +1,21 @@
 #pragma once
 
-#include "model/style_values.hpp"
 #include "directives.hpp"
+#include "model/style_values.hpp"
+#include <array>
+#include <cmath>
+#include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <array>
-#include <optional>
-#include <cmath>
-#include <set>
 
 namespace gdocsmith::lens {
 
-using model::dimensionPt;
-using model::dimensionFromPt;
 using model::colorHexFromOptional;
 using model::colorOptionalFromHex;
+using model::dimensionFromPt;
+using model::dimensionPt;
 using model::rgbToHex;
 
 inline constexpr std::array<std::string_view, 4> CELL_SIDES = {"Top", "Right", "Bottom", "Left"};
@@ -28,7 +28,7 @@ struct CellBorder {
     std::string dashStyle{"SOLID"};
     double width{0.0};
 
-    bool operator==(const CellBorder& other) const = default;
+    bool operator==(const CellBorder &other) const = default;
 };
 
 struct CellDeclaration {
@@ -44,25 +44,28 @@ struct CellDeclaration {
     std::optional<double> paddingRight;
     std::optional<double> paddingTop;
 
-    bool operator==(const CellDeclaration& other) const = default;
+    bool operator==(const CellDeclaration &other) const = default;
     bool empty() const {
         return resets.empty() && !backgroundColor && !borderBottom && !borderLeft && !borderRight && !borderTop &&
                !contentAlignment && !paddingBottom && !paddingLeft && !paddingRight && !paddingTop;
     }
 };
 
-inline CellDeclaration cellDeclarationExport(const slimr::Json& style) {
+inline CellDeclaration cellDeclarationExport(const slimr::Json &style) {
     CellDeclaration out;
-    if (!style.is_object()) return out;
+    if (!style.is_object())
+        return out;
 
     if (style.contains("backgroundColor")) {
         auto bg_hex = colorHexFromOptional(style["backgroundColor"]);
-        if (bg_hex) out.backgroundColor = *bg_hex;
+        if (bg_hex)
+            out.backgroundColor = *bg_hex;
     }
 
     if (style.contains("contentAlignment") && style["contentAlignment"].holds<std::string>()) {
         std::string align = style["contentAlignment"].get<std::string>();
-        if (align != "TOP") out.contentAlignment = align;
+        if (align != "TOP")
+            out.contentAlignment = align;
     }
 
     for (std::string_view side : CELL_SIDES) {
@@ -70,16 +73,20 @@ inline CellDeclaration cellDeclarationExport(const slimr::Json& style) {
         if (style.contains(pad_key)) {
             double pt = dimensionPt(style[pad_key]);
             if (std::abs(pt - DEFAULT_PADDING) > 1e-4) {
-                if (side == "Top") out.paddingTop = pt;
-                else if (side == "Right") out.paddingRight = pt;
-                else if (side == "Bottom") out.paddingBottom = pt;
-                else if (side == "Left") out.paddingLeft = pt;
+                if (side == "Top")
+                    out.paddingTop = pt;
+                else if (side == "Right")
+                    out.paddingRight = pt;
+                else if (side == "Bottom")
+                    out.paddingBottom = pt;
+                else if (side == "Left")
+                    out.paddingLeft = pt;
             }
         }
 
         std::string border_key = "border" + std::string(side);
         if (style.contains(border_key) && style[border_key].is_object()) {
-            const auto& b = style[border_key];
+            const auto &b = style[border_key];
             if (b.contains("color")) {
                 auto col_hex = colorHexFromOptional(b["color"]);
                 if (col_hex) {
@@ -88,12 +95,17 @@ inline CellDeclaration cellDeclarationExport(const slimr::Json& style) {
                         dash = b["dashStyle"].get<std::string>();
                     }
                     double width = 0.0;
-                    if (b.contains("width")) width = dimensionPt(b["width"]);
+                    if (b.contains("width"))
+                        width = dimensionPt(b["width"]);
                     CellBorder cb{.color = *col_hex, .dashStyle = std::move(dash), .width = width};
-                    if (side == "Top") out.borderTop = cb;
-                    else if (side == "Right") out.borderRight = cb;
-                    else if (side == "Bottom") out.borderBottom = cb;
-                    else if (side == "Left") out.borderLeft = cb;
+                    if (side == "Top")
+                        out.borderTop = cb;
+                    else if (side == "Right")
+                        out.borderRight = cb;
+                    else if (side == "Bottom")
+                        out.borderBottom = cb;
+                    else if (side == "Left")
+                        out.borderLeft = cb;
                 }
             }
         }
@@ -101,9 +113,9 @@ inline CellDeclaration cellDeclarationExport(const slimr::Json& style) {
     return out;
 }
 
-inline slimr::Json cellDeclarationPatch(const CellDeclaration& declaration) {
+inline slimr::Json cellDeclarationPatch(const CellDeclaration &declaration) {
     slimr::Json patch = slimr::json_obj();
-    for (const auto& field : declaration.resets) {
+    for (const auto &field : declaration.resets) {
         patch[field] = field.starts_with("padding") ? dimensionFromPt(DEFAULT_PADDING) : slimr::Json(nullptr);
     }
     if (declaration.backgroundColor) {
@@ -112,13 +124,18 @@ inline slimr::Json cellDeclarationPatch(const CellDeclaration& declaration) {
     if (declaration.contentAlignment) {
         patch["contentAlignment"] = *declaration.contentAlignment;
     }
-    if (declaration.paddingTop) patch["paddingTop"] = dimensionFromPt(*declaration.paddingTop);
-    if (declaration.paddingRight) patch["paddingRight"] = dimensionFromPt(*declaration.paddingRight);
-    if (declaration.paddingBottom) patch["paddingBottom"] = dimensionFromPt(*declaration.paddingBottom);
-    if (declaration.paddingLeft) patch["paddingLeft"] = dimensionFromPt(*declaration.paddingLeft);
+    if (declaration.paddingTop)
+        patch["paddingTop"] = dimensionFromPt(*declaration.paddingTop);
+    if (declaration.paddingRight)
+        patch["paddingRight"] = dimensionFromPt(*declaration.paddingRight);
+    if (declaration.paddingBottom)
+        patch["paddingBottom"] = dimensionFromPt(*declaration.paddingBottom);
+    if (declaration.paddingLeft)
+        patch["paddingLeft"] = dimensionFromPt(*declaration.paddingLeft);
 
-    auto set_border = [&](std::string_view side, const std::optional<CellBorder>& b) {
-        if (!b) return;
+    auto set_border = [&](std::string_view side, const std::optional<CellBorder> &b) {
+        if (!b)
+            return;
         slimr::Json bj = slimr::json_obj();
         if (!b->color.empty()) {
             bj["color"] = colorOptionalFromHex(b->color);
@@ -137,10 +154,14 @@ inline slimr::Json cellDeclarationPatch(const CellDeclaration& declaration) {
 }
 
 inline std::string sharedSide(std::string_view borderName) {
-    if (borderName == "borderBottom") return "borderTop";
-    if (borderName == "borderTop") return "borderBottom";
-    if (borderName == "borderLeft") return "borderRight";
-    if (borderName == "borderRight") return "borderLeft";
+    if (borderName == "borderBottom")
+        return "borderTop";
+    if (borderName == "borderTop")
+        return "borderBottom";
+    if (borderName == "borderLeft")
+        return "borderRight";
+    if (borderName == "borderRight")
+        return "borderLeft";
     return std::string(borderName);
 }
 

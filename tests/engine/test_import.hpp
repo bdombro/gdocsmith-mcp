@@ -1,8 +1,8 @@
 #pragma once
 
+#include "app.hpp"
 #include "engine/import.hpp"
 #include "model/test_docs.hpp"
-#include "app.hpp"
 #include "test.hpp"
 
 #include <filesystem>
@@ -164,8 +164,7 @@ TEST_CASE("import - newDocStyleBaseline validation") {
 
 // Keep every artifact under a unique synthetic fixture root, including on failure.
 struct ImportSafetyFixture {
-    std::filesystem::path root = std::filesystem::temp_directory_path()
-        / ("gdocsmith-import-safety-" + detail::unique_tmp_suffix());
+    std::filesystem::path root = std::filesystem::temp_directory_path() / ("gdocsmith-import-safety-" + detail::unique_tmp_suffix());
     std::filesystem::path inputPath = root / "input.md";
     FileServices services;
 
@@ -174,24 +173,25 @@ struct ImportSafetyFixture {
         services.root = (root / "work").string();
     }
 
-    ImportSafetyFixture(const ImportSafetyFixture&) = delete;
-    ImportSafetyFixture& operator=(const ImportSafetyFixture&) = delete;
+    ImportSafetyFixture(const ImportSafetyFixture &) = delete;
+    ImportSafetyFixture &operator=(const ImportSafetyFixture &) = delete;
 
     ~ImportSafetyFixture() {
         std::error_code ec;
         std::filesystem::remove_all(root, ec);
     }
 
-    static void write(const std::filesystem::path& path, const std::string& text) {
+    static void write(const std::filesystem::path &path, const std::string &text) {
         std::filesystem::create_directories(path.parent_path());
         std::ofstream out(path, std::ios::binary);
         out << text;
         out.close();
-        if (!out) throw std::runtime_error("Could not write synthetic import fixture");
+        if (!out)
+            throw std::runtime_error("Could not write synthetic import fixture");
     }
 };
 
-inline void importSafetyCheckRefusal(const FileWriteResult& result) {
+inline void importSafetyCheckRefusal(const FileWriteResult &result) {
     // Valid input cannot run because the workflow is unavailable, not malformed.
     CHECK_EQ(result.status, "failed");
     CHECK_EQ(result.writeState, "none");
@@ -219,8 +219,7 @@ TEST_CASE("import - providerless existing document refuses and preserves edited 
         "---\ngdocsmith: 1\ndoc: synthetic_doc\nrevision: r1\ntitle: Synthetic\n---\n\n"
         "::tab{id=t.0 title=\"Overview\"}\n\n"
         "Original synthetic text\n";
-    const auto revisionDir = std::filesystem::path(fixture.services.root)
-        / "exports" / "synthetic_doc" / "r1";
+    const auto revisionDir = std::filesystem::path(fixture.services.root) / "exports" / "synthetic_doc" / "r1";
     const auto basePath = revisionDir / "export.orig.md";
     fixture.inputPath = revisionDir / "export.md";
     ImportSafetyFixture::write(fixture.inputPath, edited);
@@ -238,7 +237,7 @@ TEST_CASE("import - providerless existing document refuses and preserves edited 
     importSafetyCheckRefusal(result);
 }
 
-inline void importSafetyCheckNewDocument(const std::string& baseline) {
+inline void importSafetyCheckNewDocument(const std::string &baseline) {
     ImportSafetyFixture fixture;
     const std::string content =
         "---\ngdocsmith: 1\ntitle: Synthetic new document\n---\n\n"
@@ -312,35 +311,37 @@ struct RemoteImportFixture : ImportSafetyFixture {
         remote.root = services.root;
         auto json = emulator::blank_doc_template("Synthetic", "synthetic_doc");
         backend.seed_document("synthetic_doc", json, 1);
-        remote.getDocument = [&](const std::string& id) {
+        remote.getDocument = [&](const std::string &id) {
             ++reads;
-            if (beforeRead) beforeRead();
+            if (beforeRead)
+                beforeRead();
             auto json = backend.get_doc(id).json;
             json["revisionId"] = backend.revision_id(backend.get_doc(id));
             return json;
         };
-        remote.getFileMetadata = [&](const std::string& id) {
+        remote.getFileMetadata = [&](const std::string &id) {
             return slimr::Json::object_t{{"id", id}, {"name", backend.get_doc(id).json["title"]}};
         };
-        remote.createDocument = [&](const std::string& title) {
+        remote.createDocument = [&](const std::string &title) {
             ++creates;
             return slimr::Json::object_t{{"documentId", backend.create_document(title)}};
         };
-        remote.deleteFile = [&](const std::string& id) {
+        remote.deleteFile = [&](const std::string &id) {
             ++deletes;
             backend.get_doc(id).deleted = true;
         };
-        remote.batchUpdate = [&](const std::string& id, const std::vector<slimr::Json>& requests,
-                                  const std::optional<std::string>& revision) {
+        remote.batchUpdate = [&](const std::string &id, const std::vector<slimr::Json> &requests,
+                                 const std::optional<std::string> &revision) {
             ++batches;
             sentRequests.push_back(requests);
             locks.push_back(revision.value_or(""));
-            if (beforeBatch) beforeBatch();
+            if (beforeBatch)
+                beforeBatch();
             return *slimr::parse_json<slimr::Json>(backend.batch_update(id, requests, revision));
         };
-        remote.commentsList = [&](const std::string&) { return comments; };
-        remote.textExport = [](const std::string&) { return ""; };
-        remote.commentSend = [&](const std::string&, const CommentAction& action) -> slimr::Json {
+        remote.commentsList = [&](const std::string &) { return comments; };
+        remote.textExport = [](const std::string &) { return ""; };
+        remote.commentSend = [&](const std::string &, const CommentAction &action) -> slimr::Json {
             ++commentWrites;
             if (action.kind == "create") {
                 DriveComment comment;
@@ -359,7 +360,7 @@ struct RemoteImportFixture : ImportSafetyFixture {
         auto json = backend.get_doc("synthetic_doc").json;
         json["revisionId"] = backend.revision_id(backend.get_doc("synthetic_doc"));
         return exportDocumentFile(model::docModelParse(json, model::DocModelParseOptions{.docId = "synthetic_doc"}),
-            {}, ExportOptions{.sourceVersion = std::nullopt});
+                                  {}, ExportOptions{.sourceVersion = std::nullopt});
     }
 
     lens::DocumentFile newFile() {
@@ -367,9 +368,12 @@ struct RemoteImportFixture : ImportSafetyFixture {
         lens::DocumentFile fresh;
         fresh.frontmatter.sourceVersion = existing.frontmatter.sourceVersion;
         fresh.frontmatter.title = existing.frontmatter.title;
-        for (const auto& tab : existing.tabs) {
+        for (const auto &tab : existing.tabs) {
             fresh.tabs.push_back(lens::DocumentFileTab{
-                .id = tab.id, .title = tab.title, .markdown = tab.markdown, .parent = tab.parent,
+                .id = tab.id,
+                .title = tab.title,
+                .markdown = tab.markdown,
+                .parent = tab.parent,
             });
         }
         return fresh;
@@ -387,8 +391,10 @@ TEST_CASE("import parity - unavailable opaque tokens are omitted only in newly c
     bool newTab = true;
     SUBCASE("new tab") {}
     SUBCASE("existing tab remains protected") { newTab = false; }
-    if (newTab) file.tabs.push_back(lens::DocumentFileTab{.id = "", .title = "Added", .markdown = "Kept :equation{id=unavailable}\n"});
-    else file.tabs[0].markdown = "Kept :equation{id=unavailable}\n";
+    if (newTab)
+        file.tabs.push_back(lens::DocumentFileTab{.id = "", .title = "Added", .markdown = "Kept :equation{id=unavailable}\n"});
+    else
+        file.tabs[0].markdown = "Kept :equation{id=unavailable}\n";
     const auto result = fileImport(fixture.save(file), fixture.remote);
     INFO(result.summary);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().message : ""));
@@ -417,14 +423,14 @@ TEST_CASE("import parity - known created document is reverted after first conten
     SUBCASE("confirmed rollback") {}
     SUBCASE("failed rollback keeps known document and recovery") {
         cleanupFails = true;
-        fixture.remote.deleteFile = [&](const std::string&) {
+        fixture.remote.deleteFile = [&](const std::string &) {
             ++fixture.deletes;
             throw std::runtime_error("Synthetic verification cleanup failed");
         };
     }
     const auto read = fixture.remote.getDocument;
     bool failed = false;
-    fixture.remote.getDocument = [&](const std::string& id) {
+    fixture.remote.getDocument = [&](const std::string &id) {
         const auto json = read(id);
         if (!failed && fixture.creates > 0 && slimr::write_json(json).find("Synthetic verified content") != std::string::npos) {
             failed = true;
@@ -467,13 +473,14 @@ TEST_CASE("import parity - posttransaction comment read failure keeps a verified
     bool wrote = false, verifiedRead = false, failed = false;
     fixture.beforeBatch = [&] { wrote = true; };
     const auto read = fixture.remote.getDocument;
-    fixture.remote.getDocument = [&](const std::string& id) {
+    fixture.remote.getDocument = [&](const std::string &id) {
         auto json = read(id);
-        if (wrote && slimr::write_json(json).find("Synthetic completed transaction") != std::string::npos) verifiedRead = true;
+        if (wrote && slimr::write_json(json).find("Synthetic completed transaction") != std::string::npos)
+            verifiedRead = true;
         return json;
     };
     const auto list = fixture.remote.commentsList;
-    fixture.remote.commentsList = [&](const std::string& id) {
+    fixture.remote.commentsList = [&](const std::string &id) {
         if (wrote && !failed) {
             CHECK(verifiedRead);
             failed = true;
@@ -507,10 +514,11 @@ TEST_CASE("import parity - created document failure cleanup is tracked once with
     bool cleanupFails = false;
     SUBCASE("confirmed cleanup permits a new create from unchanged input") {}
     SUBCASE("unknown cleanup keeps provider identity and exports before retry") { cleanupFails = true; }
-    if (cleanupFails) fixture.remote.deleteFile = [&](const std::string&) {
-        ++fixture.deletes;
-        throw std::runtime_error("Synthetic cleanup transport failure");
-    };
+    if (cleanupFails)
+        fixture.remote.deleteFile = [&](const std::string &) {
+            ++fixture.deletes;
+            throw std::runtime_error("Synthetic cleanup transport failure");
+        };
     fixture.beforeBatch = [] { throw std::runtime_error("Synthetic batch transport failure"); };
     const auto result = fileImport(input, fixture.remote);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().message : ""));
@@ -524,7 +532,7 @@ TEST_CASE("import parity - created document failure cleanup is tracked once with
         CHECK(std::filesystem::weakly_canonical(*result.exportPath) == std::filesystem::weakly_canonical(input.path));
         CHECK(lens::documentFileParse(inputFileRead(input.path).text).frontmatter.doc == result.doc);
         CHECK(result.writeState == "unknown");
-        CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto& warning) {
+        CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto &warning) {
             return warning.find("could not be deleted") != std::string::npos;
         }));
     } else {
@@ -535,7 +543,9 @@ TEST_CASE("import parity - created document failure cleanup is tracked once with
         fixture.beforeBatch = nullptr;
         const auto retried = fileImport(input, fixture.remote);
         INFO(retried.summary);
-        if (retried.errors) for (const auto& error : *retried.errors) INFO(error.message);
+        if (retried.errors)
+            for (const auto &error : *retried.errors)
+                INFO(error.message);
         CHECK(retried.status == "applied");
         CHECK(fixture.creates == 2);
         CHECK(fixture.deletes == 1);
@@ -548,7 +558,7 @@ TEST_CASE("import parity - unknown document creation identity never triggers cle
     file.tabs[0].markdown = "Synthetic content\n";
     auto input = fixture.save(file);
     input.newDocStyleBaseline = "generic";
-    fixture.remote.createDocument = [&](const std::string&) -> slimr::Json {
+    fixture.remote.createDocument = [&](const std::string &) -> slimr::Json {
         ++fixture.creates;
         return slimr::Json::object_t{};
     };
@@ -572,7 +582,9 @@ TEST_CASE("import parity - default segments create edit require explicit deletio
     auto input = fixture.save(file);
     const auto created = fileImport(input, fixture.remote);
     INFO(created.summary);
-    if (created.errors) for (const auto& error : *created.errors) INFO(error.message);
+    if (created.errors)
+        for (const auto &error : *created.errors)
+            INFO(error.message);
     REQUIRE(created.status == "applied");
     CHECK(created.verification == "match");
     file = lens::documentFileParse(inputFileRead(input.path).text);
@@ -583,7 +595,9 @@ TEST_CASE("import parity - default segments create edit require explicit deletio
     input = fixture.save(file);
     const auto edited = fileImport(input, fixture.remote);
     INFO(edited.summary);
-    if (edited.errors) for (const auto& error : *edited.errors) INFO(error.message);
+    if (edited.errors)
+        for (const auto &error : *edited.errors)
+            INFO(error.message);
     REQUIRE(edited.status == "applied");
     CHECK(fixture.backend.get_doc("synthetic_doc").json["tabs"][0]["documentTab"]["documentStyle"]["defaultHeaderId"] == firstId);
     const int beforeMissing = fixture.batches;
@@ -594,16 +608,19 @@ TEST_CASE("import parity - default segments create edit require explicit deletio
     CHECK(refused.errors->front().code == "tabRequired");
     CHECK(fixture.batches == beforeMissing);
     file = fixture.file();
-    for (auto& segment : file.tabs[0].segments) segment.isDelete = true;
+    for (auto &segment : file.tabs[0].segments)
+        segment.isDelete = true;
     const auto deleted = fileImport(fixture.save(file), fixture.remote);
     INFO(deleted.summary);
-    if (deleted.errors) for (const auto& error : *deleted.errors) INFO(error.message);
+    if (deleted.errors)
+        for (const auto &error : *deleted.errors)
+            INFO(error.message);
     REQUIRE(deleted.status == "applied");
     CHECK(fixture.file().tabs[0].segments.empty());
 }
 
 TEST_CASE("import parity - first and even segments cannot be invented") {
-    for (const auto* type : {"first", "even"}) {
+    for (const auto *type : {"first", "even"}) {
         RemoteImportFixture fixture;
         auto file = fixture.file();
         file.tabs[0].segments.push_back({.kind = "header", .type = type, .markdown = "Synthetic cover\n"});
@@ -618,29 +635,30 @@ TEST_CASE("import parity - first and even segments cannot be invented") {
 TEST_CASE("import parity - page geometry settings and named styles apply and reimport unchanged") {
     RemoteImportFixture fixture;
     auto file = fixture.file();
-    auto& attrs = file.tabs[0].readonlyAttributes;
+    auto &attrs = file.tabs[0].readonlyAttributes;
     attrs.flags.push_back("pageful");
     attrs.flags.push_back("landscape");
     attrs.values.emplace_back("size", "A4");
     attrs.values.emplace_back("margins", "36,40,44,48");
-    for (const auto& [name, value] : {std::pair{"headerMargin", "24"}, {"footerMargin", "20"},
-                                     {"background", "#FFF4CC"}, {"pageNumberStart", "5"}}) {
-        std::erase_if(attrs.values, [&](const auto& entry) { return entry.first == name; });
+    for (const auto &[name, value] : {std::pair{"headerMargin", "24"}, {"footerMargin", "20"}, {"background", "#FFF4CC"}, {"pageNumberStart", "5"}}) {
+        std::erase_if(attrs.values, [&](const auto &entry) { return entry.first == name; });
         attrs.values.emplace_back(name, value);
     }
-    std::erase_if(attrs.values, [](const auto& entry) { return entry.first == "namedStyleSet"; });
+    std::erase_if(attrs.values, [](const auto &entry) { return entry.first == "namedStyleSet"; });
     attrs.values.emplace_back("namedStyleSet", "1");
     file.frontmatter.namedStyleSets["1"]["HEADING_1"]["fontSize"] = 25;
     file.frontmatter.namedStyleSets["1"]["HEADING_1"]["spaceAbove"] = 30;
     auto input = fixture.save(file);
     const auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
-    if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            INFO(error.message);
     REQUIRE(result.status == "applied");
     CHECK(result.verification == "match");
     const auto actual = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json,
-        model::DocModelParseOptions{.docId = "synthetic_doc"});
-    const auto& style = actual.tabs[0].documentStyle;
+                                             model::DocModelParseOptions{.docId = "synthetic_doc"});
+    const auto &style = actual.tabs[0].documentStyle;
     CHECK(model::dimensionPt(style["pageSize"]["width"]) > model::dimensionPt(style["pageSize"]["height"]));
     CHECK(model::dimensionPt(style["marginLeft"]) == 48);
     CHECK(model::dimensionPt(style["marginHeader"]) == 24);
@@ -656,7 +674,9 @@ TEST_CASE("import parity - page geometry settings and named styles apply and rei
         CHECK(fixture.batches == before);
     }
     INFO(unchanged.summary);
-    if (unchanged.errors) for (const auto& error : *unchanged.errors) INFO(error.message);
+    if (unchanged.errors)
+        for (const auto &error : *unchanged.errors)
+            INFO(error.message);
     CHECK(unchanged.status == "unchanged");
     CHECK(fixture.batches == before);
 }
@@ -679,7 +699,9 @@ TEST_CASE("import parity - Node3 and legacy1 formats survive success and uncerta
     const auto input = fixture.save(file);
     const auto applied = fileImport(input, fixture.remote);
     INFO(applied.summary);
-    if (applied.errors) for (const auto& error : *applied.errors) INFO(error.message);
+    if (applied.errors)
+        for (const auto &error : *applied.errors)
+            INFO(error.message);
     REQUIRE(applied.status == "applied");
     auto written = lens::documentFileParse(inputFileRead(input.path).text);
     CHECK(written.frontmatter.sourceVersion == file.frontmatter.sourceVersion);
@@ -701,18 +723,12 @@ TEST_CASE("import parity - Node3 and legacy1 formats survive success and uncerta
     CHECK(recovery.frontmatter.sourceVersion == file.frontmatter.sourceVersion);
 }
 
-inline void seedSuggestion(RemoteImportFixture& fixture, const std::string& field, const std::string& id) {
-    auto& raw = fixture.backend.get_doc("synthetic_doc").json;
-    auto& content = raw["tabs"][0]["documentTab"]["body"]["content"];
+inline void seedSuggestion(RemoteImportFixture &fixture, const std::string &field, const std::string &id) {
+    auto &raw = fixture.backend.get_doc("synthetic_doc").json;
+    auto &content = raw["tabs"][0]["documentTab"]["body"]["content"];
     content = slimr::Json::array_t{
         content[0],
-        slimr::Json::object_t{{"startIndex", 1}, {"endIndex", 11},
-            {"paragraph", slimr::Json::object_t{{"elements", slimr::Json::array_t{
-                slimr::Json::object_t{{"startIndex", 1}, {"endIndex", 10},
-                    {"textRun", slimr::Json::object_t{{"content", "Synthetic"}, {field, slimr::Json::array_t{id}}}}},
-                slimr::Json::object_t{{"startIndex", 10}, {"endIndex", 11},
-                    {"textRun", slimr::Json::object_t{{"content", "\n"}}}}
-            }}}}},
+        slimr::Json::object_t{{"startIndex", 1}, {"endIndex", 11}, {"paragraph", slimr::Json::object_t{{"elements", slimr::Json::array_t{slimr::Json::object_t{{"startIndex", 1}, {"endIndex", 10}, {"textRun", slimr::Json::object_t{{"content", "Synthetic"}, {field, slimr::Json::array_t{id}}}}}, slimr::Json::object_t{{"startIndex", 10}, {"endIndex", 11}, {"textRun", slimr::Json::object_t{{"content", "\n"}}}}}}}}},
     };
 }
 
@@ -729,20 +745,22 @@ TEST_CASE("import parity - explicit text rejection removes suggestion while impl
     const auto result = fileImport(fixture.save(file), fixture.remote);
     INFO(result.summary);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().message : ""));
-    if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            INFO(error.message);
     REQUIRE(result.status == "applied");
     CHECK(result.verification == "match");
     const auto after = fixture.file();
     CHECK(after.suggestions.empty());
-    if (inserted) CHECK(after.tabs[0].markdown.find("Synthetic") == std::string::npos);
-    else CHECK(after.tabs[0].markdown.find("Synthetic") != std::string::npos);
+    if (inserted)
+        CHECK(after.tabs[0].markdown.find("Synthetic") == std::string::npos);
+    else
+        CHECK(after.tabs[0].markdown.find("Synthetic") != std::string::npos);
 }
 
 // Seeds one paragraph of suggestion-marked runs and returns its exported file text.
-inline std::string seedReviewRuns(RemoteImportFixture& fixture, std::vector<model::ParagraphContentSpec> content) {
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {
-            model::BlockSpec::make_paragraph({.content = std::move(content)})}}}});
+inline std::string seedReviewRuns(RemoteImportFixture &fixture, std::vector<model::ParagraphContentSpec> content) {
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_paragraph({.content = std::move(content)})}}}});
     fixture.backend.seed_document("synthetic_doc", json, 1);
     return lens::documentFileExport(fixture.file());
 }
@@ -750,14 +768,16 @@ inline std::string seedReviewRuns(RemoteImportFixture& fixture, std::vector<mode
 struct ReviewRun {
     std::vector<std::string> del, ins, style;
     std::string text;
-    bool operator==(const ReviewRun&) const = default;
+    bool operator==(const ReviewRun &) const = default;
 };
 
-inline std::ostream& operator<<(std::ostream& out, const ReviewRun& run) {
-    auto ids = [&](const char* name, const std::vector<std::string>& values) {
-        if (values.empty()) return;
+inline std::ostream &operator<<(std::ostream &out, const ReviewRun &run) {
+    auto ids = [&](const char *name, const std::vector<std::string> &values) {
+        if (values.empty())
+            return;
         out << name << "=[";
-        for (const auto& value : values) out << value << ";";
+        for (const auto &value : values)
+            out << value << ";";
         out << "] ";
     };
     ids("del", run.del);
@@ -767,42 +787,45 @@ inline std::ostream& operator<<(std::ostream& out, const ReviewRun& run) {
 }
 
 // Backend text runs of the first paragraph, merging neighbors with equal marks (runsOf in the original).
-inline std::vector<ReviewRun> reviewRuns(RemoteImportFixture& fixture) {
-    const auto& content = fixture.backend.get_doc("synthetic_doc").json["tabs"][0]["documentTab"]["body"]["content"];
+inline std::vector<ReviewRun> reviewRuns(RemoteImportFixture &fixture) {
+    const auto &content = fixture.backend.get_doc("synthetic_doc").json["tabs"][0]["documentTab"]["body"]["content"];
     std::vector<ReviewRun> out;
-    for (const auto& element : content.get<slimr::Json::array_t>()) {
-        if (!element.contains("paragraph")) continue;
-        for (const auto& item : element["paragraph"]["elements"].get<slimr::Json::array_t>()) {
-            const auto& run = item["textRun"];
+    for (const auto &element : content.get<slimr::Json::array_t>()) {
+        if (!element.contains("paragraph"))
+            continue;
+        for (const auto &item : element["paragraph"]["elements"].get<slimr::Json::array_t>()) {
+            const auto &run = item["textRun"];
             ReviewRun entry;
-            auto list = [&](const char* field, std::vector<std::string>& values) {
+            auto list = [&](const char *field, std::vector<std::string> &values) {
                 if (run.contains(field) && run[field].is_array())
-                    for (const auto& id : run[field].get<slimr::Json::array_t>()) values.push_back(id.get<std::string>());
+                    for (const auto &id : run[field].get<slimr::Json::array_t>())
+                        values.push_back(id.get<std::string>());
             };
             list("suggestedDeletionIds", entry.del);
             list("suggestedInsertionIds", entry.ins);
             if (run.contains("suggestedTextStyleChanges") && run["suggestedTextStyleChanges"].is_object())
-                for (const auto& [id, value] : run["suggestedTextStyleChanges"].get<slimr::Json::object_t>()) {
+                for (const auto &[id, value] : run["suggestedTextStyleChanges"].get<slimr::Json::object_t>()) {
                     (void)value;
                     entry.style.push_back(id);
                 }
             entry.text = run["content"].get<std::string>();
             if (!out.empty() && out.back().del == entry.del && out.back().ins == entry.ins && out.back().style == entry.style)
                 out.back().text += entry.text;
-            else out.push_back(std::move(entry));
+            else
+                out.push_back(std::move(entry));
         }
         break;
     }
     return out;
 }
 
-inline std::string replaced(std::string text, const std::string& from, const std::string& to) {
+inline std::string replaced(std::string text, const std::string &from, const std::string &to) {
     const auto at = text.find(from);
     REQUIRE(at != std::string::npos);
     return text.replace(at, from.size(), to);
 }
 
-inline model::JsonObject boldSuggestion(const std::string& id) {
+inline model::JsonObject boldSuggestion(const std::string &id) {
     return slimr::Json::object_t{{id, slimr::Json::object_t{{"textStyle", slimr::Json::object_t{{"bold", true}}}}}};
 }
 
@@ -810,10 +833,10 @@ inline model::JsonObject boldSuggestion(const std::string& id) {
 TEST_CASE("import parity - review carry - edit inside a replacement's deletion half keeps the insertion half") {
     RemoteImportFixture fixture;
     const auto markdown = seedReviewRuns(fixture, {"Launch date: ",
-        model::ParagraphTextSpec{.text = "March 3", .sugDel = std::vector<std::string>{"s1"}},
-        model::ParagraphTextSpec{.text = "March 10", .sugIns = std::vector<std::string>{"s1"}}, " ok"});
+                                                   model::ParagraphTextSpec{.text = "March 3", .sugDel = std::vector<std::string>{"s1"}},
+                                                   model::ParagraphTextSpec{.text = "March 10", .sugIns = std::vector<std::string>{"s1"}}, " ok"});
     CHECK(lens::markdownRender(lens::markdownParse(lens::documentFileParse(markdown).tabs[0].markdown))
-        .find("Launch date: March 3 ok") != std::string::npos);
+              .find("Launch date: March 3 ok") != std::string::npos);
     CHECK(markdown.find("Launch date: :suggestion{id=s1 start}March 3:suggestion{id=s1 end} ok") != std::string::npos);
     fixture.write(fixture.inputPath, replaced(markdown, "start}March 3:suggestion", "start}April 1:suggestion"));
     const auto result = fileImport(ImportInput{.path = fixture.inputPath.string()}, fixture.remote);
@@ -821,14 +844,13 @@ TEST_CASE("import parity - review carry - edit inside a replacement's deletion h
     CHECK_FALSE(result.errors);
     CHECK(result.verification == "match");
     CHECK(reviewRuns(fixture) == std::vector<ReviewRun>{
-        {.text = "Launch date: "}, {.del = {"s1"}, .text = "April 1"}, {.ins = {"s1"}, .text = "March 10"}, {.text = " ok\n"}});
+                                     {.text = "Launch date: "}, {.del = {"s1"}, .text = "April 1"}, {.ins = {"s1"}, .text = "March 10"}, {.text = " ok\n"}});
 }
 
 // Source: import.test.ts 373–389, plus zero sends before the explicit reject.
 TEST_CASE("import parity - review carry - edit crossing a suggestion edge refuses naming it; reject lands plain") {
     RemoteImportFixture fixture;
-    const auto markdown = seedReviewRuns(fixture, {
-        model::ParagraphTextSpec{.text = "Fast", .sugStyle = boldSuggestion("s2")}, " and safe"});
+    const auto markdown = seedReviewRuns(fixture, {model::ParagraphTextSpec{.text = "Fast", .sugStyle = boldSuggestion("s2")}, " and safe"});
     const auto crossed = replaced(markdown, ":suggestion{id=s2 start}Fast:suggestion{id=s2 end} and safe", "Quick or safe");
     fixture.write(fixture.inputPath, crossed);
     const auto refused = fileImport(ImportInput{.path = fixture.inputPath.string()}, fixture.remote);
@@ -839,7 +861,7 @@ TEST_CASE("import parity - review carry - edit crossing a suggestion edge refuse
     CHECK(fixture.batches == 0);
     CHECK(fixture.sentRequests.empty());
     fixture.write(fixture.inputPath, std::regex_replace(crossed, std::regex(R"((::suggestion\{id=s2[^\n]*)\})"), "$1 reject}",
-        std::regex_constants::format_first_only));
+                                                        std::regex_constants::format_first_only));
     const auto result = fileImport(ImportInput{.path = fixture.inputPath.string()}, fixture.remote);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().code + ": " + result.errors->front().message : ""));
     CHECK_FALSE(result.errors);
@@ -850,7 +872,7 @@ TEST_CASE("import parity - review carry - edit crossing a suggestion edge refuse
 TEST_CASE("import parity - review carry - edit inside a style suggestion keeps it on the new text") {
     RemoteImportFixture fixture;
     const auto markdown = seedReviewRuns(fixture, {"Go ",
-        model::ParagraphTextSpec{.text = "Fast", .sugStyle = boldSuggestion("s3")}, " now"});
+                                                   model::ParagraphTextSpec{.text = "Fast", .sugStyle = boldSuggestion("s3")}, " now"});
     fixture.write(fixture.inputPath, replaced(markdown, "start}Fast:suggestion", "start}Fuel:suggestion"));
     const auto result = fileImport(ImportInput{.path = fixture.inputPath.string()}, fixture.remote);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().code + ": " + result.errors->front().message : ""));
@@ -861,7 +883,7 @@ TEST_CASE("import parity - review carry - edit inside a style suggestion keeps i
 
 TEST_CASE("import parity - page-layout suggestion rejection remains unsupported and sends nothing") {
     RemoteImportFixture fixture;
-    auto& tab = fixture.backend.get_doc("synthetic_doc").json["tabs"][0]["documentTab"];
+    auto &tab = fixture.backend.get_doc("synthetic_doc").json["tabs"][0]["documentTab"];
     tab["suggestedDocumentStyleChanges"] = slimr::Json::object_t{
         {"synthetic_layout", slimr::Json::object_t{{"documentStyle", slimr::Json::object_t{{"flipPageOrientation", true}}}}}};
     auto file = fixture.file();
@@ -885,16 +907,15 @@ TEST_CASE("import parity - paragraph and table-row rejects use typed reconcile r
         table.cells = {
             {{model::BlockSpec::make_paragraph({.content = {"Header"}})}},
             {{model::BlockSpec::make_paragraph({.content = {
-                model::ParagraphTextSpec{.text = "Retained", .sugDel = std::vector<std::string>{"synthetic_reject"}}}})}}
-        };
+                                                    model::ParagraphTextSpec{.text = "Retained", .sugDel = std::vector<std::string>{"synthetic_reject"}}}})}}};
         blocks.push_back(model::BlockSpec::make_table(std::move(table)));
-    } else blocks.push_back(model::BlockSpec::make_paragraph({.content = {"Alpha"}}));
+    } else
+        blocks.push_back(model::BlockSpec::make_paragraph({.content = {"Alpha"}}));
     blocks.push_back(model::BlockSpec::make_paragraph({.content = {"Bravo"}}));
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = std::move(blocks)}}});
-    auto& content = json["tabs"][0]["documentTab"]["body"]["content"];
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = std::move(blocks)}}});
+    auto &content = json["tabs"][0]["documentTab"]["body"]["content"];
     if (row) {
-        auto& table = content[1]["table"];
+        auto &table = content[1]["table"];
         auto second = table["tableRows"].get<slimr::Json::array_t>().at(1);
         second["suggestedDeletionIds"] = slimr::Json::array_t{"synthetic_reject"};
         auto cell = second["tableCells"].get<slimr::Json::array_t>().at(0);
@@ -924,11 +945,7 @@ TEST_CASE("import parity - paragraph and table-row rejects use typed reconcile r
 
 TEST_CASE("import parity - rejecting a suggested paragraph break joins without reinserting it") {
     RemoteImportFixture fixture;
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {
-            model::BlockSpec::make_paragraph({.content = {"Alpha"}, .newlineSugIns = std::vector<std::string>{"synthetic_break"}}),
-            model::BlockSpec::make_paragraph({.content = {"Bravo"}}),
-            model::BlockSpec::make_paragraph({.content = {"End"}})}}}});
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_paragraph({.content = {"Alpha"}, .newlineSugIns = std::vector<std::string>{"synthetic_break"}}), model::BlockSpec::make_paragraph({.content = {"Bravo"}}), model::BlockSpec::make_paragraph({.content = {"End"}})}}}});
     fixture.backend.seed_document("synthetic_doc", json, 1);
     auto file = fixture.file();
     CHECK(file.tabs[0].markdown.find("Alpha") != std::string::npos);
@@ -948,8 +965,7 @@ TEST_CASE("import parity - cellStyles frontmatter declaration edit applies on im
     model::TableBlockSpec table;
     table.cells = {{{model::BlockSpec::make_paragraph({.content = {"Cell A"}})},
                     {model::BlockSpec::make_paragraph({.content = {"Cell B"}})}}};
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_table(std::move(table))}}}});
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_table(std::move(table))}}}});
     fixture.backend.seed_document("synthetic_doc", json, 1);
     auto file = fixture.file();
     const auto pos = file.tabs[0].markdown.find("Cell A");
@@ -959,13 +975,15 @@ TEST_CASE("import parity - cellStyles frontmatter declaration edit applies on im
     file.frontmatter.cellStyles["highlight"].paddingTop = 12;
     const auto result = fileImport(fixture.save(file), fixture.remote);
     INFO(result.summary);
-    if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            INFO(error.message);
     REQUIRE(result.status == "applied");
     CHECK(result.verification == "match");
     const auto after = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
     REQUIRE(after.tabs[0].blocks.size() >= 1);
     REQUIRE(after.tabs[0].blocks[0].is_table());
-    const auto& cellStyle = after.tabs[0].blocks[0].as_table().rows[0].cells[0].style;
+    const auto &cellStyle = after.tabs[0].blocks[0].as_table().rows[0].cells[0].style;
     CHECK(cellStyle["paddingTop"]["magnitude"].as<double>() == 12.0);
     CHECK(model::colorHexFromOptional(cellStyle["backgroundColor"]) == std::optional<std::string>("#FFF4CC"));
 }
@@ -976,35 +994,50 @@ TEST_CASE("import parity - image deletion reject recreates known sources with lo
     bool lossy = false, missing = false, approved = false, fallback = false, insecure = false;
     SUBCASE("lossless known source") {}
     SUBCASE("lossy source needs approval") { lossy = true; }
-    SUBCASE("explicit approval permits known lossy source") { lossy = true; approved = true; }
-    SUBCASE("unknown source cannot be waived") { missing = true; approved = true; }
+    SUBCASE("explicit approval permits known lossy source") {
+        lossy = true;
+        approved = true;
+    }
+    SUBCASE("unknown source cannot be waived") {
+        missing = true;
+        approved = true;
+    }
     SUBCASE("authoritative HTTPS source URI recreates without invented dimensions") { fallback = true; }
-    SUBCASE("authoritative fallback still needs approval for actual losses") { fallback = true; lossy = true; }
-    SUBCASE("approved authoritative fallback preserves loss guard provenance") { fallback = true; lossy = true; approved = true; }
-    SUBCASE("HTTP source URI is not authoritative fallback") { fallback = true; insecure = true; }
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {
-            model::BlockSpec::make_paragraph({.content = {model::ParagraphAtomSpec{.type = "image"}, "Picture"}}),
-            model::BlockSpec::make_paragraph({.content = {"End"}})}}}});
-    auto& dt = json["tabs"][0]["documentTab"];
+    SUBCASE("authoritative fallback still needs approval for actual losses") {
+        fallback = true;
+        lossy = true;
+    }
+    SUBCASE("approved authoritative fallback preserves loss guard provenance") {
+        fallback = true;
+        lossy = true;
+        approved = true;
+    }
+    SUBCASE("HTTP source URI is not authoritative fallback") {
+        fallback = true;
+        insecure = true;
+    }
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_paragraph({.content = {model::ParagraphAtomSpec{.type = "image"}, "Picture"}}), model::BlockSpec::make_paragraph({.content = {"End"}})}}}});
+    auto &dt = json["tabs"][0]["documentTab"];
     dt["body"]["content"][1]["paragraph"]["elements"][0]["inlineObjectElement"] = slimr::Json::object_t{
         {"inlineObjectId", "synthetic_image"}, {"suggestedDeletionIds", slimr::Json::array_t{"synthetic_image_reject"}}};
     auto embedded = slimr::Json::object_t{
         {"size", slimr::Json::object_t{{"width", model::dimensionFromPt(100)}, {"height", model::dimensionFromPt(50)}}},
-        {"imageProperties", missing ? slimr::Json(slimr::Json::object_t{}) :
-            slimr::Json(slimr::Json::object_t{{"contentUri", "https://example.invalid/synthetic.png"}})}};
-    if (lossy) embedded["rotationAngle"] = 0.5;
-    if (fallback) embedded["imageProperties"] = slimr::Json::object_t{
-        {"sourceUri", insecure ? "http://example.invalid/synthetic-source.png" : "https://example.invalid/synthetic-source.png"}};
+        {"imageProperties", missing ? slimr::Json(slimr::Json::object_t{}) : slimr::Json(slimr::Json::object_t{{"contentUri", "https://example.invalid/synthetic.png"}})}};
+    if (lossy)
+        embedded["rotationAngle"] = 0.5;
+    if (fallback)
+        embedded["imageProperties"] = slimr::Json::object_t{
+            {"sourceUri", insecure ? "http://example.invalid/synthetic-source.png" : "https://example.invalid/synthetic-source.png"}};
     dt["inlineObjects"] = slimr::Json::object_t{
         {"synthetic_image", slimr::Json::object_t{{"objectId", "synthetic_image"},
-            {"inlineObjectProperties", slimr::Json::object_t{{"embeddedObject", embedded}}}}}};
+                                                  {"inlineObjectProperties", slimr::Json::object_t{{"embeddedObject", embedded}}}}}};
     fixture.backend.seed_document("synthetic_doc", json, 1);
     auto file = fixture.file();
     REQUIRE(file.suggestions.size() == 1);
     file.suggestions[0].isReject = true;
     auto input = fixture.save(file);
-    if (approved) input.allow = {"lossyImageMove"};
+    if (approved)
+        input.allow = {"lossyImageMove"};
     const auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
     INFO((result.errors && !result.errors->empty() ? result.errors->front().message : ""));
@@ -1017,7 +1050,7 @@ TEST_CASE("import parity - image deletion reject recreates known sources with lo
         CHECK(result.verification == "match");
         CHECK(fixture.file().suggestions.empty());
         const auto actual = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json,
-            {.docId = "synthetic_doc"});
+                                                 {.docId = "synthetic_doc"});
         const auto atoms = model::atomsDeep(actual.tabs[0].blocks);
         REQUIRE(atoms.size() == 1);
         CHECK(atoms[0].type == "image");
@@ -1026,14 +1059,15 @@ TEST_CASE("import parity - image deletion reject recreates known sources with lo
         CHECK(*createdId != "synthetic_image");
         CHECK(actual.tabs[0].inlineObjects.contains(*createdId));
         size_t inserts = 0;
-        for (const auto& requests : fixture.sentRequests) for (const auto& request : requests) {
-            if (!request.contains("insertInlineImage")) continue;
-            ++inserts;
-            const auto& image = request["insertInlineImage"];
-            CHECK(image["uri"] == slimr::Json(fallback ? "https://example.invalid/synthetic-source.png" :
-                                                               "https://example.invalid/synthetic.png"));
-            CHECK(image.contains("objectSize") == !fallback);
-        }
+        for (const auto &requests : fixture.sentRequests)
+            for (const auto &request : requests) {
+                if (!request.contains("insertInlineImage"))
+                    continue;
+                ++inserts;
+                const auto &image = request["insertInlineImage"];
+                CHECK(image["uri"] == slimr::Json(fallback ? "https://example.invalid/synthetic-source.png" : "https://example.invalid/synthetic.png"));
+                CHECK(image.contains("objectSize") == !fallback);
+            }
         CHECK(inserts == 1);
     }
 }
@@ -1101,7 +1135,9 @@ TEST_CASE("import - real adapters apply revision-locked edits and authoritative 
     auto input = fixture.save(file);
     auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
-    if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            INFO(error.message);
     CHECK(result.status == "applied");
     CHECK(result.writeState == "complete");
     CHECK(result.verification == "match");
@@ -1128,7 +1164,9 @@ TEST_CASE("W4 - baseValidate succeeds on a commented document without false stal
         fixture.comments, fixture.remote);
     const auto result = fileImport(ImportInput{.path = exported.exportPath}, fixture.remote);
     INFO(result.summary);
-    if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            INFO(error.message);
     CHECK_FALSE(result.errors);
     CHECK(result.status == "unchanged");
 }
@@ -1151,7 +1189,8 @@ TEST_CASE("import - concurrent revision change during no-op refreshes without ov
     auto input = fixture.save(fixture.file());
     const auto before = inputFileRead(input.path).text;
     fixture.beforeRead = [&] {
-        if (fixture.reads == 2) ++fixture.backend.get_doc("synthetic_doc").revision;
+        if (fixture.reads == 2)
+            ++fixture.backend.get_doc("synthetic_doc").revision;
     };
     auto result = fileImport(input, fixture.remote);
     CHECK(result.status == "refused");
@@ -1197,7 +1236,7 @@ TEST_CASE("import - comment approval refuses before any write then executes afte
     CHECK(fixture.batches == 0);
     input.allow = {"commentChanges"};
     const auto send = fixture.remote.commentSend;
-    fixture.remote.commentSend = [&, send](const std::string& id, const CommentAction& action) {
+    fixture.remote.commentSend = [&, send](const std::string &id, const CommentAction &action) {
         CHECK(fixture.reads >= 3);
         return send(id, action);
     };
@@ -1219,8 +1258,8 @@ TEST_CASE("import - unknown write refreshes remote and keeps unsent input withou
     }
     SUBCASE("transport loss after write") {
         landed = true;
-        fixture.remote.batchUpdate = [&](const std::string& id, const std::vector<slimr::Json>& requests,
-                                         const std::optional<std::string>& revision) -> slimr::Json {
+        fixture.remote.batchUpdate = [&](const std::string &id, const std::vector<slimr::Json> &requests,
+                                         const std::optional<std::string> &revision) -> slimr::Json {
             ++fixture.batches;
             fixture.backend.batch_update(id, requests, revision);
             throw std::runtime_error("Synthetic response loss");
@@ -1263,7 +1302,7 @@ TEST_CASE("import - confirmed content then rejected title reports partial and re
     auto file = fixture.file();
     file.tabs[0].markdown = "Synthetic content landed\n";
     file.frontmatter.title = "Renamed";
-    fixture.remote.rename = [](const std::string&, const std::string&) -> std::string {
+    fixture.remote.rename = [](const std::string &, const std::string &) -> std::string {
         throw model::CoreError("remoteRejected", "Synthetic rename refusal");
     };
     auto input = fixture.save(file);
@@ -1303,7 +1342,8 @@ TEST_CASE("import - concurrent local input edits survive verified remote success
     auto input = fixture.save(file);
     const auto changed = inputFileRead(input.path).text + "\nLocal edit during import\n";
     fixture.beforeRead = [&] {
-        if (fixture.reads == 2) fixture.write(input.path, changed);
+        if (fixture.reads == 2)
+            fixture.write(input.path, changed);
     };
     auto result = fileImport(input, fixture.remote);
     CHECK(result.status == "applied");
@@ -1316,7 +1356,8 @@ TEST_CASE("import - uncertain refresh preserves edited canonical working copy an
     RemoteImportFixture fixture;
     auto base = fixture.file();
     auto exported = exportModel(model::docModelParse(fixture.backend.get_doc("synthetic_doc").json,
-                                model::DocModelParseOptions{.docId = "synthetic_doc"}), {}, fixture.remote,
+                                                     model::DocModelParseOptions{.docId = "synthetic_doc"}),
+                                {}, fixture.remote,
                                 ExportOptions{.sourceVersion = base.frontmatter.sourceVersion});
     fixture.inputPath = exported.exportPath;
     base.tabs[0].markdown = "Synthetic unimported edit\n";
@@ -1340,12 +1381,13 @@ TEST_CASE("import - uncertain refresh preserves edited canonical working copy an
 TEST_CASE("import - same-revision partial comments preserve canonical input and immutable original") {
     RemoteImportFixture fixture;
     auto exported = exportModel(model::docModelParse(fixture.backend.get_doc("synthetic_doc").json,
-                                model::DocModelParseOptions{.docId = "synthetic_doc"}), {}, fixture.remote);
+                                                     model::DocModelParseOptions{.docId = "synthetic_doc"}),
+                                {}, fixture.remote);
     fixture.inputPath = exported.exportPath;
     const auto originalPath = fixture.inputPath.parent_path() / "export.orig.md";
     const auto original = inputFileRead(originalPath.string()).text;
     auto file = lens::documentFileParse(original);
-    for (const auto* text : {"Synthetic first comment", "Synthetic second comment"}) {
+    for (const auto *text : {"Synthetic first comment", "Synthetic second comment"}) {
         lens::CommentBlock block;
         block.text = text;
         file.comments.push_back(block);
@@ -1357,10 +1399,11 @@ TEST_CASE("import - same-revision partial comments preserve canonical input and 
     bool secondUnknown = false;
     SUBCASE("known second-action rejection") {}
     SUBCASE("unconfirmed second-action receipt") { secondUnknown = true; }
-    fixture.remote.commentSend = [&, send](const std::string& id, const CommentAction& action) -> slimr::Json {
+    fixture.remote.commentSend = [&, send](const std::string &id, const CommentAction &action) -> slimr::Json {
         if (fixture.commentWrites == 1) {
             ++fixture.commentWrites;
-            if (secondUnknown) return slimr::Json::object_t{};
+            if (secondUnknown)
+                return slimr::Json::object_t{};
             throw model::CoreError("remoteRejected", "Synthetic second comment rejection");
         }
         return send(id, action);
@@ -1423,7 +1466,7 @@ TEST_CASE("import - matching apiUser succeeds while tampered apiUser refuses") {
 }
 
 TEST_CASE("import - every existing comment action requires authoritative outcome not just receipt") {
-    for (const auto* kind : {"edit", "delete", "reply", "replyEdit", "replyDelete", "resolve", "reopen"}) {
+    for (const auto *kind : {"edit", "delete", "reply", "replyEdit", "replyDelete", "resolve", "reopen"}) {
         for (const bool landed : {false, true}) {
             CAPTURE(kind);
             CAPTURE(landed);
@@ -1434,48 +1477,63 @@ TEST_CASE("import - every existing comment action requires authoritative outcome
             thread.author = DriveCommentAuthor{.me = true};
             thread.resolved = std::string_view(kind) == "reopen";
             thread.replies.push_back(DriveCommentReply{
-                .id = "existing_reply", .content = "Synthetic old reply",
+                .id = "existing_reply",
+                .content = "Synthetic old reply",
                 .author = DriveCommentAuthor{.me = true},
             });
             fixture.comments.push_back(thread);
             auto json = fixture.remote.getDocument("synthetic_doc");
             auto file = exportDocumentFile(model::docModelParse(json,
-                model::DocModelParseOptions{.docId = "synthetic_doc"}), fixture.comments,
-                ExportOptions{.commentsIncludeResolved = true});
+                                                                model::DocModelParseOptions{.docId = "synthetic_doc"}),
+                                           fixture.comments,
+                                           ExportOptions{.commentsIncludeResolved = true});
             REQUIRE(file.comments.size() == 1);
-            auto& block = file.comments[0];
+            auto &block = file.comments[0];
             const std::string actionKind = kind;
-            if (actionKind == "edit") block.text = "Synthetic new text";
-            if (actionKind == "delete") block.isDelete = true;
+            if (actionKind == "edit")
+                block.text = "Synthetic new text";
+            if (actionKind == "delete")
+                block.isDelete = true;
             if (actionKind == "reply") {
                 lens::CommentReply reply;
                 reply.text = "Synthetic new text";
                 block.replies.push_back(reply);
             }
-            if (actionKind == "replyEdit") block.replies[0].text = "Synthetic new text";
-            if (actionKind == "replyDelete") block.replies[0].isDelete = true;
-            if (actionKind == "resolve") block.resolved = true;
-            if (actionKind == "reopen") block.resolved = false;
-            fixture.remote.commentSend = [&](const std::string&, const CommentAction& action) -> slimr::Json {
+            if (actionKind == "replyEdit")
+                block.replies[0].text = "Synthetic new text";
+            if (actionKind == "replyDelete")
+                block.replies[0].isDelete = true;
+            if (actionKind == "resolve")
+                block.resolved = true;
+            if (actionKind == "reopen")
+                block.resolved = false;
+            fixture.remote.commentSend = [&](const std::string &, const CommentAction &action) -> slimr::Json {
                 ++fixture.commentWrites;
                 CHECK(action.kind == actionKind);
                 const bool existingReply = action.kind == "replyEdit" || action.kind == "replyDelete";
                 const auto replyId = existingReply ? "existing_reply" : "provider_action_reply";
                 if (landed) {
-                    if (action.kind == "delete") fixture.comments.clear();
-                    else if (action.kind == "edit") fixture.comments[0].content = action.text;
-                    else if (action.kind == "replyDelete") fixture.comments[0].replies.clear();
-                    else if (action.kind == "replyEdit") fixture.comments[0].replies[0].content = action.text;
+                    if (action.kind == "delete")
+                        fixture.comments.clear();
+                    else if (action.kind == "edit")
+                        fixture.comments[0].content = action.text;
+                    else if (action.kind == "replyDelete")
+                        fixture.comments[0].replies.clear();
+                    else if (action.kind == "replyEdit")
+                        fixture.comments[0].replies[0].content = action.text;
                     else {
                         fixture.comments[0].replies.push_back(DriveCommentReply{
-                            .id = replyId, .content = action.text,
+                            .id = replyId,
+                            .content = action.text,
                             .action = action.kind == "reply" ? std::nullopt : std::make_optional(action.kind),
                             .author = DriveCommentAuthor{.me = true},
                         });
-                        if (action.kind != "reply") fixture.comments[0].resolved = action.kind == "resolve";
+                        if (action.kind != "reply")
+                            fixture.comments[0].resolved = action.kind == "resolve";
                     }
                 }
-                if (action.kind == "delete" || action.kind == "replyDelete") return slimr::Json::object_t{};
+                if (action.kind == "delete" || action.kind == "replyDelete")
+                    return slimr::Json::object_t{};
                 if (action.kind == "resolve" || action.kind == "reopen") {
                     return slimr::Json::object_t{{"id", replyId}, {"action", action.kind}};
                 }
@@ -1510,7 +1568,7 @@ TEST_CASE("import - immutable snapshots and orphan footnotes refuse before all c
         auto raw = fixture.backend.get_doc("synthetic_doc").json;
         raw["revisionId"] = "rev-1";
         file = exportDocumentFile(model::docModelParse(raw, {.docId = "synthetic_doc"}), {},
-            ExportOptions{.sourceVersion = std::nullopt});
+                                  ExportOptions{.sourceVersion = std::nullopt});
         REQUIRE(file.frontmatter.styleBaseline);
         (*file.frontmatter.styleBaseline)["tabs"]["t.0"]["documentStyle"]["opaqueSetting"] = "changed";
     }
@@ -1522,7 +1580,8 @@ TEST_CASE("import - immutable snapshots and orphan footnotes refuse before all c
         file.frontmatter.revision.reset();
     }
     auto input = fixture.save(file);
-    if (creating) input.newDocStyleBaseline = "account";
+    if (creating)
+        input.newDocStyleBaseline = "account";
     const auto intent = inputFileRead(input.path).text;
     const auto result = fileImport(input, fixture.remote);
     CHECK(result.status == "refused");
@@ -1541,11 +1600,12 @@ TEST_CASE("import - recovery uses current Drive title despite same-revision lagg
     bool concurrentTitle = false;
     SUBCASE("confirmed rename remains current") {}
     SUBCASE("concurrent Drive rename supersedes confirmed rename") { concurrentTitle = true; }
-    fixture.remote.getFileMetadata = [&](const std::string& id) {
+    fixture.remote.getFileMetadata = [&](const std::string &id) {
         return slimr::Json::object_t{{"id", id}, {"name", driveTitle}};
     };
     auto exported = exportModel(model::docModelParse(fixture.remote.getDocument("synthetic_doc"),
-        model::DocModelParseOptions{.docId = "synthetic_doc"}), {}, fixture.remote);
+                                                     model::DocModelParseOptions{.docId = "synthetic_doc"}),
+                                {}, fixture.remote);
     fixture.inputPath = exported.exportPath;
     const auto canonicalOriginal = fixture.inputPath.parent_path() / "export.orig.md";
     const auto original = inputFileRead(canonicalOriginal.string()).text;
@@ -1555,14 +1615,15 @@ TEST_CASE("import - recovery uses current Drive title despite same-revision lagg
     block.text = "Synthetic failed comment";
     file.comments.push_back(block);
     int renames = 0;
-    fixture.remote.rename = [&](const std::string&, const std::string& title) {
+    fixture.remote.rename = [&](const std::string &, const std::string &title) {
         ++renames;
         driveTitle = title;
         return title;
     };
-    fixture.remote.commentSend = [&](const std::string&, const CommentAction&) -> slimr::Json {
+    fixture.remote.commentSend = [&](const std::string &, const CommentAction &) -> slimr::Json {
         ++fixture.commentWrites;
-        if (concurrentTitle) driveTitle = "Synthetic concurrent rename";
+        if (concurrentTitle)
+            driveTitle = "Synthetic concurrent rename";
         throw model::CoreError("remoteRejected", "Synthetic comment rejection");
     };
     auto input = fixture.save(file);
@@ -1592,12 +1653,12 @@ TEST_CASE("import - recovery uses current Drive title despite same-revision lagg
 }
 
 TEST_CASE("import - created document reports actual provider identity and preserves baseline choice") {
-    for (const auto* baseline : {"generic", "account"}) {
+    for (const auto *baseline : {"generic", "account"}) {
         RemoteImportFixture fixture;
-        fixture.remote.createDocument = [&](const std::string& title) {
+        fixture.remote.createDocument = [&](const std::string &title) {
             ++fixture.creates;
             auto id = fixture.backend.create_document(title);
-            auto& json = fixture.backend.get_doc(id).json;
+            auto &json = fixture.backend.get_doc(id).json;
             json["tabs"][0]["documentTab"]["namedStyles"]["styles"][0]["textStyle"]["fontSize"]["magnitude"] = 17;
             return slimr::Json::object_t{{"documentId", id}};
         };
@@ -1609,15 +1670,17 @@ TEST_CASE("import - created document reports actual provider identity and preser
         input.newDocStyleBaseline = baseline;
         auto result = fileImport(input, fixture.remote);
         INFO(baseline, result.summary);
-        if (result.errors) for (const auto& error : *result.errors) INFO(error.message);
+        if (result.errors)
+            for (const auto &error : *result.errors)
+                INFO(error.message);
         CHECK(result.status == "applied");
         CHECK(result.doc == "doc_1");
         CHECK(fixture.creates == 1);
         REQUIRE(!fixture.locks.empty());
         CHECK(fixture.locks.front() == "rev-1");
         CHECK(lens::documentFileParse(inputFileRead(input.path).text).frontmatter.doc == "doc_1");
-        const auto& json = fixture.backend.get_doc("doc_1").json;
-        const auto& size = json["tabs"][0]["documentTab"]["namedStyles"]["styles"][0]["textStyle"]["fontSize"]["magnitude"];
+        const auto &json = fixture.backend.get_doc("doc_1").json;
+        const auto &size = json["tabs"][0]["documentTab"]["namedStyles"]["styles"][0]["textStyle"]["fontSize"]["magnitude"];
         CHECK(std::stod(slimr::write_json(size)) == (std::string_view(baseline) == "generic" ? 11.0 : 17.0));
     }
 }
@@ -1630,7 +1693,7 @@ TEST_CASE("import - creation with unknown identity never invents or retries an I
     auto input = fixture.save(file);
     input.newDocStyleBaseline = "generic";
     const auto before = inputFileRead(input.path).text;
-    fixture.remote.createDocument = [&](const std::string&) {
+    fixture.remote.createDocument = [&](const std::string &) {
         ++fixture.creates;
         return slimr::Json::object_t{};
     };
@@ -1651,10 +1714,11 @@ TEST_CASE("import - mismatched authoritative readback never becomes verified suc
     auto file = creating ? fixture.newFile() : fixture.file();
     file.tabs[0].markdown = "Synthetic intended content\n";
     auto input = fixture.save(file);
-    if (creating) input.newDocStyleBaseline = "generic";
+    if (creating)
+        input.newDocStyleBaseline = "generic";
     const auto before = inputFileRead(input.path).text;
-    fixture.remote.batchUpdate = [&](const std::string& id, const std::vector<slimr::Json>& requests,
-                                     const std::optional<std::string>& revision) {
+    fixture.remote.batchUpdate = [&](const std::string &id, const std::vector<slimr::Json> &requests,
+                                     const std::optional<std::string> &revision) {
         ++fixture.batches;
         auto response = *slimr::parse_json<slimr::Json>(fixture.backend.batch_update(id, requests, revision));
         fixture.backend.get_doc(id).json = emulator::blank_doc_template("Synthetic", id);
@@ -1687,7 +1751,9 @@ TEST_CASE("import - new tab uses provider ID and chains create revision into con
     auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
     std::string errors;
-    if (result.errors) for (const auto& error : *result.errors) errors += error.message + "\n";
+    if (result.errors)
+        for (const auto &error : *result.errors)
+            errors += error.message + "\n";
     INFO(errors);
     REQUIRE(result.status == "applied");
     REQUIRE(fixture.locks.size() >= 2);
@@ -1734,20 +1800,13 @@ inline std::string importPng(int width = 10, int height = 10) {
     return bytes;
 }
 
-inline void seedImportDropdown(RemoteImportFixture& fixture) {
-    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic",
-        .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {
-            model::BlockSpec::make_paragraph({.content = {"Status ", model::ParagraphAtomSpec{.type = "dropdown"}}})}}}});
-    auto& tab = json["tabs"][0]["documentTab"];
+inline void seedImportDropdown(RemoteImportFixture &fixture) {
+    auto json = model::docJsonBuild({.documentId = "synthetic_doc", .title = "Synthetic", .tabs = {{.tabId = "t.0", .title = "Main", .blocks = {model::BlockSpec::make_paragraph({.content = {"Status ", model::ParagraphAtomSpec{.type = "dropdown"}}})}}}});
+    auto &tab = json["tabs"][0]["documentTab"];
     tab["body"]["content"][1]["paragraph"]["elements"][1]["dropdown"] = slimr::Json::object_t{
-        {"dropdownId", "kix.dd1"}, {"dropdownProperties", slimr::Json::object_t{
-            {"displayValue", "Todo"}, {"dropdownDefinitionId", "kix.list1"}, {"selectedOptionId", "dropdownItem.todo"}}}};
+        {"dropdownId", "kix.dd1"}, {"dropdownProperties", slimr::Json::object_t{{"displayValue", "Todo"}, {"dropdownDefinitionId", "kix.list1"}, {"selectedOptionId", "dropdownItem.todo"}}}};
     tab["dropdownDefinitions"] = slimr::Json::object_t{{"kix.list1", slimr::Json::object_t{
-        {"dropdownDefinitionId", "kix.list1"}, {"dropdownDefinitionProperties", slimr::Json::object_t{
-            {"title", "Status"}, {"options", slimr::Json::array_t{
-                slimr::Json::object_t{{"displayValue", "Todo"}, {"optionId", "dropdownItem.todo"},
-                    {"textStyle", slimr::Json::object_t{{"foregroundColor", model::colorOptionalFromHex("#FF0000")}}}},
-                slimr::Json::object_t{{"displayValue", "Done"}, {"optionId", "dropdownItem.done"}}}}}}}}};
+                                                                         {"dropdownDefinitionId", "kix.list1"}, {"dropdownDefinitionProperties", slimr::Json::object_t{{"title", "Status"}, {"options", slimr::Json::array_t{slimr::Json::object_t{{"displayValue", "Todo"}, {"optionId", "dropdownItem.todo"}, {"textStyle", slimr::Json::object_t{{"foregroundColor", model::colorOptionalFromHex("#FF0000")}}}}, slimr::Json::object_t{{"displayValue", "Done"}, {"optionId", "dropdownItem.done"}}}}}}}}};
     fixture.backend.seed_document("synthetic_doc", json, 1);
 }
 
@@ -1762,7 +1821,7 @@ TEST_CASE("import dropdown parity - list creation selection and canonical replay
     INFO(unchanged.summary);
     INFO((unchanged.errors && !unchanged.errors->empty() ? unchanged.errors->front().message : ""));
     CHECK(unchanged.status == "unchanged");
-    auto& lists = file.frontmatter.dropdowns["t.0"];
+    auto &lists = file.frontmatter.dropdowns["t.0"];
     lists["size"] = slimr::Json::object_t{{"title", "Status"}, {"options", slimr::Json::array_t{"S", "L"}}};
     lists["fruit"] = slimr::Json::object_t{{"options", slimr::Json::array_t{"Apple", "Pear"}}};
     const auto select = file.tabs[0].markdown.find("list=kix.list1}");
@@ -1779,7 +1838,7 @@ TEST_CASE("import dropdown parity - list creation selection and canonical replay
     REQUIRE(actual.tabs[0].dropdownDefinitions.size() == 3);
     CHECK(actual.tabs[0].dropdownDefinitions.contains("kix.list1"));
     size_t sameTitles = 0, defaultTitles = 0;
-    for (const auto& [id, definition] : actual.tabs[0].dropdownDefinitions) {
+    for (const auto &[id, definition] : actual.tabs[0].dropdownDefinitions) {
         CHECK(id.starts_with("kix."));
         const auto title = definition["dropdownDefinitionProperties"]["title"].get<std::string>();
         sameTitles += title == "Status";
@@ -1789,13 +1848,13 @@ TEST_CASE("import dropdown parity - list creation selection and canonical replay
     CHECK(defaultTitles == 1);
     const auto atoms = model::atomsDeep(actual.tabs[0].blocks);
     REQUIRE(atoms.size() == 3);
-    for (const auto& atom : atoms) {
+    for (const auto &atom : atoms) {
         REQUIRE(atom.raw);
-        const auto& props = (*atom.raw)["dropdown"]["dropdownProperties"];
+        const auto &props = (*atom.raw)["dropdown"]["dropdownProperties"];
         const auto definition = props["dropdownDefinitionId"].get<std::string>();
         REQUIRE(actual.tabs[0].dropdownDefinitions.contains(definition));
         CHECK(lens::optionIdOf(actual.tabs[0].dropdownDefinitions.at(definition),
-            props["displayValue"].get<std::string>()) == std::optional<std::string>{props["selectedOptionId"].get<std::string>()});
+                               props["displayValue"].get<std::string>()) == std::optional<std::string>{props["selectedOptionId"].get<std::string>()});
     }
     const auto before = fixture.batches;
     CHECK(fileImport(input, fixture.remote).status == "unchanged");
@@ -1807,7 +1866,7 @@ TEST_CASE("import dropdown parity - list creation selection and canonical replay
     REQUIRE(added.status == "applied");
     const auto final = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
     REQUIRE(final.tabs[0].dropdownDefinitions.size() == 4);
-    for (const auto& [id, definition] : actual.tabs[0].dropdownDefinitions) {
+    for (const auto &[id, definition] : actual.tabs[0].dropdownDefinitions) {
         REQUIRE(final.tabs[0].dropdownDefinitions.contains(id));
         CHECK(final.tabs[0].dropdownDefinitions.at(id) == definition);
     }
@@ -1825,7 +1884,7 @@ TEST_CASE("import dropdown parity - option rename recolor preserves provider IDs
     INFO((result.errors && !result.errors->empty() ? result.errors->front().message : ""));
     REQUIRE(result.status == "applied");
     const auto actual = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
-    const auto& definition = actual.tabs[0].dropdownDefinitions.at("kix.list1");
+    const auto &definition = actual.tabs[0].dropdownDefinitions.at("kix.list1");
     CHECK(lens::optionIdOf(definition, "To do") == std::optional<std::string>{"dropdownItem.todo"});
     CHECK(lens::optionIdOf(definition, "Done") == std::optional<std::string>{"dropdownItem.done"});
     CHECK(definition["dropdownDefinitionProperties"]["title"] == slimr::Json("New status"));
@@ -1843,7 +1902,8 @@ TEST_CASE("import dropdown parity - removed selected option list and invalid car
     SUBCASE("too few options") { file.frontmatter.dropdowns["t.0"]["kix.list1"]["options"] = slimr::Json::array_t{"Todo"}; }
     SUBCASE("too many options") {
         slimr::Json::array_t options;
-        for (int i = 0; i < 51; ++i) options.emplace_back("Option " + std::to_string(i));
+        for (int i = 0; i < 51; ++i)
+            options.emplace_back("Option " + std::to_string(i));
         file.frontmatter.dropdowns["t.0"]["kix.list1"]["options"] = std::move(options);
     }
     SUBCASE("duplicate names") { file.frontmatter.dropdowns["t.0"]["kix.list1"]["options"] = slimr::Json::array_t{"Todo", "Todo"}; }
@@ -1869,25 +1929,29 @@ TEST_CASE("import upload parity - three source kinds upload once and clean exact
     fixture.write(fixture.root / "pic.png", importPng());
     int uploads = 0, downloads = 0;
     std::string temporary;
-    fixture.remote.fetchImage = [&](const std::string& uri) {
+    fixture.remote.fetchImage = [&](const std::string &uri) {
         ++downloads;
         CHECK(uri == "http://example.invalid/pic.png");
         return importPng();
     };
-    fixture.remote.imagesUpload = [&](const std::string&, const std::vector<DocxImage>& images) {
+    fixture.remote.imagesUpload = [&](const std::string &, const std::vector<DocxImage> &images) {
         ++uploads;
         REQUIRE(images.size() == 2);
-        for (const auto& image : images) CHECK(image.bytes == importPng());
+        for (const auto &image : images)
+            CHECK(image.bytes == importPng());
         temporary = fixture.backend.create_document("Synthetic image conversion");
-        if (conversionFails) throw ImagesUploadError("Synthetic conversion read failure", temporary);
+        if (conversionFails)
+            throw ImagesUploadError("Synthetic conversion read failure", temporary);
         return ImagesUploadResult{.contentUris = {
-            "https://example.invalid/" + temporary + "/one",
-            "https://example.invalid/" + temporary + "/two"}, .documentId = temporary};
+                                      "https://example.invalid/" + temporary + "/one",
+                                      "https://example.invalid/" + temporary + "/two"},
+                                  .documentId = temporary};
     };
-    fixture.remote.deleteFile = [&](const std::string& id) {
+    fixture.remote.deleteFile = [&](const std::string &id) {
         ++fixture.deletes;
         CHECK(id == temporary);
-        if (cleanupFails) throw std::runtime_error("Synthetic cleanup failure");
+        if (cleanupFails)
+            throw std::runtime_error("Synthetic cleanup failure");
         fixture.backend.get_doc(id).deleted = true;
     };
     if (conversionFails) {
@@ -1898,7 +1962,7 @@ TEST_CASE("import upload parity - three source kinds upload once and clean exact
     fixture.write(sourceImage, importPng());
     auto file = fixture.file();
     file.tabs[0].markdown = "Body ![](pic.png) ![](file://" + sourceImage.string() +
-        ") ![](http://example.invalid/pic.png)\n";
+                            ") ![](http://example.invalid/pic.png)\n";
     const auto input = fixture.save(file);
     const auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
@@ -1907,8 +1971,10 @@ TEST_CASE("import upload parity - three source kinds upload once and clean exact
     CHECK(downloads == 1);
     CHECK(fixture.deletes == 1);
     REQUIRE(!temporary.empty());
-    if (cleanupFails) CHECK_FALSE(fixture.backend.get_doc(temporary).deleted);
-    else CHECK_THROWS(fixture.backend.get_doc(temporary));
+    if (cleanupFails)
+        CHECK_FALSE(fixture.backend.get_doc(temporary).deleted);
+    else
+        CHECK_THROWS(fixture.backend.get_doc(temporary));
     if (conversionFails) {
         CHECK(result.status == "failed");
         CHECK(result.writeState == "unknown");
@@ -1916,7 +1982,7 @@ TEST_CASE("import upload parity - three source kinds upload once and clean exact
         CHECK(fixture.batches == 0);
         CHECK(result.exportPath == std::optional<std::string>{input.path});
         CHECK(inputFileRead(input.path).text == lens::documentFileExport(file));
-        CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto& warning) {
+        CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto &warning) {
             return warning == "export.md already had local edits for this revision, so it was kept; delete it and export again for a clean copy.";
         }));
     } else {
@@ -1925,17 +1991,18 @@ TEST_CASE("import upload parity - three source kinds upload once and clean exact
         const auto actual = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
         const auto atoms = model::atomsDeep(actual.tabs[0].blocks);
         REQUIRE(atoms.size() == 3);
-        for (const auto& atom : atoms) {
+        for (const auto &atom : atoms) {
             const auto id = model::googleIdOf(atom);
             REQUIRE(id);
             CHECK(actual.tabs[0].inlineObjects.contains(*id));
-            const auto& uri = actual.tabs[0].inlineObjects.at(*id)["inlineObjectProperties"]["embeddedObject"]["imageProperties"]["sourceUri"];
+            const auto &uri = actual.tabs[0].inlineObjects.at(*id)["inlineObjectProperties"]["embeddedObject"]["imageProperties"]["sourceUri"];
             CHECK(uri.get<std::string>().find(temporary) != std::string::npos);
         }
         if (cleanupFails) {
             CHECK(std::any_of(result.warnings.begin(), result.warnings.end(),
-                [&](const auto& warning) { return warning.find(temporary) != std::string::npos; }));
-        } else CHECK(result.warnings.empty());
+                              [&](const auto &warning) { return warning.find(temporary) != std::string::npos; }));
+        } else
+            CHECK(result.warnings.empty());
         const auto before = fixture.batches;
         const auto second = fileImport(input, fixture.remote);
         CHECK(second.status == "unchanged");
@@ -1949,7 +2016,7 @@ TEST_CASE("import upload parity - all invalid sources aggregate before any uploa
     RemoteImportFixture fixture;
     int uploads = 0;
     fixture.write(fixture.root / "bad.png", "Synthetic nonimage");
-    fixture.remote.imagesUpload = [&](const std::string&, const std::vector<DocxImage>&) {
+    fixture.remote.imagesUpload = [&](const std::string &, const std::vector<DocxImage> &) {
         ++uploads;
         return ImagesUploadResult{};
     };
@@ -1970,14 +2037,12 @@ TEST_CASE("import upload parity - all invalid sources aggregate before any uploa
 
 TEST_CASE("import image parity - foreign image sources are read once and retain native provider identities") {
     RemoteImportFixture fixture;
-    auto source = model::docJsonBuild({.documentId = "synthetic_source", .title = "Synthetic source",
-        .tabs = {{.tabId = "t.source", .title = "Source", .blocks = {
-            model::BlockSpec::make_paragraph({.content = {model::ParagraphAtomSpec{.type = "image"}}})}}}});
-    auto& tab = source["tabs"][0]["documentTab"];
+    auto source = model::docJsonBuild({.documentId = "synthetic_source", .title = "Synthetic source", .tabs = {{.tabId = "t.source", .title = "Source", .blocks = {model::BlockSpec::make_paragraph({.content = {model::ParagraphAtomSpec{.type = "image"}}})}}}});
+    auto &tab = source["tabs"][0]["documentTab"];
     tab["body"]["content"][1]["paragraph"]["elements"][0]["inlineObjectElement"]["inlineObjectId"] = "foreign_image";
     tab["inlineObjects"]["foreign_image"] = slimr::Json::object_t{{"inlineObjectProperties", slimr::Json::object_t{
-        {"embeddedObject", slimr::Json::object_t{{"imageProperties", slimr::Json::object_t{
-            {"contentUri", "https://example.invalid/foreign.png"}}}}}}}};
+                                                                                                 {"embeddedObject", slimr::Json::object_t{{"imageProperties", slimr::Json::object_t{
+                                                                                                                                                                  {"contentUri", "https://example.invalid/foreign.png"}}}}}}}};
     fixture.backend.seed_document("synthetic_source", source, 1);
     const auto sourceModel = model::docModelParse(source, {.docId = "synthetic_source"});
     const auto sourceAtoms = model::atomsDeep(sourceModel.tabs[0].blocks);
@@ -1988,9 +2053,10 @@ TEST_CASE("import image parity - foreign image sources are read once and retain 
     int sourceReads = 0;
     std::vector<std::string> getDocOrder;
     const auto getDocument = fixture.remote.getDocument;
-    fixture.remote.getDocument = [&](const std::string& id) {
+    fixture.remote.getDocument = [&](const std::string &id) {
         getDocOrder.push_back(id);
-        if (id == "synthetic_source") ++sourceReads;
+        if (id == "synthetic_source")
+            ++sourceReads;
         return getDocument(id);
     };
     const auto canonicalModel = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
@@ -2000,7 +2066,7 @@ TEST_CASE("import image parity - foreign image sources are read once and retain 
     const auto originalBytes = inputFileRead(originalPath.string()).text;
     auto file = fixture.file();
     file.tabs[0].markdown = "Target :image{src=gdoc:synthetic_source/" + *exportedId +
-        "} :image{src=gdoc:synthetic_source/" + *exportedId + "}\n";
+                            "} :image{src=gdoc:synthetic_source/" + *exportedId + "}\n";
     auto input = fixture.save(file);
     const auto result = fileImport(input, fixture.remote);
     INFO(result.summary);
@@ -2036,22 +2102,25 @@ TEST_CASE("import upload parity - real app adapter fetches bytes without Google 
     RemoteImportFixture fixture;
     struct WorkRoot {
         std::optional<std::string> previous;
-        explicit WorkRoot(const std::string& path) {
-            if (const char* value = std::getenv("GDOCSMITH_WORK_DIR")) previous = value;
+        explicit WorkRoot(const std::string &path) {
+            if (const char *value = std::getenv("GDOCSMITH_WORK_DIR"))
+                previous = value;
             setenv("GDOCSMITH_WORK_DIR", path.c_str(), 1);
         }
-        WorkRoot(const WorkRoot&) = delete;
-        WorkRoot& operator=(const WorkRoot&) = delete;
+        WorkRoot(const WorkRoot &) = delete;
+        WorkRoot &operator=(const WorkRoot &) = delete;
         ~WorkRoot() {
-            if (previous) setenv("GDOCSMITH_WORK_DIR", previous->c_str(), 1);
-            else unsetenv("GDOCSMITH_WORK_DIR");
+            if (previous)
+                setenv("GDOCSMITH_WORK_DIR", previous->c_str(), 1);
+            else
+                unsetenv("GDOCSMITH_WORK_DIR");
         }
     } root(fixture.remote.root);
     auto file = fixture.file();
     file.tabs[0].markdown = "Body ![](http://example.invalid/app.png)\n";
     const auto input = fixture.save(file);
     int downloads = 0, uploads = 0, deletes = 0;
-    HttpTransport transport = [&](const HttpCall& request) -> HttpCallResponse {
+    HttpTransport transport = [&](const HttpCall &request) -> HttpCallResponse {
         if (request.url == "http://example.invalid/app.png") {
             ++downloads;
             CHECK(request.headers.empty());
@@ -2072,12 +2141,13 @@ TEST_CASE("import upload parity - real app adapter fetches bytes without Google 
             ++deletes;
             return {.status = 204};
         }
-        if (request.url.find("/comments") != std::string::npos) return {.body = R"({"comments":[]})"};
+        if (request.url.find("/comments") != std::string::npos)
+            return {.body = R"({"comments":[]})"};
         if (request.url.find("documents/synthetic_doc:batchUpdate") != std::string::npos) {
             const auto body = *slimr::parse_json<slimr::Json>(request.body);
             return {.body = fixture.backend.batch_update("synthetic_doc",
-                body["requests"].get<slimr::Json::array_t>(),
-                body["writeControl"]["requiredRevisionId"].get<std::string>())};
+                                                         body["requests"].get<slimr::Json::array_t>(),
+                                                         body["writeControl"]["requiredRevisionId"].get<std::string>())};
         }
         if (request.url.find("documents/synthetic_doc") != std::string::npos) {
             auto document = fixture.backend.get_doc("synthetic_doc").json;
@@ -2089,7 +2159,7 @@ TEST_CASE("import upload parity - real app adapter fetches bytes without Google 
         }
         return {.status = 404, .body = R"({"error":{"message":"Synthetic missing route"}})"};
     };
-    const GwsRunner runner = [](const std::vector<std::string>&) {
+    const GwsRunner runner = [](const std::vector<std::string> &) {
         return R"({"client_id":"synthetic-id","client_secret":"synthetic-secret","refresh_token":"synthetic-refresh"})";
     };
     token_cache_reset();
@@ -2105,7 +2175,7 @@ TEST_CASE("import upload parity - real app adapter fetches bytes without Google 
 
 TEST_CASE("import upload parity - API post-create failure preserves exact temporary identity") {
     token_cache_reset();
-    const HttpTransport transport = [](const HttpCall& request) -> HttpCallResponse {
+    const HttpTransport transport = [](const HttpCall &request) -> HttpCallResponse {
         if (request.url == "https://oauth2.googleapis.com/token") {
             return {.body = R"({"access_token":"synthetic-access","expires_in":3600})"};
         }
@@ -2114,14 +2184,14 @@ TEST_CASE("import upload parity - API post-create failure preserves exact tempor
         }
         throw std::runtime_error("Synthetic readback transport loss");
     };
-    const GwsRunner runner = [](const std::vector<std::string>&) {
+    const GwsRunner runner = [](const std::vector<std::string> &) {
         return R"({"client_id":"synthetic-id","client_secret":"synthetic-secret","refresh_token":"synthetic-refresh"})";
     };
     DriveClient drive(transport, runner);
     try {
         drive.imagesUpload("Synthetic conversion", {{.bytes = importPng(), .widthPx = 10, .heightPx = 10, .type = "png"}});
         FAIL("Expected a typed post-create failure");
-    } catch (const ImagesUploadError& error) {
+    } catch (const ImagesUploadError &error) {
         CHECK(error.documentId == "synthetic_known_upload");
     }
     token_cache_reset();

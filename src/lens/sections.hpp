@@ -1,17 +1,17 @@
 #pragma once
 
+#include "json.hpp"
+#include "lens/cell_styles.hpp"
+#include "lens/directives.hpp"
+#include "lens/json_helper.hpp"
+#include <array>
+#include <cmath>
+#include <limits>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <array>
-#include <optional>
-#include <sstream>
-#include <cmath>
-#include <limits>
-#include "json.hpp"
-#include "lens/json_helper.hpp"
-#include "lens/cell_styles.hpp"
-#include "lens/directives.hpp"
 
 namespace gdocsmith::lens {
 
@@ -25,20 +25,18 @@ struct SectionSettings {
     std::optional<int> pageNumberStart;
     bool rtl{false};
 
-    bool operator==(const SectionSettings& other) const = default;
+    bool operator==(const SectionSettings &other) const = default;
 };
 
 inline constexpr std::array<std::string_view, 4> SECTION_FLAGS = {
-    "columnSeparator", "firstPage", "landscape", "rtl"
-};
+    "columnSeparator", "firstPage", "landscape", "rtl"};
 
 inline constexpr std::array<std::string_view, 4> SECTION_VALUES = {
-    "columnGap", "columns", "margins", "pageNumberStart"
-};
+    "columnGap", "columns", "margins", "pageNumberStart"};
 
-inline std::string sectionTypeFlag(const slimr::Json& style) {
+inline std::string sectionTypeFlag(const slimr::Json &style) {
     if (style.is_object()) {
-        if (auto* st = json::get(style, "sectionType")) {
+        if (auto *st = json::get(style, "sectionType")) {
             if (st->is_string() && st->get<std::string>() == "CONTINUOUS") {
                 return "continuous";
             }
@@ -47,7 +45,7 @@ inline std::string sectionTypeFlag(const slimr::Json& style) {
     return "nextPage";
 }
 
-inline DirectiveAttrs sectionSettingsAttrs(const SectionSettings& settings) {
+inline DirectiveAttrs sectionSettingsAttrs(const SectionSettings &settings) {
     DirectiveAttrs attrs;
     if (settings.columns) {
         attrs.values.push_back({"columns", std::to_string(*settings.columns)});
@@ -58,7 +56,7 @@ inline DirectiveAttrs sectionSettingsAttrs(const SectionSettings& settings) {
         attrs.values.push_back({"columnGap", ss.str()});
     }
     if (settings.margins) {
-        const auto& m = *settings.margins;
+        const auto &m = *settings.margins;
         std::ostringstream ss;
         ss << m[0] << "," << m[1] << "," << m[2] << "," << m[3];
         attrs.values.push_back({"margins", ss.str()});
@@ -67,28 +65,35 @@ inline DirectiveAttrs sectionSettingsAttrs(const SectionSettings& settings) {
         attrs.values.push_back({"pageNumberStart", std::to_string(*settings.pageNumberStart)});
     }
     for (std::string_view flag : SECTION_FLAGS) {
-        if (flag == "columnSeparator" && settings.columnSeparator) attrs.flags.push_back(std::string(flag));
-        else if (flag == "firstPage" && settings.firstPage) attrs.flags.push_back(std::string(flag));
-        else if (flag == "landscape" && settings.landscape) attrs.flags.push_back(std::string(flag));
-        else if (flag == "rtl" && settings.rtl) attrs.flags.push_back(std::string(flag));
+        if (flag == "columnSeparator" && settings.columnSeparator)
+            attrs.flags.push_back(std::string(flag));
+        else if (flag == "firstPage" && settings.firstPage)
+            attrs.flags.push_back(std::string(flag));
+        else if (flag == "landscape" && settings.landscape)
+            attrs.flags.push_back(std::string(flag));
+        else if (flag == "rtl" && settings.rtl)
+            attrs.flags.push_back(std::string(flag));
     }
     return attrs;
 }
 
-inline SectionSettings sectionSettingsOf(const slimr::Json& style, const slimr::Json& tabStyle) {
+inline SectionSettings sectionSettingsOf(const slimr::Json &style, const slimr::Json &tabStyle) {
     SectionSettings settings;
-    if (!style.is_object()) return settings;
+    if (!style.is_object())
+        return settings;
 
-    auto pt = [](const slimr::Json* v) -> std::optional<double> {
-        if (!v || !v->is_object()) return std::nullopt;
-        auto* mag = json::get(*v, "magnitude");
-        if (mag && mag->is_number()) return mag->as<double>();
+    auto pt = [](const slimr::Json *v) -> std::optional<double> {
+        if (!v || !v->is_object())
+            return std::nullopt;
+        auto *mag = json::get(*v, "magnitude");
+        if (mag && mag->is_number())
+            return mag->as<double>();
         return std::nullopt;
     };
 
-    auto* cols = json::get(style, "columnProperties");
+    auto *cols = json::get(style, "columnProperties");
     if (cols && cols->is_array() && cols->get<slimr::Json::array_t>().size() > 1) {
-        const auto& arr = cols->get<slimr::Json::array_t>();
+        const auto &arr = cols->get<slimr::Json::array_t>();
         settings.columns = static_cast<int>(arr.size());
         auto gap = pt(json::get(arr[0], "paddingEnd"));
         if (gap && std::abs(*gap - 36.0) > 1e-4) {
@@ -96,17 +101,17 @@ inline SectionSettings sectionSettingsOf(const slimr::Json& style, const slimr::
         }
     }
 
-    if (auto* cs = json::get(style, "columnSeparatorStyle")) {
+    if (auto *cs = json::get(style, "columnSeparatorStyle")) {
         if (cs->is_string() && cs->get<std::string>() == "BETWEEN_EACH_COLUMN") {
             settings.columnSeparator = true;
         }
     }
-    if (auto* fp = json::get(style, "useFirstPageHeaderFooter")) {
+    if (auto *fp = json::get(style, "useFirstPageHeaderFooter")) {
         if (fp->is_boolean() && fp->get<bool>()) {
             settings.firstPage = true;
         }
     }
-    if (auto* fo = json::get(style, "flipPageOrientation")) {
+    if (auto *fo = json::get(style, "flipPageOrientation")) {
         if (fo->is_boolean() && fo->get<bool>()) {
             settings.landscape = true;
         }
@@ -130,11 +135,12 @@ inline SectionSettings sectionSettingsOf(const slimr::Json& style, const slimr::
         settings.margins = m;
     }
 
-    if (auto* pns = json::get(style, "pageNumberStart")) {
-        if (pns->is_number()) settings.pageNumberStart = static_cast<int>(pns->as<int64_t>());
+    if (auto *pns = json::get(style, "pageNumberStart")) {
+        if (pns->is_number())
+            settings.pageNumberStart = static_cast<int>(pns->as<int64_t>());
     }
 
-    if (auto* cd = json::get(style, "contentDirection")) {
+    if (auto *cd = json::get(style, "contentDirection")) {
         if (cd->is_string() && cd->get<std::string>() == "RIGHT_TO_LEFT") {
             settings.rtl = true;
         }
@@ -142,14 +148,15 @@ inline SectionSettings sectionSettingsOf(const slimr::Json& style, const slimr::
     return settings;
 }
 
-inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flags, const std::vector<std::pair<std::string, std::string>>& values) {
+inline SectionSettings sectionSettingsParse(const std::vector<std::string> &flags, const std::vector<std::pair<std::string, std::string>> &values) {
     auto fail = [](std::string_view msg) {
         throw CoreError("unsupportedSyntax", "::section " + std::string(msg));
     };
 
     auto get_val = [&](std::string_view name) -> std::optional<std::string> {
-        for (const auto& [k, v] : values) {
-            if (k == name) return v;
+        for (const auto &[k, v] : values) {
+            if (k == name)
+                return v;
         }
         return std::nullopt;
     };
@@ -176,11 +183,14 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
     SectionSettings settings;
     if (get_val("columns")) {
         int cols = static_cast<int>(num_val("columns", true));
-        if (cols < 1 || cols > 3) fail("columns must be 1, 2 or 3");
-        if (cols > 1) settings.columns = cols;
+        if (cols < 1 || cols > 3)
+            fail("columns must be 1, 2 or 3");
+        if (cols > 1)
+            settings.columns = cols;
     }
     if (get_val("columnGap")) {
-        if (!settings.columns) fail("columnGap needs columns=2 or 3");
+        if (!settings.columns)
+            fail("columnGap needs columns=2 or 3");
         settings.columnGap = num_val("columnGap", false);
     }
     if (get_val("margins")) {
@@ -208,11 +218,15 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
     if (get_val("pageNumberStart")) {
         settings.pageNumberStart = static_cast<int>(num_val("pageNumberStart", true));
     }
-    for (const auto& flag : flags) {
-        if (flag == "columnSeparator") settings.columnSeparator = true;
-        else if (flag == "firstPage") settings.firstPage = true;
-        else if (flag == "landscape") settings.landscape = true;
-        else if (flag == "rtl") settings.rtl = true;
+    for (const auto &flag : flags) {
+        if (flag == "columnSeparator")
+            settings.columnSeparator = true;
+        else if (flag == "firstPage")
+            settings.firstPage = true;
+        else if (flag == "landscape")
+            settings.landscape = true;
+        else if (flag == "rtl")
+            settings.rtl = true;
     }
     if (settings.columnSeparator && !settings.columns) {
         fail("columnSeparator needs columns=2 or 3");
@@ -220,13 +234,16 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
     return settings;
 }
 
-inline slimr::Json sectionStyleWith(const slimr::Json& style, const SectionSettings& settings) {
+inline slimr::Json sectionStyleWith(const slimr::Json &style, const SectionSettings &settings) {
     auto out = style.is_object() ? style : slimr::json_obj();
-    const auto set = [&](const std::string& field, const std::optional<slimr::Json>& value) {
-        if (value) out[field] = *value;
+    const auto set = [&](const std::string &field, const std::optional<slimr::Json> &value) {
+        if (value)
+            out[field] = *value;
         else if (out.contains(field)) {
-            if (out[field].is_boolean()) out[field] = false;
-            else throw CoreError("unsupportedSyntax", "Google can't clear a section's " + field + " once set.");
+            if (out[field].is_boolean())
+                out[field] = false;
+            else
+                throw CoreError("unsupportedSyntax", "Google can't clear a section's " + field + " once set.");
         }
     };
     if (settings.columns || out.contains("columnProperties")) {
@@ -241,29 +258,33 @@ inline slimr::Json sectionStyleWith(const slimr::Json& style, const SectionSetti
     out["columnSeparatorStyle"] = settings.columnSeparator ? "BETWEEN_EACH_COLUMN" : "NONE";
     set("useFirstPageHeaderFooter", settings.firstPage ? std::optional<slimr::Json>{true} : std::nullopt);
     set("flipPageOrientation", settings.landscape ? std::optional<slimr::Json>{true} : std::nullopt);
-    constexpr std::array<const char*, 4> sides = {"marginTop", "marginRight", "marginBottom", "marginLeft"};
+    constexpr std::array<const char *, 4> sides = {"marginTop", "marginRight", "marginBottom", "marginLeft"};
     for (size_t i = 0; i < sides.size(); ++i) {
         set(sides[i], settings.margins
-            ? std::optional<slimr::Json>{dimensionFromPt((*settings.margins)[i])} : std::nullopt);
+                          ? std::optional<slimr::Json>{dimensionFromPt((*settings.margins)[i])}
+                          : std::nullopt);
     }
     set("pageNumberStart", settings.pageNumberStart
-        ? std::optional<slimr::Json>{*settings.pageNumberStart} : std::nullopt);
-    if (settings.rtl) out["contentDirection"] = "RIGHT_TO_LEFT";
+                               ? std::optional<slimr::Json>{*settings.pageNumberStart}
+                               : std::nullopt);
+    if (settings.rtl)
+        out["contentDirection"] = "RIGHT_TO_LEFT";
     else if (out.contains("contentDirection") && out["contentDirection"] == slimr::Json("RIGHT_TO_LEFT")) {
         out["contentDirection"] = "LEFT_TO_RIGHT";
     }
     return out;
 }
 
-inline SectionSettings sectionDirectiveSettings(const DirectiveAttrs& attrs) {
-    if (!attrs.classes.empty()) throw CoreError("unsupportedSyntax", "Invalid section class.");
-    for (const auto& flag : attrs.flags) {
+inline SectionSettings sectionDirectiveSettings(const DirectiveAttrs &attrs) {
+    if (!attrs.classes.empty())
+        throw CoreError("unsupportedSyntax", "Invalid section class.");
+    for (const auto &flag : attrs.flags) {
         if (flag != "continuous" && flag != "nextPage" &&
             std::find(SECTION_FLAGS.begin(), SECTION_FLAGS.end(), flag) == SECTION_FLAGS.end()) {
             throw CoreError("unsupportedSyntax", "Unknown section flag.");
         }
     }
-    for (const auto& [key, value] : attrs.values) {
+    for (const auto &[key, value] : attrs.values) {
         (void)value;
         if (key != "id" && std::find(SECTION_VALUES.begin(), SECTION_VALUES.end(), key) == SECTION_VALUES.end()) {
             throw CoreError("unsupportedSyntax", "Unknown section attribute.");

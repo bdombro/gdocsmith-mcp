@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/hidden_chips.hpp"
 #include "lens/atom_put.hpp"
+#include "lens/hidden_chips.hpp"
 #include "test.hpp"
 
 namespace gdocsmith::lens::test {
@@ -12,22 +12,27 @@ TEST_CASE("source person email criterion refuses before allocating or mutating i
     tab.tabId = "main";
     model::EditTarget target{context, tab};
     AtomPutReport report;
-    for (const auto* email : {"not-an-email", "a@localhost", "a b@host.test", "a@@b.test", "@host.test", "a@\u00A0host.test"}) {
+    for (const auto *email : {"not-an-email", "a@localhost", "a b@host.test", "a@@b.test", "@host.test", "a@\u00A0host.test"}) {
         TokenRef token{.kind = "person"};
         token.attrs.values.emplace_back("email", email);
-        try { (void)atomTokenCreate(target, token, {}, report); FAIL("expected invalid person refusal"); }
-        catch (const model::CoreError& error) { CHECK(error.code == "unsupportedSyntax"); }
+        try {
+            (void)atomTokenCreate(target, token, {}, report);
+            FAIL("expected invalid person refusal");
+        } catch (const model::CoreError &error) {
+            CHECK(error.code == "unsupportedSyntax");
+        }
     }
     CHECK(tab.blocks.empty());
     CHECK(context.tombstones.empty());
     CHECK(report.notes.empty());
-    for (const auto* email : {"a@b.test", "person+tag@example.invalid", "a..b@host.example"}) {
+    for (const auto *email : {"a@b.test", "person+tag@example.invalid", "a..b@host.example"}) {
         TokenRef token{.kind = "person"};
         token.attrs.values.emplace_back("email", email);
         const auto created = atomTokenCreate(target, token, {}, report);
         REQUIRE(created.create);
         CHECK(created.create->email == email);
-        if (std::string_view(email) == "a@b.test") CHECK(created.key == "n1");
+        if (std::string_view(email) == "a@b.test")
+            CHECK(created.key == "n1");
     }
 }
 
@@ -49,21 +54,13 @@ TEST_CASE("source person and date recreation preserve supported metadata but not
     model::TabModel tab;
     model::EditTarget target{context, tab};
     AtomPutReport report;
-    model::Atom person{.key = "person", .type = "person", .raw = slimr::Json::object_t{
-        {"person", slimr::Json::object_t{{"personId", "provider-person"},
-            {"personProperties", slimr::Json::object_t{{"email", "person@example.invalid"}, {"name", "Person"}}}}}
-    }};
+    model::Atom person{.key = "person", .type = "person", .raw = slimr::Json::object_t{{"person", slimr::Json::object_t{{"personId", "provider-person"}, {"personProperties", slimr::Json::object_t{{"email", "person@example.invalid"}, {"name", "Person"}}}}}}};
     auto moved = atomRecreate(target, person, report);
     REQUIRE(moved.create);
     CHECK(moved.create->email == "person@example.invalid");
     CHECK_FALSE(moved.raw);
     CHECK(moved.key != person.key);
-    model::Atom date{.key = "date", .type = "date", .raw = slimr::Json::object_t{
-        {"dateElement", slimr::Json::object_t{{"dateElementProperties", slimr::Json::object_t{
-            {"timestamp", "2026-03-01T15:00:00Z"}, {"dateFormat", "DATE_FORMAT_ISO8601"},
-            {"timeFormat", "TIME_FORMAT_HOUR_MINUTE_TIMEZONE"}, {"timeZoneId", "America/New_York"}, {"locale", "pt-BR"}
-        }}}}
-    }};
+    model::Atom date{.key = "date", .type = "date", .raw = slimr::Json::object_t{{"dateElement", slimr::Json::object_t{{"dateElementProperties", slimr::Json::object_t{{"timestamp", "2026-03-01T15:00:00Z"}, {"dateFormat", "DATE_FORMAT_ISO8601"}, {"timeFormat", "TIME_FORMAT_HOUR_MINUTE_TIMEZONE"}, {"timeZoneId", "America/New_York"}, {"locale", "pt-BR"}}}}}}};
     moved = atomRecreate(target, date, report);
     REQUIRE(moved.create);
     CHECK(moved.create->timestamp == "2026-03-01T15:00:00Z");
@@ -75,8 +72,10 @@ TEST_CASE("source person and date recreation preserve supported metadata but not
     TokenRef before{.kind = "person", .attrs = directiveAttrsParse("id=person email=person@example.invalid"), .label = "Pat"};
     auto after = before;
     after.label = "Sam";
-    try { atomTokenKeep(person, before, after, tab, {}); FAIL("expected relabel refusal"); }
-    catch (const model::CoreError& error) {
+    try {
+        atomTokenKeep(person, before, after, tab, {});
+        FAIL("expected relabel refusal");
+    } catch (const model::CoreError &error) {
         CHECK(error.code == "tokenLabelChanged");
         CHECK(error.what() == std::string("the person \"Pat\" can't be relabeled \"Sam\"; keep exported objects unchanged"));
     }
@@ -92,7 +91,7 @@ TEST_CASE("source fresh date chips produce noon floating and UTC payloads and va
     model::TabModel tab;
     model::EditTarget target{context, tab};
     AtomPutReport report;
-    auto create = [&](const std::string& attrs) {
+    auto create = [&](const std::string &attrs) {
         return atomTokenCreate(target, TokenRef{.kind = "date", .attrs = directiveAttrsParse(attrs)}, {}, report);
     };
     const auto noon = create("value=2026-03-01 format=iso locale=pt-BR");
@@ -110,24 +109,23 @@ TEST_CASE("source fresh date chips produce noon floating and UTC payloads and va
     CHECK(utc.create->timeFormat == "TIME_FORMAT_HOUR_MINUTE_TIMEZONE");
     CHECK(utc.create->timeZoneId == "UTC");
 #if defined(__APPLE__) || (defined(__cpp_lib_chrono) && __cpp_lib_chrono >= 201907L)
-    for (const auto& [attrs, expected] : {
-        std::pair{"value=2026-03-01 time=10:00 zone=America/New_York format=long", "2026-03-01T15:00:00Z"},
-        {"value=2026-07-01 time=10:00 zone=America/New_York", "2026-07-01T14:00:00Z"},
-        {"value=2026-01-01 time=00:30 zone=Asia/Tokyo", "2025-12-31T15:30:00Z"},
-        {"value=2026-03-08 time=03:30 zone=America/New_York", "2026-03-08T07:30:00Z"},
-        {"value=2026-11-01 time=01:30 zone=America/New_York", "2026-11-01T05:30:00Z"}
-    }) {
+    for (const auto &[attrs, expected] : {
+             std::pair{"value=2026-03-01 time=10:00 zone=America/New_York format=long", "2026-03-01T15:00:00Z"},
+             {"value=2026-07-01 time=10:00 zone=America/New_York", "2026-07-01T14:00:00Z"},
+             {"value=2026-01-01 time=00:30 zone=Asia/Tokyo", "2025-12-31T15:30:00Z"},
+             {"value=2026-03-08 time=03:30 zone=America/New_York", "2026-03-08T07:30:00Z"},
+             {"value=2026-11-01 time=01:30 zone=America/New_York", "2026-11-01T05:30:00Z"}}) {
         const auto zoned = create(attrs);
         REQUIRE(zoned.create);
         CHECK(zoned.create->timestamp == expected);
         const auto token = atomTokenProject(zoned, tab);
         CHECK(token.attrs.get_value("zone") == zoned.create->timeZoneId);
-        CHECK(token.attrs.get_value("time") == (std::string(attrs).find("00:30") != std::string::npos ? "00:30" :
-            std::string(attrs).find("03:30") != std::string::npos ? "03:30" :
-            std::string(attrs).find("01:30") != std::string::npos ? "01:30" : "10:00"));
+        CHECK(token.attrs.get_value("time") == (std::string(attrs).find("00:30") != std::string::npos ? "00:30" : std::string(attrs).find("03:30") != std::string::npos ? "03:30"
+                                                                                                              : std::string(attrs).find("01:30") != std::string::npos   ? "01:30"
+                                                                                                                                                                        : "10:00"));
     }
 #endif
-    for (const auto* attrs : {"value=2026-03-01 time=25:00", "value=2026-03-01 zone=UTC",
+    for (const auto *attrs : {"value=2026-03-01 time=25:00", "value=2026-03-01 zone=UTC",
                               "value=2026-03-01 format=bogus", "value=2026-03-01 locale=English",
                               "value=2026-03-01 time=10:00 zone=EST",
                               "value=2026-03-01 time=10:00 zone=Not/AZone"}) {
@@ -139,9 +137,7 @@ TEST_CASE("source moved footnote recreates original label with fresh identity") 
     model::EditContext context;
     model::TabModel tab;
     tab.tabId = "tab";
-    model::Atom original{.key = "old-footnote", .type = "footnoteRef", .raw = slimr::Json::object_t{
-        {"footnoteReference", slimr::Json::object_t{{"footnoteId", "provider-note"}}}
-    }};
+    model::Atom original{.key = "old-footnote", .type = "footnoteRef", .raw = slimr::Json::object_t{{"footnoteReference", slimr::Json::object_t{{"footnoteId", "provider-note"}}}}};
     model::ParagraphBlock paragraph;
     paragraph.inlines = {model::Inline::from_atom(original)};
     tab.blocks.emplace_back(paragraph);
@@ -168,10 +164,12 @@ TEST_CASE("source new footnotes are body-only while existing references remain p
     AtomPutReport report;
     const TokenRef token{.kind = "footnoteRef", .label = "new"};
     CHECK_NOTHROW(atomTokenCreate(target, token, {}, report));
-    for (const auto* segment : {"main::header", "main::footer", "main::footnote"}) {
+    for (const auto *segment : {"main::header", "main::footer", "main::footnote"}) {
         tab.tabId = segment;
-        try { (void)atomTokenCreate(target, token, {}, report); FAIL("expected body-only footnote refusal"); }
-        catch (const model::CoreError& error) {
+        try {
+            (void)atomTokenCreate(target, token, {}, report);
+            FAIL("expected body-only footnote refusal");
+        } catch (const model::CoreError &error) {
             CHECK(error.code == "unsupportedSyntax");
             CHECK(error.message == "footnote [^new] can only be referenced from a tab body");
         }
@@ -183,11 +181,7 @@ TEST_CASE("source new footnotes are body-only while existing references remain p
 
 TEST_CASE("source default English date locale does not change exported token identity") {
     model::TabModel tab;
-    model::Atom date{.key = "old-date", .type = "date", .raw = slimr::Json::object_t{
-        {"dateElement", slimr::Json::object_t{{"dateId", "provider-date"}, {"dateElementProperties", slimr::Json::object_t{
-            {"timestamp", "2026-03-01T12:00:00Z"}, {"locale", "en"}
-        }}}}
-    }};
+    model::Atom date{.key = "old-date", .type = "date", .raw = slimr::Json::object_t{{"dateElement", slimr::Json::object_t{{"dateId", "provider-date"}, {"dateElementProperties", slimr::Json::object_t{{"timestamp", "2026-03-01T12:00:00Z"}, {"locale", "en"}}}}}}};
     const TokenRef sourceToken{.kind = "date", .attrs = directiveAttrsParse("id=provider-date value=2026-03-01")};
     const auto projected = atomTokenProject(date, tab);
     CHECK_FALSE(projected.attrs.get_value("locale"));

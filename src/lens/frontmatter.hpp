@@ -1,19 +1,19 @@
 #pragma once
 
-#include "model/errors.hpp"
-#include "lens/json_helper.hpp"
-#include "lens/cell_styles.hpp"
-#include "lens/paragraph_styles.hpp"
 #include "json.hpp"
+#include "lens/cell_styles.hpp"
+#include "lens/json_helper.hpp"
+#include "lens/paragraph_styles.hpp"
+#include "model/errors.hpp"
 #include "yaml.hpp"
-#include <string>
-#include <string_view>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
+#include <algorithm>
 #include <optional>
 #include <regex>
-#include <algorithm>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 namespace gdocsmith::lens {
 
@@ -33,13 +33,11 @@ static const std::unordered_map<std::string, std::string> STYLE_ATTRIBUTES = {
     {"italic", "boolean"},
     {"smallCaps", "boolean"},
     {"strikethrough", "boolean"},
-    {"underline", "boolean"}
-};
+    {"underline", "boolean"}};
 
 static const std::vector<std::string> NAMED_STYLE_TYPES = {
     "NORMAL_TEXT", "TITLE", "SUBTITLE",
-    "HEADING_1", "HEADING_2", "HEADING_3", "HEADING_4", "HEADING_5", "HEADING_6"
-};
+    "HEADING_1", "HEADING_2", "HEADING_3", "HEADING_4", "HEADING_5", "HEADING_6"};
 
 struct StyleDeclaration {
     std::set<std::string> resets;
@@ -55,33 +53,33 @@ struct StyleDeclaration {
     std::optional<bool> strikethrough;
     std::optional<bool> underline;
 
-    bool operator==(const StyleDeclaration& other) const = default;
+    bool operator==(const StyleDeclaration &other) const = default;
 };
 
-inline DirectiveAttrs styleDeclarationAttrs(const StyleDeclaration& declaration) {
+inline DirectiveAttrs styleDeclarationAttrs(const StyleDeclaration &declaration) {
     DirectiveAttrs attrs;
-    for (const auto& field : declaration.resets) attrs.values.emplace_back(field, "null");
-    const auto text = [&](const char* name, const auto& value) {
-        if (value) attrs.values.emplace_back(name, *value);
+    for (const auto &field : declaration.resets)
+        attrs.values.emplace_back(field, "null");
+    const auto text = [&](const char *name, const auto &value) {
+        if (value)
+            attrs.values.emplace_back(name, *value);
     };
     text("backgroundColor", declaration.backgroundColor);
     text("baselineOffset", declaration.baselineOffset);
     text("fontFamily", declaration.fontFamily);
     text("foregroundColor", declaration.foregroundColor);
-    for (const auto& [name, value] : {
+    for (const auto &[name, value] : {
              std::pair{"fontSize", declaration.fontSize}, {"fontWeight", declaration.fontWeight}}) {
-        if (value) attrs.values.emplace_back(name, std::to_string(*value));
+        if (value)
+            attrs.values.emplace_back(name, std::to_string(*value));
     }
-    for (const auto& [name, value] : {
-             std::pair{"bold", declaration.bold}, {"italic", declaration.italic},
-             {"smallCaps", declaration.smallCaps}, {"strikethrough", declaration.strikethrough},
-             {"underline", declaration.underline}}) {
-        if (value) attrs.values.emplace_back(name, *value ? "true" : "false");
+    for (const auto &[name, value] : {
+             std::pair{"bold", declaration.bold}, {"italic", declaration.italic}, {"smallCaps", declaration.smallCaps}, {"strikethrough", declaration.strikethrough}, {"underline", declaration.underline}}) {
+        if (value)
+            attrs.values.emplace_back(name, *value ? "true" : "false");
     }
     return attrs;
 }
-
-
 
 struct DocumentFrontmatter {
     int gdocsmith = GDOCSMITH_VERSION;
@@ -101,7 +99,7 @@ struct DocumentFrontmatter {
     std::optional<int> commentsLine;
     std::optional<int> suggestionsLine;
 
-    bool operator==(const DocumentFrontmatter& other) const = default;
+    bool operator==(const DocumentFrontmatter &other) const = default;
 };
 
 struct TabFrontmatter {
@@ -117,7 +115,8 @@ struct TabFrontmatter {
 };
 
 inline bool isValidDeclarationName(std::string_view name) {
-    if (name.empty()) return false;
+    if (name.empty())
+        return false;
     char first = name[0];
     if (!((first >= 'A' && first <= 'Z') || (first >= 'a' && first <= 'z') || (first >= '0' && first <= '9'))) {
         return false;
@@ -132,7 +131,8 @@ inline bool isValidDeclarationName(std::string_view name) {
 }
 
 inline bool isValidHexColor(std::string_view hex) {
-    if (hex.size() != 7 || hex[0] != '#') return false;
+    if (hex.size() != 7 || hex[0] != '#')
+        return false;
     for (size_t i = 1; i < 7; i++) {
         char c = hex[i];
         if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
@@ -150,7 +150,7 @@ inline std::string uppercaseHex(std::string_view s) {
     return out;
 }
 
-inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::string_view kind = "document") {
+inline DocumentFrontmatter frontmatterValidate(const slimr::Json &root, std::string_view kind = "document") {
     std::vector<std::string> problems;
 
     if (!root.is_object()) {
@@ -161,15 +161,13 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     static const std::unordered_set<std::string> doc_allowed_keys = {
         "apiUser", "cellStyles", "commentsLine", "doc", "dropdowns", "gdocsmith",
         "guards", "namedStyleSets", "paragraphStyles", "revision", "styleBaseline",
-        "styles", "suggestionsLine", "textStyles", "title", "variables"
-    };
+        "styles", "suggestionsLine", "textStyles", "title", "variables"};
 
     static const std::unordered_set<std::string> tab_allowed_keys = {
-        "cellStyles", "doc", "gdocsmith", "paragraphStyles", "revision", "styles", "textStyles", "tab", "title", "variables"
-    };
+        "cellStyles", "doc", "gdocsmith", "paragraphStyles", "revision", "styles", "textStyles", "tab", "title", "variables"};
 
-    const auto& allowed = (kind == "document") ? doc_allowed_keys : tab_allowed_keys;
-    for (const auto& [key, _] : root.get<slimr::Json::object_t>()) {
+    const auto &allowed = (kind == "document") ? doc_allowed_keys : tab_allowed_keys;
+    for (const auto &[key, _] : root.get<slimr::Json::object_t>()) {
         if (!allowed.contains(key)) {
             if (kind == "document") {
                 problems.push_back("unknown frontmatter field \"" + key + "\"");
@@ -182,7 +180,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     DocumentFrontmatter df;
 
     // gdocsmith
-    if (auto* g_val = json::get(root, "gdocsmith")) {
+    if (auto *g_val = json::get(root, "gdocsmith")) {
         if (g_val->is_number()) {
             if (g_val->as<int64_t>() != GDOCSMITH_VERSION) {
                 problems.push_back("frontmatter gdocsmith must be " + std::to_string(GDOCSMITH_VERSION));
@@ -200,7 +198,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     }
 
     // doc
-    if (auto* doc_val = json::get(root, "doc")) {
+    if (auto *doc_val = json::get(root, "doc")) {
         if (!doc_val->is_null()) {
             if (doc_val->is_string() && !doc_val->get<std::string>().empty() &&
                 doc_val->get<std::string>().find_first_not_of(" \t\r\n") != std::string::npos) {
@@ -212,7 +210,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     }
 
     // revision
-    if (auto* rev_val = json::get(root, "revision")) {
+    if (auto *rev_val = json::get(root, "revision")) {
         if (!rev_val->is_null()) {
             if (rev_val->is_string() && !rev_val->get<std::string>().empty() &&
                 rev_val->get<std::string>().find_first_not_of(" \t\r\n") != std::string::npos) {
@@ -224,7 +222,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     }
 
     // title
-    if (auto* title_val = json::get(root, "title")) {
+    if (auto *title_val = json::get(root, "title")) {
         if (title_val->is_string() && !title_val->get<std::string>().empty() &&
             title_val->get<std::string>().find_first_not_of(" \t\r\n") != std::string::npos) {
             df.title = title_val->get<std::string>();
@@ -234,38 +232,49 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     } else if (kind == "document") {
         problems.push_back("title must be a nonempty string");
     }
-    if (auto* api_val = json::get(root, "apiUser"); api_val && api_val->is_string() && !api_val->get<std::string>().empty()) {
+    if (auto *api_val = json::get(root, "apiUser"); api_val && api_val->is_string() && !api_val->get<std::string>().empty()) {
         df.apiUser = api_val->get<std::string>();
     }
-    if (root.contains("styleBaseline")) df.styleBaseline = root["styleBaseline"];
+    if (root.contains("styleBaseline"))
+        df.styleBaseline = root["styleBaseline"];
     if (root.contains("namedStyleSets")) {
-        if (!root["namedStyleSets"].is_object()) throw CoreError("unsupportedSyntax", "namedStyleSets must be a mapping");
+        if (!root["namedStyleSets"].is_object())
+            throw CoreError("unsupportedSyntax", "namedStyleSets must be a mapping");
         df.namedStyleSets = root["namedStyleSets"];
     }
     if (root.contains("dropdowns")) {
         df.dropdowns = root["dropdowns"];
         auto invalid = [] { throw CoreError("unsupportedSyntax", "Invalid dropdowns declaration."); };
-        if (!df.dropdowns.is_object()) invalid();
-        for (auto& [tab, lists] : df.dropdowns.get<slimr::Json::object_t>()) {
+        if (!df.dropdowns.is_object())
+            invalid();
+        for (auto &[tab, lists] : df.dropdowns.get<slimr::Json::object_t>()) {
             (void)tab;
-            if (!lists.is_object()) invalid();
-            for (auto& [key, list] : lists.get<slimr::Json::object_t>()) {
-                if (key.empty() || !list.is_object() || !list.contains("options") || !list["options"].is_array()) invalid();
-                for (const auto& [field, value] : list.get<slimr::Json::object_t>()) {
-                    if (field == "options") continue;
-                    if (field != "title" || !value.is_string() || value.get<std::string>().empty()) invalid();
+            if (!lists.is_object())
+                invalid();
+            for (auto &[key, list] : lists.get<slimr::Json::object_t>()) {
+                if (key.empty() || !list.is_object() || !list.contains("options") || !list["options"].is_array())
+                    invalid();
+                for (const auto &[field, value] : list.get<slimr::Json::object_t>()) {
+                    if (field == "options")
+                        continue;
+                    if (field != "title" || !value.is_string() || value.get<std::string>().empty())
+                        invalid();
                 }
-                for (auto& option : list["options"].get<slimr::Json::array_t>()) {
+                for (auto &option : list["options"].get<slimr::Json::array_t>()) {
                     if (option.is_string()) {
-                        if (option.get<std::string>().empty()) invalid();
+                        if (option.get<std::string>().empty())
+                            invalid();
                         continue;
                     }
-                    if (!option.is_object() || option.get<slimr::Json::object_t>().size() != 1) invalid();
-                    auto& [name, colors] = *option.get<slimr::Json::object_t>().begin();
-                    if (name.empty() || !colors.is_object()) invalid();
-                    for (auto& [field, color] : colors.get<slimr::Json::object_t>()) {
+                    if (!option.is_object() || option.get<slimr::Json::object_t>().size() != 1)
+                        invalid();
+                    auto &[name, colors] = *option.get<slimr::Json::object_t>().begin();
+                    if (name.empty() || !colors.is_object())
+                        invalid();
+                    for (auto &[field, color] : colors.get<slimr::Json::object_t>()) {
                         if ((field != "color" && field != "background") || !color.is_string() ||
-                            !isValidHexColor(color.get<std::string>())) invalid();
+                            !isValidHexColor(color.get<std::string>()))
+                            invalid();
                         color = uppercaseHex(color.get<std::string>());
                     }
                 }
@@ -273,22 +282,25 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
         }
     }
 
-    if (root.contains("guards")) df.guards = root["guards"];
+    if (root.contains("guards"))
+        df.guards = root["guards"];
     if (root.contains("variables")) {
-        if (!root["variables"].is_object()) throw CoreError("unsupportedSyntax", "variables must be a mapping");
-        for (const auto& [key, value] : root["variables"].get<slimr::Json::object_t>()) {
-            if (!value.is_string()) throw CoreError("unsupportedSyntax", "variables must contain strings");
+        if (!root["variables"].is_object())
+            throw CoreError("unsupportedSyntax", "variables must be a mapping");
+        for (const auto &[key, value] : root["variables"].get<slimr::Json::object_t>()) {
+            if (!value.is_string())
+                throw CoreError("unsupportedSyntax", "variables must contain strings");
             df.variables[key] = value.get<std::string>();
         }
     }
 
     // textStyles / styles
-    auto parse_styles = [&](const std::string& sec_name, const slimr::Json& styles_obj) {
+    auto parse_styles = [&](const std::string &sec_name, const slimr::Json &styles_obj) {
         if (!styles_obj.is_object()) {
             problems.push_back("frontmatter " + sec_name + " must be a mapping of name → attributes");
             return;
         }
-        for (const auto& [decl_name, decl_obj] : styles_obj.get<slimr::Json::object_t>()) {
+        for (const auto &[decl_name, decl_obj] : styles_obj.get<slimr::Json::object_t>()) {
             if (!isValidDeclarationName(decl_name)) {
                 problems.push_back("style name \"" + decl_name + "\" must match ^[A-Za-z0-9][A-Za-z0-9_+.-]*$");
                 continue;
@@ -298,20 +310,23 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 continue;
             }
             StyleDeclaration sd;
-            for (const auto& [attr_name, attr_val] : decl_obj.get<slimr::Json::object_t>()) {
+            for (const auto &[attr_name, attr_val] : decl_obj.get<slimr::Json::object_t>()) {
                 auto it = STYLE_ATTRIBUTES.find(attr_name);
                 if (it == STYLE_ATTRIBUTES.end()) {
                     problems.push_back("style \"" + decl_name + "\" has unknown attribute \"" + attr_name +
-                                      "\" (allowed: backgroundColor, baselineOffset, bold, fontFamily, fontSize, fontWeight, foregroundColor, italic, smallCaps, strikethrough, underline)");
+                                       "\" (allowed: backgroundColor, baselineOffset, bold, fontFamily, fontSize, fontWeight, foregroundColor, italic, smallCaps, strikethrough, underline)");
                     continue;
                 }
-                const std::string& type = it->second;
-                if (attr_val.is_null()) sd.resets.insert(attr_name);
+                const std::string &type = it->second;
+                if (attr_val.is_null())
+                    sd.resets.insert(attr_name);
                 if (type == "color") {
                     if (attr_val.is_string() && isValidHexColor(attr_val.get<std::string>())) {
                         std::string up = uppercaseHex(attr_val.get<std::string>());
-                        if (attr_name == "backgroundColor") sd.backgroundColor = up;
-                        else if (attr_name == "foregroundColor") sd.foregroundColor = up;
+                        if (attr_name == "backgroundColor")
+                            sd.backgroundColor = up;
+                        else if (attr_name == "foregroundColor")
+                            sd.foregroundColor = up;
                     } else if (attr_val.is_null()) {
                         // Explicit reset null is allowed
                     } else {
@@ -320,8 +335,10 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 } else if (type == "number") {
                     if (attr_val.is_number() && attr_val.as<double>() > 0) {
                         double val = attr_val.as<double>();
-                        if (attr_name == "fontSize") sd.fontSize = val;
-                        else if (attr_name == "fontWeight") sd.fontWeight = val;
+                        if (attr_name == "fontSize")
+                            sd.fontSize = val;
+                        else if (attr_name == "fontWeight")
+                            sd.fontWeight = val;
                     } else if (attr_val.is_null()) {
                         // Explicit null
                     } else {
@@ -330,11 +347,16 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 } else if (type == "boolean") {
                     if (attr_val.is_boolean()) {
                         bool b = attr_val.get<bool>();
-                        if (attr_name == "bold") sd.bold = b;
-                        else if (attr_name == "italic") sd.italic = b;
-                        else if (attr_name == "smallCaps") sd.smallCaps = b;
-                        else if (attr_name == "strikethrough") sd.strikethrough = b;
-                        else if (attr_name == "underline") sd.underline = b;
+                        if (attr_name == "bold")
+                            sd.bold = b;
+                        else if (attr_name == "italic")
+                            sd.italic = b;
+                        else if (attr_name == "smallCaps")
+                            sd.smallCaps = b;
+                        else if (attr_name == "strikethrough")
+                            sd.strikethrough = b;
+                        else if (attr_name == "underline")
+                            sd.underline = b;
                     } else if (attr_val.is_null()) {
                         // Explicit null
                     } else {
@@ -342,8 +364,10 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     }
                 } else if (type == "string") {
                     if (attr_val.is_string() && !attr_val.get<std::string>().empty()) {
-                        if (attr_name == "baselineOffset") sd.baselineOffset = attr_val.get<std::string>();
-                        else if (attr_name == "fontFamily") sd.fontFamily = attr_val.get<std::string>();
+                        if (attr_name == "baselineOffset")
+                            sd.baselineOffset = attr_val.get<std::string>();
+                        else if (attr_name == "fontFamily")
+                            sd.fontFamily = attr_val.get<std::string>();
                     } else if (attr_val.is_null()) {
                         // Explicit null
                     } else {
@@ -355,15 +379,17 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
         }
     };
 
-    if (auto* ts = json::get(root, "textStyles")) parse_styles("textStyles", *ts);
-    else if (auto* s = json::get(root, "styles")) parse_styles("styles", *s);
+    if (auto *ts = json::get(root, "textStyles"))
+        parse_styles("textStyles", *ts);
+    else if (auto *s = json::get(root, "styles"))
+        parse_styles("styles", *s);
 
     // paragraphStyles
-    if (auto* ps_val = json::get(root, "paragraphStyles")) {
+    if (auto *ps_val = json::get(root, "paragraphStyles")) {
         if (!ps_val->is_object()) {
             problems.push_back("paragraphStyles must be a mapping");
         } else {
-            for (const auto& [decl_name, decl_obj] : ps_val->get<slimr::Json::object_t>()) {
+            for (const auto &[decl_name, decl_obj] : ps_val->get<slimr::Json::object_t>()) {
                 if (!isValidDeclarationName(decl_name)) {
                     problems.push_back("invalid paragraph style name \"" + decl_name + "\"");
                     continue;
@@ -373,8 +399,9 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     continue;
                 }
                 ParagraphDeclaration pd;
-                for (const auto& [prop, val] : decl_obj.get<slimr::Json::object_t>()) {
-                    if (val.is_null() && prop != "namedStyle") pd.resets.insert(prop);
+                for (const auto &[prop, val] : decl_obj.get<slimr::Json::object_t>()) {
+                    if (val.is_null() && prop != "namedStyle")
+                        pd.resets.insert(prop);
                     if (prop == "namedStyle") {
                         if (val.is_null()) {
                             problems.push_back("namedStyle cannot be null; use NORMAL_TEXT");
@@ -402,16 +429,20 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     } else if (prop == "direction") {
                         if (val.is_string()) {
                             std::string s = val.get<std::string>();
-                            if (s == "LEFT_TO_RIGHT" || s == "RIGHT_TO_LEFT") pd.direction = s;
-                            else problems.push_back("invalid direction: " + s);
+                            if (s == "LEFT_TO_RIGHT" || s == "RIGHT_TO_LEFT")
+                                pd.direction = s;
+                            else
+                                problems.push_back("invalid direction: " + s);
                         } else if (!val.is_null()) {
                             problems.push_back("invalid direction: " + slimr::to_json(val));
                         }
                     } else if (prop == "spacingMode") {
                         if (val.is_string()) {
                             std::string s = val.get<std::string>();
-                            if (s == "COLLAPSE_LISTS" || s == "NEVER_COLLAPSE") pd.spacingMode = s;
-                            else problems.push_back("invalid spacingMode: " + s);
+                            if (s == "COLLAPSE_LISTS" || s == "NEVER_COLLAPSE")
+                                pd.spacingMode = s;
+                            else
+                                problems.push_back("invalid spacingMode: " + s);
                         } else if (!val.is_null()) {
                             problems.push_back("invalid spacingMode: " + slimr::to_json(val));
                         }
@@ -425,46 +456,64 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                                prop == "keepWithNext" || prop == "pageBreakBefore") {
                         if (val.is_boolean()) {
                             bool b = val.get<bool>();
-                            if (prop == "avoidWidowAndOrphan") pd.avoidWidowAndOrphan = b;
-                            else if (prop == "keepLinesTogether") pd.keepLinesTogether = b;
-                            else if (prop == "keepWithNext") pd.keepWithNext = b;
-                            else if (prop == "pageBreakBefore") pd.pageBreakBefore = b;
+                            if (prop == "avoidWidowAndOrphan")
+                                pd.avoidWidowAndOrphan = b;
+                            else if (prop == "keepLinesTogether")
+                                pd.keepLinesTogether = b;
+                            else if (prop == "keepWithNext")
+                                pd.keepWithNext = b;
+                            else if (prop == "pageBreakBefore")
+                                pd.pageBreakBefore = b;
                         }
                     } else if (prop == "lineSpacing" || prop == "indentEnd" || prop == "indentFirstLine" ||
                                prop == "indentStart" || prop == "spaceAbove" || prop == "spaceBelow") {
                         if (val.is_number()) {
                             double num = val.as<double>();
-                            if (prop == "lineSpacing") pd.lineSpacing = num;
-                            else if (prop == "indentEnd") pd.indentEnd = num;
-                            else if (prop == "indentFirstLine") pd.indentFirstLine = num;
-                            else if (prop == "indentStart") pd.indentStart = num;
-                            else if (prop == "spaceAbove") pd.spaceAbove = num;
-                            else if (prop == "spaceBelow") pd.spaceBelow = num;
+                            if (prop == "lineSpacing")
+                                pd.lineSpacing = num;
+                            else if (prop == "indentEnd")
+                                pd.indentEnd = num;
+                            else if (prop == "indentFirstLine")
+                                pd.indentFirstLine = num;
+                            else if (prop == "indentStart")
+                                pd.indentStart = num;
+                            else if (prop == "spaceAbove")
+                                pd.spaceAbove = num;
+                            else if (prop == "spaceBelow")
+                                pd.spaceBelow = num;
                         } else if (!val.is_null()) {
                             problems.push_back(prop + " must be a finite valid point value");
                         }
                     } else if (prop.starts_with("border")) {
                         if (val.is_object()) {
                             ParagraphBorder pb;
-                            if (auto* col = json::get(val, "color")) {
+                            if (auto *col = json::get(val, "color")) {
                                 if (col->is_string() && isValidHexColor(col->get<std::string>())) {
                                     pb.color = uppercaseHex(col->get<std::string>());
                                 }
                             }
-                            if (auto* dash = json::get(val, "dashStyle")) {
-                                if (dash->is_string()) pb.dashStyle = dash->get<std::string>();
+                            if (auto *dash = json::get(val, "dashStyle")) {
+                                if (dash->is_string())
+                                    pb.dashStyle = dash->get<std::string>();
                             }
-                            if (auto* pad = json::get(val, "padding")) {
-                                if (pad->is_number()) pb.padding = pad->as<double>();
+                            if (auto *pad = json::get(val, "padding")) {
+                                if (pad->is_number())
+                                    pb.padding = pad->as<double>();
                             }
-                            if (auto* wid = json::get(val, "width")) {
-                                if (wid->is_number()) pb.width = wid->as<double>();
+                            if (auto *wid = json::get(val, "width")) {
+                                if (wid->is_number())
+                                    pb.width = wid->as<double>();
                             }
-                            if (prop == "borderBetween") pd.borderBetween = pb;
-                            else if (prop == "borderBottom") pd.borderBottom = pb;
-                            else if (prop == "borderLeft") pd.borderLeft = pb;
-                            else if (prop == "borderRight") pd.borderRight = pb;
-                            else if (prop == "borderTop") pd.borderTop = pb;
+                            if (prop == "borderBetween")
+                                pd.borderBetween = pb;
+                            else if (prop == "borderBottom")
+                                pd.borderBottom = pb;
+                            else if (prop == "borderLeft")
+                                pd.borderLeft = pb;
+                            else if (prop == "borderRight")
+                                pd.borderRight = pb;
+                            else if (prop == "borderTop")
+                                pd.borderTop = pb;
                         }
                     } else {
                         problems.push_back("unknown paragraph style field \"" + prop + "\"");
@@ -476,11 +525,11 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     }
 
     // cellStyles
-    if (auto* cs_val = json::get(root, "cellStyles")) {
+    if (auto *cs_val = json::get(root, "cellStyles")) {
         if (!cs_val->is_object()) {
             problems.push_back("cellStyles must be a mapping");
         } else {
-            for (const auto& [decl_name, decl_obj] : cs_val->get<slimr::Json::object_t>()) {
+            for (const auto &[decl_name, decl_obj] : cs_val->get<slimr::Json::object_t>()) {
                 if (!isValidDeclarationName(decl_name)) {
                     problems.push_back("invalid cell style name \"" + decl_name + "\"");
                     continue;
@@ -490,8 +539,9 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     continue;
                 }
                 CellDeclaration cd;
-                for (const auto& [prop, val] : decl_obj.get<slimr::Json::object_t>()) {
-                    if (val.is_null()) cd.resets.insert(prop);
+                for (const auto &[prop, val] : decl_obj.get<slimr::Json::object_t>()) {
+                    if (val.is_null())
+                        cd.resets.insert(prop);
                     if (prop == "backgroundColor") {
                         if (val.is_string() && isValidHexColor(val.get<std::string>())) {
                             cd.backgroundColor = uppercaseHex(val.get<std::string>());
@@ -501,35 +551,48 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     } else if (prop == "contentAlignment") {
                         if (val.is_string()) {
                             std::string s = val.get<std::string>();
-                            if (s == "TOP" || s == "MIDDLE" || s == "BOTTOM") cd.contentAlignment = s;
-                            else problems.push_back("contentAlignment must be TOP, MIDDLE, BOTTOM");
+                            if (s == "TOP" || s == "MIDDLE" || s == "BOTTOM")
+                                cd.contentAlignment = s;
+                            else
+                                problems.push_back("contentAlignment must be TOP, MIDDLE, BOTTOM");
                         }
                     } else if (prop.starts_with("padding")) {
                         if (val.is_number()) {
                             double pt = val.as<double>();
-                            if (prop == "paddingTop") cd.paddingTop = pt;
-                            else if (prop == "paddingRight") cd.paddingRight = pt;
-                            else if (prop == "paddingBottom") cd.paddingBottom = pt;
-                            else if (prop == "paddingLeft") cd.paddingLeft = pt;
+                            if (prop == "paddingTop")
+                                cd.paddingTop = pt;
+                            else if (prop == "paddingRight")
+                                cd.paddingRight = pt;
+                            else if (prop == "paddingBottom")
+                                cd.paddingBottom = pt;
+                            else if (prop == "paddingLeft")
+                                cd.paddingLeft = pt;
                         } else if (!val.is_null()) {
                             problems.push_back(prop + " must be a point value");
                         }
                     } else if (prop.starts_with("border")) {
                         if (val.is_object()) {
                             CellBorder cb;
-                            if (auto* col = json::get(val, "color")) {
-                                if (col->is_string() && isValidHexColor(col->get<std::string>())) cb.color = uppercaseHex(col->get<std::string>());
+                            if (auto *col = json::get(val, "color")) {
+                                if (col->is_string() && isValidHexColor(col->get<std::string>()))
+                                    cb.color = uppercaseHex(col->get<std::string>());
                             }
-                            if (auto* dash = json::get(val, "dashStyle")) {
-                                if (dash->is_string()) cb.dashStyle = dash->get<std::string>();
+                            if (auto *dash = json::get(val, "dashStyle")) {
+                                if (dash->is_string())
+                                    cb.dashStyle = dash->get<std::string>();
                             }
-                            if (auto* wid = json::get(val, "width")) {
-                                if (wid->is_number()) cb.width = wid->as<double>();
+                            if (auto *wid = json::get(val, "width")) {
+                                if (wid->is_number())
+                                    cb.width = wid->as<double>();
                             }
-                            if (prop == "borderTop") cd.borderTop = cb;
-                            else if (prop == "borderRight") cd.borderRight = cb;
-                            else if (prop == "borderBottom") cd.borderBottom = cb;
-                            else if (prop == "borderLeft") cd.borderLeft = cb;
+                            if (prop == "borderTop")
+                                cd.borderTop = cb;
+                            else if (prop == "borderRight")
+                                cd.borderRight = cb;
+                            else if (prop == "borderBottom")
+                                cd.borderBottom = cb;
+                            else if (prop == "borderLeft")
+                                cd.borderLeft = cb;
                         } else if (!val.is_null()) {
                             problems.push_back(prop + " must be { color: \"#RRGGBB\", width: <points>, dashStyle: SOLID | DOT | DASH }");
                         }
@@ -548,7 +611,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     return df;
 }
 
-inline ParagraphDeclaration paragraphDeclarationValidate(const slimr::Json& value) {
+inline ParagraphDeclaration paragraphDeclarationValidate(const slimr::Json &value) {
     slimr::Json root = slimr::json_obj();
     slimr::Json ps = slimr::json_obj();
     ps["decl"] = value;

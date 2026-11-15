@@ -9,17 +9,14 @@ inline PresetTable makeSyntheticTable() {
     PresetTable table;
     table["BULLET_CHECKBOX"] = {
         slimr::Json::object_t{{"glyphFormat", "%0"}, {"glyphSymbol", "☐"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}},
-        slimr::Json::object_t{{"glyphFormat", "%1"}, {"glyphSymbol", "☐"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}}
-    };
+        slimr::Json::object_t{{"glyphFormat", "%1"}, {"glyphSymbol", "☐"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}}};
     table["BULLET_DISC_CIRCLE_SQUARE"] = {
         slimr::Json::object_t{{"glyphFormat", "%0"}, {"glyphSymbol", "●"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}},
         slimr::Json::object_t{{"glyphFormat", "%1"}, {"glyphSymbol", "○"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}},
-        slimr::Json::object_t{{"glyphFormat", "%2"}, {"glyphSymbol", "■"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}}
-    };
+        slimr::Json::object_t{{"glyphFormat", "%2"}, {"glyphSymbol", "■"}, {"glyphType", "GLYPH_TYPE_UNSPECIFIED"}}};
     table["NUMBERED_DECIMAL_ALPHA_ROMAN"] = {
         slimr::Json::object_t{{"glyphFormat", "%0."}, {"glyphType", "DECIMAL"}},
-        slimr::Json::object_t{{"glyphFormat", "%1."}, {"glyphType", "ALPHA"}}
-    };
+        slimr::Json::object_t{{"glyphFormat", "%1."}, {"glyphType", "ALPHA"}}};
     return table;
 }
 
@@ -31,19 +28,15 @@ TEST_CASE("lists - infers preset from synthetic table") {
             {"glyphFormat", "%0"},
             {"glyphSymbol", "●"},
             {"glyphType", "GLYPH_TYPE_UNSPECIFIED"},
-            {"indentFirstLine", slimr::Json::object_t{}}
-        }
-    };
+            {"indentFirstLine", slimr::Json::object_t{}}}};
     CHECK(listPresetInfer(levels1, synTable) == "BULLET_DISC_CIRCLE_SQUARE");
 
     std::vector<RawListNestingLevel> levels2 = {
-        slimr::Json::object_t{{"glyphFormat", "%0."}, {"glyphType", "DECIMAL"}}
-    };
+        slimr::Json::object_t{{"glyphFormat", "%0."}, {"glyphType", "DECIMAL"}}};
     CHECK(listPresetInfer(levels2, synTable) == "NUMBERED_DECIMAL_ALPHA_ROMAN");
 
     std::vector<RawListNestingLevel> levels3 = {
-        slimr::Json::object_t{{"glyphFormat", "%0"}, {"glyphSymbol", "☃"}}
-    };
+        slimr::Json::object_t{{"glyphFormat", "%0"}, {"glyphSymbol", "☃"}}};
     CHECK(listPresetInfer(levels3, synTable) == std::nullopt);
 }
 
@@ -56,9 +49,7 @@ TEST_CASE("lists - ignores indents and textStyle when matching a preset") {
             {"glyphSymbol", "●"},
             {"glyphType", "GLYPH_TYPE_UNSPECIFIED"},
             {"indentFirstLine", slimr::Json::object_t{{"magnitude", static_cast<int64_t>(99)}}},
-            {"textStyle", slimr::Json::object_t{{"bold", true}}}
-        }
-    };
+            {"textStyle", slimr::Json::object_t{{"bold", true}}}}};
     CHECK(listPresetInfer(levels, synTable) == "BULLET_DISC_CIRCLE_SQUARE");
 }
 

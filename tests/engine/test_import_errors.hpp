@@ -15,9 +15,9 @@ namespace gdocsmith::engine::test {
 namespace import_errors {
 
 // `declarations` seeds a styled paragraph so the export carries paragraphStyles frontmatter lines
-inline void seedTwoTabs(RemoteImportFixture& fixture, bool declarations = false) {
+inline void seedTwoTabs(RemoteImportFixture &fixture, bool declarations = false) {
     const auto blank = emulator::blank_doc_template("Synthetic", "synthetic_doc");
-    const auto& blankTab = blank["tabs"][0]["documentTab"];
+    const auto &blankTab = blank["tabs"][0]["documentTab"];
     model::TabSpec first{.tabId = "t.0", .title = "First Tab"};
     if (declarations) {
         model::ParagraphSpec styled{.content = {std::string("Styled seed")}};
@@ -30,7 +30,7 @@ inline void seedTwoTabs(RemoteImportFixture& fixture, bool declarations = false)
         .tabs = {first, model::TabSpec{.tabId = "t.1", .title = "Second Tab"}},
     });
     for (std::size_t i = 0; i < 2; ++i) {
-        auto& docTab = json["tabs"][i]["documentTab"];
+        auto &docTab = json["tabs"][i]["documentTab"];
         docTab["documentStyle"] = blankTab["documentStyle"];
         docTab["namedStyles"] = blankTab["namedStyles"];
     }
@@ -39,40 +39,43 @@ inline void seedTwoTabs(RemoteImportFixture& fixture, bool declarations = false)
 }
 
 // 1-based lines of the full saved file (frontmatter included) whose text matches
-inline std::vector<int> fileLinesOf(const std::string& text, const std::function<bool(const std::string&)>& match) {
+inline std::vector<int> fileLinesOf(const std::string &text, const std::function<bool(const std::string &)> &match) {
     std::vector<int> lines;
     std::istringstream stream(text);
     std::string line;
     int number = 0;
     while (std::getline(stream, line)) {
         ++number;
-        if (match(line)) lines.push_back(number);
+        if (match(line))
+            lines.push_back(number);
     }
     return lines;
 }
 
-inline int fileLineOf(const std::string& text, const std::function<bool(const std::string&)>& match) {
+inline int fileLineOf(const std::string &text, const std::function<bool(const std::string &)> &match) {
     const auto lines = fileLinesOf(text, match);
     REQUIRE(lines.size() == 1);
     return lines.front();
 }
 
 // Lines through the closing frontmatter delimiter
-inline int fmLinesOf(const std::string& text) {
+inline int fmLinesOf(const std::string &text) {
     std::istringstream stream(text);
     std::string line;
     int number = 0;
     int fences = 0;
     while (fences < 2 && std::getline(stream, line)) {
         ++number;
-        if (number == 1 && line != "---") return 0;
-        if (line == "---") ++fences;
+        if (number == 1 && line != "---")
+            return 0;
+        if (line == "---")
+            ++fences;
     }
     return fences == 2 ? number : 0;
 }
 
 inline auto startsWith(std::string prefix) {
-    return [prefix = std::move(prefix)](const std::string& line) { return line.starts_with(prefix); };
+    return [prefix = std::move(prefix)](const std::string &line) { return line.starts_with(prefix); };
 }
 
 struct Variant {
@@ -89,17 +92,16 @@ struct Outcome {
     int uploads = 0;
 };
 
-inline Outcome importWith(const Variant& variant) {
+inline Outcome importWith(const Variant &variant) {
     RemoteImportFixture fixture;
     seedTwoTabs(fixture, variant.declarations);
     int uploads = 0;
-    fixture.remote.imagesUpload = [&](const std::string&, const std::vector<DocxImage>&) {
+    fixture.remote.imagesUpload = [&](const std::string &, const std::vector<DocxImage> &) {
         ++uploads;
         return ImagesUploadResult{};
     };
     const auto canonical = model::docModelParse(fixture.backend.get_doc("synthetic_doc").json, {.docId = "synthetic_doc"});
-    const auto initial = exportModel(canonical, {}, fixture.remote, variant.sourceEnvelope
-        ? ExportOptions{} : ExportOptions{.sourceVersion = std::nullopt});
+    const auto initial = exportModel(canonical, {}, fixture.remote, variant.sourceEnvelope ? ExportOptions{} : ExportOptions{.sourceVersion = std::nullopt});
     fixture.inputPath = initial.exportPath;
     auto file = variant.sourceEnvelope ? lens::documentFileParse(inputFileRead(initial.exportPath).text) : fixture.file();
     REQUIRE(file.tabs.size() == 2);
@@ -115,14 +117,14 @@ inline Outcome importWith(const Variant& variant) {
     return outcome;
 }
 
-inline std::string markerImage(const std::string& src) { return "\n\nBefore marker :image{src=" + src + "}\n"; }
+inline std::string markerImage(const std::string &src) { return "\n\nBefore marker :image{src=" + src + "}\n"; }
 
-inline bool localized(const ResultError& error, int batches, int uploads, int expectedLine) {
+inline bool localized(const ResultError &error, int batches, int uploads, int expectedLine) {
     return error.code == "anchorNotFound" && error.tab == std::optional<std::string>("Second Tab") &&
-        error.line == std::optional<int>(expectedLine) && batches == 0 && uploads == 0;
+           error.line == std::optional<int>(expectedLine) && batches == 0 && uploads == 0;
 }
 
-inline const ResultError& onlyError(const Outcome& outcome) {
+inline const ResultError &onlyError(const Outcome &outcome) {
     INFO(outcome.result.summary);
     REQUIRE(outcome.result.errors);
     REQUIRE(outcome.result.errors->size() == 1);
@@ -136,13 +138,13 @@ TEST_CASE("import errors - image refusals report the tab and full-file line of t
         {"gdoc:synthetic_source/unknown", "no single image"},
         {"gdoc:synthetic_missing/unknown", "document synthetic_missing couldn't be read"},
     };
-    for (const auto& [src, message] : cases) {
+    for (const auto &[src, message] : cases) {
         SUBCASE(src.c_str()) {
             const auto outcome = import_errors::importWith({.secondTabExtra = import_errors::markerImage(src)});
-            const auto& result = outcome.result;
+            const auto &result = outcome.result;
             CHECK(result.status == "refused");
             CHECK(result.writeState == "none");
-            const auto& error = import_errors::onlyError(outcome);
+            const auto &error = import_errors::onlyError(outcome);
             CHECK(error.code == "anchorNotFound");
             CHECK(error.message.find(message) != std::string::npos);
             CHECK(error.phase == std::optional<std::string>("planning"));
@@ -157,10 +159,9 @@ TEST_CASE("import errors - image refusals report the tab and full-file line of t
 }
 
 TEST_CASE("import errors - image refusal in a multi-line paragraph reports its first line") {
-    const auto outcome = import_errors::importWith({
-        .secondTabExtra = "\n\nLead line\nsecond :image{src=gdoc:synthetic_source/unknown}\n"});
-    const auto& error = import_errors::onlyError(outcome);
-    const auto lead = import_errors::fileLineOf(outcome.text, [](const auto& line) { return line == "Lead line"; });
+    const auto outcome = import_errors::importWith({.secondTabExtra = "\n\nLead line\nsecond :image{src=gdoc:synthetic_source/unknown}\n"});
+    const auto &error = import_errors::onlyError(outcome);
+    const auto lead = import_errors::fileLineOf(outcome.text, [](const auto &line) { return line == "Lead line"; });
     const auto second = import_errors::fileLineOf(outcome.text, import_errors::startsWith("second :image"));
     CHECK(second == lead + 1);
     CHECK(import_errors::localized(error, outcome.batches, outcome.uploads, lead));
@@ -172,12 +173,11 @@ TEST_CASE("import errors - image refusal line follows frontmatter and earlier-ta
     std::vector<int> reported;
     std::vector<int> frontmatter;
     for (const bool declarations : {false, true}) {
-        for (const auto& extra : {std::string(), longer}) {
+        for (const auto &extra : {std::string(), longer}) {
             CAPTURE(declarations);
             CAPTURE(extra.size());
-            const auto outcome = import_errors::importWith({
-                .declarations = declarations, .firstTabExtra = extra, .secondTabExtra = image});
-            const auto& error = import_errors::onlyError(outcome);
+            const auto outcome = import_errors::importWith({.declarations = declarations, .firstTabExtra = extra, .secondTabExtra = image});
+            const auto &error = import_errors::onlyError(outcome);
             const auto blockLine = import_errors::fileLineOf(outcome.text, import_errors::startsWith("Before marker"));
             CHECK(import_errors::localized(error, outcome.batches, outcome.uploads, blockLine));
             reported.push_back(error.line.value_or(0));
@@ -193,10 +193,9 @@ TEST_CASE("import errors - image refusal line follows frontmatter and earlier-ta
 }
 
 TEST_CASE("import errors - image refusal line with an opening section envelope") {
-    const auto outcome = import_errors::importWith({
-        .secondTabExtra = import_errors::markerImage("gdoc:synthetic_source/unknown"), .sourceEnvelope = true});
+    const auto outcome = import_errors::importWith({.secondTabExtra = import_errors::markerImage("gdoc:synthetic_source/unknown"), .sourceEnvelope = true});
     CHECK(import_errors::fileLinesOf(outcome.text, import_errors::startsWith("::section{")).size() == 2);
-    const auto& error = import_errors::onlyError(outcome);
+    const auto &error = import_errors::onlyError(outcome);
     const auto blockLine = import_errors::fileLineOf(outcome.text, import_errors::startsWith("Before marker"));
     CHECK(import_errors::localized(error, outcome.batches, outcome.uploads, blockLine));
 }
@@ -222,7 +221,7 @@ TEST_CASE("import errors - tab and comment header problems report full-file line
         REQUIRE(!result.errors->empty());
         REQUIRE(lines.size() == 2);
         REQUIRE(fmLines > 0);
-        const auto& error = result.errors->front();
+        const auto &error = result.errors->front();
         CHECK(error.code == "tabTitleTaken");
         CHECK(error.tab == std::optional<std::string>("first tab"));
         CHECK(error.line == std::optional<int>(lines[1]));
@@ -241,7 +240,7 @@ TEST_CASE("import errors - tab and comment header problems report full-file line
         REQUIRE(result.errors);
         REQUIRE(result.errors->size() == 1);
         REQUIRE(fmLines > 0);
-        const auto& error = result.errors->front();
+        const auto &error = result.errors->front();
         CHECK(error.message.find("a new comment needs text") != std::string::npos);
         CHECK(error.line == std::optional<int>(line));
         CHECK(error.line != std::optional<int>(line - fmLines));

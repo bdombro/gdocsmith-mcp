@@ -1,11 +1,11 @@
 #pragma once
 
+#include "directives.hpp"
+#include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <optional>
-#include <sstream>
-#include "directives.hpp"
 
 namespace gdocsmith::lens {
 
@@ -17,7 +17,7 @@ struct CommentReply {
     int line{1};
     std::string text;
 
-    bool operator==(const CommentReply& other) const = default;
+    bool operator==(const CommentReply &other) const = default;
 };
 
 struct CommentBlock {
@@ -33,7 +33,7 @@ struct CommentBlock {
     int line{1};
     std::vector<CommentReply> replies;
 
-    bool operator==(const CommentBlock& other) const = default;
+    bool operator==(const CommentBlock &other) const = default;
 };
 
 inline std::string commentTextEscape(std::string_view text) {
@@ -41,43 +41,64 @@ inline std::string commentTextEscape(std::string_view text) {
     std::string out, line;
     while (std::getline(input, line)) {
         const auto first = line.find_first_not_of('\\');
-        if (first != std::string::npos && line.substr(first).starts_with("::")) out += '\\';
+        if (first != std::string::npos && line.substr(first).starts_with("::"))
+            out += '\\';
         out += line + "\n";
     }
     return out;
 }
 
-inline std::string commentBlockRender(const CommentBlock& cb, bool legacy = true) {
+inline std::string commentBlockRender(const CommentBlock &cb, bool legacy = true) {
     if (!legacy) {
         DirectiveAttrs attrs;
-        if (!cb.id.empty()) attrs.values.emplace_back("id", cb.id);
-        if (cb.quote) attrs.values.emplace_back("quote", *cb.quote);
-        if (cb.author) attrs.values.emplace_back("author", *cb.author);
-        if (cb.resolved) attrs.flags.push_back("resolved");
-        if (cb.orphaned) attrs.flags.push_back("orphaned");
-        if (cb.ambiguous) attrs.flags.push_back("ambiguous");
-        if (cb.mine) attrs.flags.push_back("mine");
-        if (cb.isDelete) attrs.flags.push_back("delete");
+        if (!cb.id.empty())
+            attrs.values.emplace_back("id", cb.id);
+        if (cb.quote)
+            attrs.values.emplace_back("quote", *cb.quote);
+        if (cb.author)
+            attrs.values.emplace_back("author", *cb.author);
+        if (cb.resolved)
+            attrs.flags.push_back("resolved");
+        if (cb.orphaned)
+            attrs.flags.push_back("orphaned");
+        if (cb.ambiguous)
+            attrs.flags.push_back("ambiguous");
+        if (cb.mine)
+            attrs.flags.push_back("mine");
+        if (cb.isDelete)
+            attrs.flags.push_back("delete");
         auto out = "::comment" + directiveAttrsRender(attrs) + "\n" + commentTextEscape(cb.text);
-        if (cb.text.empty()) out += "\n";
-        for (const auto& reply : cb.replies) {
+        if (cb.text.empty())
+            out += "\n";
+        for (const auto &reply : cb.replies) {
             DirectiveAttrs replyAttrs;
-            if (reply.id) replyAttrs.values.emplace_back("id", *reply.id);
-            if (reply.author) replyAttrs.values.emplace_back("author", *reply.author);
-            if (reply.mine) replyAttrs.flags.push_back("mine");
-            if (reply.isDelete) replyAttrs.flags.push_back("delete");
+            if (reply.id)
+                replyAttrs.values.emplace_back("id", *reply.id);
+            if (reply.author)
+                replyAttrs.values.emplace_back("author", *reply.author);
+            if (reply.mine)
+                replyAttrs.flags.push_back("mine");
+            if (reply.isDelete)
+                replyAttrs.flags.push_back("delete");
             out += "::reply" + directiveAttrsRender(replyAttrs) + "\n" + commentTextEscape(reply.text);
-            if (reply.text.empty()) out += "\n";
+            if (reply.text.empty())
+                out += "\n";
         }
         return out;
     }
     std::string out = ":::comment{id=" + directiveValueRender(cb.id);
-    if (cb.author) out += " author=" + directiveValueRender(*cb.author);
-    if (cb.resolved) out += " resolved";
-    if (cb.orphaned) out += " orphaned";
-    if (cb.ambiguous) out += " ambiguous";
-    if (cb.mine) out += " mine";
-    if (cb.isDelete) out += " delete";
+    if (cb.author)
+        out += " author=" + directiveValueRender(*cb.author);
+    if (cb.resolved)
+        out += " resolved";
+    if (cb.orphaned)
+        out += " orphaned";
+    if (cb.ambiguous)
+        out += " ambiguous";
+    if (cb.mine)
+        out += " mine";
+    if (cb.isDelete)
+        out += " delete";
     out += "}\n";
 
     if (cb.quote && !cb.quote->empty()) {
@@ -90,9 +111,10 @@ inline std::string commentBlockRender(const CommentBlock& cb, bool legacy = true
     }
 
     out += cb.text;
-    if (!cb.text.ends_with('\n')) out += "\n";
+    if (!cb.text.ends_with('\n'))
+        out += "\n";
 
-    for (const auto& rep : cb.replies) {
+    for (const auto &rep : cb.replies) {
         out += "\n::reply";
         bool has_attrs = rep.author.has_value() || rep.id.has_value() || rep.mine || rep.isDelete;
         if (has_attrs) {
@@ -103,23 +125,27 @@ inline std::string commentBlockRender(const CommentBlock& cb, bool legacy = true
                 first = false;
             }
             if (rep.id) {
-                if (!first) out += " ";
+                if (!first)
+                    out += " ";
                 out += "id=" + directiveValueRender(*rep.id);
                 first = false;
             }
             if (rep.mine) {
-                if (!first) out += " ";
+                if (!first)
+                    out += " ";
                 out += "mine";
                 first = false;
             }
             if (rep.isDelete) {
-                if (!first) out += " ";
+                if (!first)
+                    out += " ";
                 out += "delete";
             }
             out += "}";
         }
         out += "\n" + rep.text;
-        if (!rep.text.ends_with('\n')) out += "\n";
+        if (!rep.text.ends_with('\n'))
+            out += "\n";
     }
 
     out += ":::\n";

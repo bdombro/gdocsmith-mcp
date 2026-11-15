@@ -10,7 +10,7 @@
 
 namespace gdocsmith::reconcile::test {
 
-inline JsonObject containerDoc(const std::vector<BlockSpec>& blocks) {
+inline JsonObject containerDoc(const std::vector<BlockSpec> &blocks) {
     DocSpec spec;
     TabSpec tspec;
     tspec.blocks = blocks;
@@ -19,14 +19,14 @@ inline JsonObject containerDoc(const std::vector<BlockSpec>& blocks) {
 }
 
 TEST_CASE("containerReconcile - no change produces no requests") {
-    auto r = differentialRun(containerDoc({paraSpec({"a"})}), [](EditTarget&, const std::vector<std::string>&) {});
+    auto r = differentialRun(containerDoc({paraSpec({"a"})}), [](EditTarget &, const std::vector<std::string> &) {});
     CHECK(r.requests.empty());
     CHECK(r.compare.diffs.empty());
 }
 
 TEST_CASE("containerReconcile - inserting a paragraph between kept paragraphs") {
     auto json = containerDoc({paraSpec({"a"}), paraSpec({"b"})});
-    auto r = differentialRun(json, [](EditTarget& t, const std::vector<std::string>&) {
+    auto r = differentialRun(json, [](EditTarget &t, const std::vector<std::string> &) {
         EditParagraphSpec eps;
         eps.syms = {SymSpec{.ch = "x"}};
         paragraphsInsert(t, ContainerRef{.kind = "body"}, 1, {eps});
@@ -38,7 +38,7 @@ TEST_CASE("containerReconcile - inserting a paragraph between kept paragraphs") 
 
 TEST_CASE("containerReconcile - deleting a middle paragraph") {
     auto json = containerDoc({paraSpec({"a"}), paraSpec({"b"}), paraSpec({"c"})});
-    auto r = differentialRun(json, [](EditTarget& t, const std::vector<std::string>& k) {
+    auto r = differentialRun(json, [](EditTarget &t, const std::vector<std::string> &k) {
         blocksDelete(t, {k[1]});
     });
     CHECK(r.compare.diffs.empty());
@@ -48,7 +48,7 @@ TEST_CASE("containerReconcile - deleting a middle paragraph") {
 
 TEST_CASE("containerReconcile - inserting a new table after a kept paragraph") {
     auto json = containerDoc({paraSpec({"a"}), paraSpec({"b"})});
-    auto r = differentialRun(json, [](EditTarget& t, const std::vector<std::string>&) {
+    auto r = differentialRun(json, [](EditTarget &t, const std::vector<std::string> &) {
         EditTableSpec spec;
         spec.rows = {{{SymSpec{.ch = "x"}}, {SymSpec{.ch = "y"}}}};
         tableCreate(t, 1, spec);
@@ -60,7 +60,7 @@ TEST_CASE("containerReconcile - inserting a new table after a kept paragraph") {
 
 TEST_CASE("containerReconcile - inserting a section break") {
     auto json = containerDoc({paraSpec({"a"}), paraSpec({"b"})});
-    auto r = differentialRun(json, [](EditTarget& t, const std::vector<std::string>&) {
+    auto r = differentialRun(json, [](EditTarget &t, const std::vector<std::string> &) {
         sectionBreakInsert(t, 1, "CONTINUOUS");
     });
     CHECK(r.compare.diffs.empty());
@@ -70,7 +70,7 @@ TEST_CASE("containerReconcile - inserting a section break") {
 
 TEST_CASE("containerReconcile - inserting a page break") {
     auto json = containerDoc({paraSpec({"a"}), paraSpec({"b"})});
-    auto r = differentialRun(json, [](EditTarget& t, const std::vector<std::string>&) {
+    auto r = differentialRun(json, [](EditTarget &t, const std::vector<std::string> &) {
         pageBreakParagraphInsert(t, 1);
     });
     CHECK(r.compare.diffs.empty());
@@ -90,7 +90,7 @@ TEST_CASE("containerReconcile - a block that moved is rejected as a delete plus 
     bool threw = false;
     try {
         containerReconcile(original.tabs[0].blocks, reordered, ctx);
-    } catch (const CoreError& err) {
+    } catch (const CoreError &err) {
         threw = true;
         CHECK(err.code == std::string("internal"));
         CHECK(std::string(err.what()).find("moved") != std::string::npos);

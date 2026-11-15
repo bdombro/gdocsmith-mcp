@@ -21,7 +21,7 @@ inline auto rngCreate(uint32_t seed) {
     };
 }
 
-inline int lcsLength(const std::vector<std::string>& a, const std::vector<std::string>& b) {
+inline int lcsLength(const std::vector<std::string> &a, const std::vector<std::string> &b) {
     int n = static_cast<int>(a.size());
     int m = static_cast<int>(b.size());
     std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1, 0));
@@ -35,13 +35,15 @@ inline int lcsLength(const std::vector<std::string>& a, const std::vector<std::s
 
 inline uint32_t fnv1a32(std::string_view s) {
     uint32_t h = 0x811c9dc5u;
-    for (char c : s) h = (h ^ static_cast<uint32_t>(static_cast<unsigned char>(c))) * 0x01000193u;
+    for (char c : s)
+        h = (h ^ static_cast<uint32_t>(static_cast<unsigned char>(c))) * 0x01000193u;
     return h;
 }
 
 inline std::vector<std::string> to_chars(std::string_view s) {
     std::vector<std::string> res;
-    for (char c : s) res.push_back(std::string(1, c));
+    for (char c : s)
+        res.push_back(std::string(1, c));
     return res;
 }
 
@@ -74,16 +76,21 @@ TEST_CASE("diffHunks - random inputs: hunks reproduce b with a minimal number of
         // Original draw order: a length, a chars, b length, b chars
         int a_len = static_cast<int>(rng() * 14);
         std::vector<std::string> a;
-        for (int i = 0; i < a_len; ++i) a.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
+        for (int i = 0; i < a_len; ++i)
+            a.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
         int b_len = static_cast<int>(rng() * 14);
         std::vector<std::string> b;
-        for (int i = 0; i < b_len; ++i) b.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
+        for (int i = 0; i < b_len; ++i)
+            b.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
 
         std::string pair;
-        for (const auto& c : a) pair += c;
+        for (const auto &c : a)
+            pair += c;
         pair += "|";
-        for (const auto& c : b) pair += c;
-        if (first_pairs.size() < 3) first_pairs.push_back(pair);
+        for (const auto &c : b)
+            pair += c;
+        if (first_pairs.size() < 3)
+            first_pairs.push_back(pair);
         sample += pair + "\n";
         ++trials;
 
@@ -92,7 +99,7 @@ TEST_CASE("diffHunks - random inputs: hunks reproduce b with a minimal number of
         CHECK(applied == b);
 
         int edits = 0;
-        for (const auto& h : hunks) {
+        for (const auto &h : hunks) {
             edits += (h.aEnd - h.aStart) + (h.bEnd - h.bStart);
         }
         CHECK(edits == a_len + b_len - 2 * lcsLength(a, b));
@@ -109,7 +116,7 @@ TEST_CASE("diffHunks - custom equality") {
     using namespace gdocsmith::diff;
     std::vector<std::string> a = {"A"};
     std::vector<std::string> b = {"a"};
-    auto eq = [](const std::string& x, const std::string& y) {
+    auto eq = [](const std::string &x, const std::string &y) {
         return std::tolower(static_cast<unsigned char>(x[0])) == std::tolower(static_cast<unsigned char>(y[0]));
     };
     auto hunks = diffHunks(a, b, eq);
@@ -127,16 +134,21 @@ TEST_CASE("lcsPairs - pairs form a longest common subsequence") {
         // Original draw order: a length, a chars, b length, b chars
         int a_len = static_cast<int>(rng() * 10);
         std::vector<std::string> a;
-        for (int i = 0; i < a_len; ++i) a.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
+        for (int i = 0; i < a_len; ++i)
+            a.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
         int b_len = static_cast<int>(rng() * 10);
         std::vector<std::string> b;
-        for (int i = 0; i < b_len; ++i) b.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
+        for (int i = 0; i < b_len; ++i)
+            b.push_back(std::string(1, alphabet[static_cast<int>(rng() * 3)]));
 
         std::string pair;
-        for (const auto& c : a) pair += c;
+        for (const auto &c : a)
+            pair += c;
         pair += "|";
-        for (const auto& c : b) pair += c;
-        if (first_pairs.size() < 3) first_pairs.push_back(pair);
+        for (const auto &c : b)
+            pair += c;
+        if (first_pairs.size() < 3)
+            first_pairs.push_back(pair);
         sample += pair + "\n";
         ++trials;
 
@@ -160,19 +172,22 @@ TEST_CASE("lcsPairs - pairs form a longest common subsequence") {
 TEST_CASE("Myers samples - original input identity and reordered-draw control") {
     auto raw = rngCreate(7);
     std::vector<uint32_t> first_raw;
-    for (int i = 0; i < 3; ++i) first_raw.push_back(static_cast<uint32_t>(raw() * 4294967296.0));
+    for (int i = 0; i < 3; ++i)
+        first_raw.push_back(static_cast<uint32_t>(raw() * 4294967296.0));
     CHECK(first_raw == std::vector<uint32_t>{50271532u, 266108690u, 4195786334u});
 
     // Old order (both lengths first) must not reproduce the original inputs
-    auto reordered = [](uint32_t seed, int trials, int max_len, const std::string& alphabet) {
+    auto reordered = [](uint32_t seed, int trials, int max_len, const std::string &alphabet) {
         auto rng = rngCreate(seed);
         std::string sample;
         for (int t = 0; t < trials; ++t) {
             int a_len = static_cast<int>(rng() * max_len);
             int b_len = static_cast<int>(rng() * max_len);
-            for (int i = 0; i < a_len; ++i) sample += alphabet[static_cast<int>(rng() * 3)];
+            for (int i = 0; i < a_len; ++i)
+                sample += alphabet[static_cast<int>(rng() * 3)];
             sample += "|";
-            for (int i = 0; i < b_len; ++i) sample += alphabet[static_cast<int>(rng() * 3)];
+            for (int i = 0; i < b_len; ++i)
+                sample += alphabet[static_cast<int>(rng() * 3)];
             sample += "\n";
         }
         return fnv1a32(sample);
@@ -189,7 +204,7 @@ TEST_CASE("Myers samples - nonminimal reconstructing script fails minimality") {
     CHECK(hunksApply(a, b, hunks) == b);
 
     int edits = 0;
-    for (const auto& h : hunks) {
+    for (const auto &h : hunks) {
         edits += (h.aEnd - h.aStart) + (h.bEnd - h.bStart);
     }
     int a_len = static_cast<int>(a.size());

@@ -18,13 +18,11 @@ TEST_CASE("RangeCreate equality and fields") {
     RangeCreate rc1{
         .start = {.key = "p1", .offset = 0},
         .end = {.key = "p1", .offset = 10},
-        .name = "my_range"
-    };
+        .name = "my_range"};
     RangeCreate rc2{
         .start = {.key = "p1", .offset = 0},
         .end = {.key = "p1", .offset = 10},
-        .name = "my_range"
-    };
+        .name = "my_range"};
     CHECK(rc1 == rc2);
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/render.hpp"
 #include "lens/parse.hpp"
+#include "lens/render.hpp"
 #include "test.hpp"
 
 namespace gdocsmith::lens::test {
@@ -97,7 +97,7 @@ TEST_CASE("rich span marks and literal Markdown survive render and parse") {
 
 TEST_CASE("multiple tables retain independent referenced cell contents") {
     Projection projection;
-    for (const auto& text : {"first", "second"}) {
+    for (const auto &text : {"first", "second"}) {
         ProjSpan span;
         span.text = text;
         ProjBlock cell;

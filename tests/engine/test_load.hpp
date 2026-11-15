@@ -8,7 +8,7 @@ namespace gdocsmith::engine::test {
 
 struct FakeClient {
     std::map<std::string, slimr::Json> docs;
-    slimr::Json getDocument(const std::string& id) {
+    slimr::Json getDocument(const std::string &id) {
         return docs[id];
     }
 };

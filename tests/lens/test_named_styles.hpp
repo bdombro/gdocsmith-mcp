@@ -7,12 +7,13 @@
 namespace gdocsmith::lens::test {
 
 TEST_CASE("defaultNamedStyles covers all 9 named styles") {
-    const auto& defs = defaultNamedStyles();
+    const auto &defs = defaultNamedStyles();
     CHECK(defs.size() == 9u);
     std::vector<std::string> types;
-    for (const auto& d : defs) types.push_back(d.namedStyleType);
+    for (const auto &d : defs)
+        types.push_back(d.namedStyleType);
 
-    for (const auto& expected : NAMED_STYLE_TYPES) {
+    for (const auto &expected : NAMED_STYLE_TYPES) {
         CHECK(std::find(types.begin(), types.end(), expected) != types.end());
     }
 }
@@ -32,7 +33,7 @@ TEST_CASE("namedStyleSetMerge overlays properties") {
 
     auto merged = namedStyleSetMerge(base, overlay);
     CHECK(merged.contains("NORMAL_TEXT"));
-    const auto& m = merged["NORMAL_TEXT"];
+    const auto &m = merged["NORMAL_TEXT"];
     CHECK(m.text.fontSize == std::optional<double>(14.0));
     CHECK(m.text.fontFamily == std::optional<std::string>("Arial"));
     CHECK(m.text.bold == std::optional<bool>(true));

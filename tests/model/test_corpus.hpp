@@ -30,17 +30,17 @@ struct CorpusRunResult {
     std::vector<std::string> errors;
 };
 
-inline bool corpusRequireNonEmpty(const CorpusRunResult& res) {
+inline bool corpusRequireNonEmpty(const CorpusRunResult &res) {
     return res.state == CorpusState::nonempty &&
            res.docs_executed > 0 &&
            res.tabs_executed > 0 &&
            res.errors.empty();
 }
 
-inline std::vector<Range> tabRawRangesCollect(const JsonObject& dt) {
+inline std::vector<Range> tabRawRangesCollect(const JsonObject &dt) {
     std::vector<Range> ranges;
-    auto walk = [&](auto& self, const slimr::Json::array_t& content) -> void {
-        for (const auto& raw : content) {
+    auto walk = [&](auto &self, const slimr::Json::array_t &content) -> void {
+        for (const auto &raw : content) {
             if (raw.contains("startIndex") && raw.contains("endIndex")) {
                 int s = raw["startIndex"].holds<int64_t>()
                             ? static_cast<int>(raw["startIndex"].get<int64_t>())
@@ -52,7 +52,7 @@ inline std::vector<Range> tabRawRangesCollect(const JsonObject& dt) {
             }
             if (raw.contains("table") && raw["table"].contains("tableRows") &&
                 raw["table"]["tableRows"].holds<slimr::Json::array_t>()) {
-                for (const auto& row : raw["table"]["tableRows"].get<slimr::Json::array_t>()) {
+                for (const auto &row : raw["table"]["tableRows"].get<slimr::Json::array_t>()) {
                     if (row.contains("startIndex") && row.contains("endIndex")) {
                         int s = row["startIndex"].holds<int64_t>()
                                     ? static_cast<int>(row["startIndex"].get<int64_t>())
@@ -63,7 +63,7 @@ inline std::vector<Range> tabRawRangesCollect(const JsonObject& dt) {
                         ranges.push_back(Range{.end = e, .start = s});
                     }
                     if (row.contains("tableCells") && row["tableCells"].holds<slimr::Json::array_t>()) {
-                        for (const auto& cell : row["tableCells"].get<slimr::Json::array_t>()) {
+                        for (const auto &cell : row["tableCells"].get<slimr::Json::array_t>()) {
                             if (cell.contains("startIndex") && cell.contains("endIndex")) {
                                 int s = cell["startIndex"].holds<int64_t>()
                                             ? static_cast<int>(cell["startIndex"].get<int64_t>())
@@ -89,25 +89,25 @@ inline std::vector<Range> tabRawRangesCollect(const JsonObject& dt) {
     return ranges;
 }
 
-inline void collectRawTabBodiesDfs(const JsonObject& tabJson, std::vector<const JsonObject*>& out) {
+inline void collectRawTabBodiesDfs(const JsonObject &tabJson, std::vector<const JsonObject *> &out) {
     if (tabJson.contains("documentTab") && tabJson["documentTab"].is_object()) {
         out.push_back(&tabJson["documentTab"]);
     } else {
         out.push_back(&tabJson);
     }
     if (tabJson.contains("childTabs") && tabJson["childTabs"].holds<slimr::Json::array_t>()) {
-        for (const auto& child : tabJson["childTabs"].get<slimr::Json::array_t>()) {
+        for (const auto &child : tabJson["childTabs"].get<slimr::Json::array_t>()) {
             collectRawTabBodiesDfs(child, out);
         }
     }
 }
 
-inline std::vector<const JsonObject*> docRawTabBodiesDfs(const JsonObject& docJson) {
-    const auto& raw = rawDocumentOf(docJson);
-    std::vector<const JsonObject*> out;
+inline std::vector<const JsonObject *> docRawTabBodiesDfs(const JsonObject &docJson) {
+    const auto &raw = rawDocumentOf(docJson);
+    std::vector<const JsonObject *> out;
     if (raw.contains("tabs") && raw["tabs"].holds<slimr::Json::array_t>() &&
         !raw["tabs"].get<slimr::Json::array_t>().empty()) {
-        for (const auto& tabJson : raw["tabs"].get<slimr::Json::array_t>()) {
+        for (const auto &tabJson : raw["tabs"].get<slimr::Json::array_t>()) {
             collectRawTabBodiesDfs(tabJson, out);
         }
     } else {
@@ -116,20 +116,20 @@ inline std::vector<const JsonObject*> docRawTabBodiesDfs(const JsonObject& docJs
     return out;
 }
 
-inline bool isGoogleDocSnapshot(const JsonObject& json) {
-    const JsonObject* raw = &json;
+inline bool isGoogleDocSnapshot(const JsonObject &json) {
+    const JsonObject *raw = &json;
     if (json.contains("document") && json["document"].is_object()) {
         raw = &json["document"];
     }
     if (raw->contains("tabs") && (*raw)["tabs"].holds<slimr::Json::array_t>() &&
         !(*raw)["tabs"].get<slimr::Json::array_t>().empty()) {
-        const auto& first = (*raw)["tabs"].get<slimr::Json::array_t>()[0];
+        const auto &first = (*raw)["tabs"].get<slimr::Json::array_t>()[0];
         return first.is_object() && first.contains("tabProperties") && first.contains("documentTab");
     }
     return raw->contains("body") && (*raw)["body"].is_object();
 }
 
-inline void verifyCorpusDocument(const JsonObject& docJson, std::string_view docId, CorpusRunResult& res) {
+inline void verifyCorpusDocument(const JsonObject &docJson, std::string_view docId, CorpusRunResult &res) {
     try {
         KeyAllocator keys;
         auto doc = docModelParse(docJson, DocModelParseOptions{.docId = std::string(docId), .keys = keys});
@@ -143,18 +143,21 @@ inline void verifyCorpusDocument(const JsonObject& docJson, std::string_view doc
         }
 
         for (size_t i = 0; i < doc.tabs.size(); ++i) {
-            const auto& tab = doc.tabs[i];
+            const auto &tab = doc.tabs[i];
             auto layout = layoutCompute(tab);
             ++res.tabs_executed;
 
             std::vector<std::string> gotRanges;
-            for (const auto& [_, r] : layout.blockRanges) gotRanges.push_back(std::format("{}-{}", r.start, r.end));
-            for (const auto& [_, r] : layout.rowRanges) gotRanges.push_back(std::format("{}-{}", r.start, r.end));
-            for (const auto& [_, r] : layout.cellRanges) gotRanges.push_back(std::format("{}-{}", r.start, r.end));
+            for (const auto &[_, r] : layout.blockRanges)
+                gotRanges.push_back(std::format("{}-{}", r.start, r.end));
+            for (const auto &[_, r] : layout.rowRanges)
+                gotRanges.push_back(std::format("{}-{}", r.start, r.end));
+            for (const auto &[_, r] : layout.cellRanges)
+                gotRanges.push_back(std::format("{}-{}", r.start, r.end));
             std::sort(gotRanges.begin(), gotRanges.end());
 
             std::vector<std::string> wantRanges;
-            for (const auto& r : tabRawRangesCollect(*rawTabs[i])) {
+            for (const auto &r : tabRawRangesCollect(*rawTabs[i])) {
                 if (r.start != 0) {
                     wantRanges.push_back(std::format("{}-{}", r.start, r.end));
                 }
@@ -166,12 +169,12 @@ inline void verifyCorpusDocument(const JsonObject& docJson, std::string_view doc
                                                  docId, tab.tabId, gotRanges.size(), wantRanges.size()));
             }
         }
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         res.errors.push_back(std::format("{}: {}", docId, ex.what()));
     }
 }
 
-inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path& dir) {
+inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path &dir) {
     CorpusRunResult res;
     if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir)) {
         res.state = CorpusState::unavailable;
@@ -179,7 +182,7 @@ inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path& dir) {
     }
 
     std::vector<std::filesystem::path> jsonFiles;
-    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+    for (const auto &entry : std::filesystem::directory_iterator(dir)) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
             jsonFiles.push_back(entry.path());
         }
@@ -192,7 +195,7 @@ inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path& dir) {
     }
 
     res.state = CorpusState::nonempty;
-    for (const auto& path : jsonFiles) {
+    for (const auto &path : jsonFiles) {
         std::ifstream input(path);
         if (!input.is_open()) {
             res.errors.push_back(std::format("{}: cannot open snapshot", path.string()));
@@ -204,7 +207,7 @@ inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path& dir) {
             res.errors.push_back(std::format("{}: malformed JSON", path.string()));
             continue;
         }
-        const auto& json = *parsed;
+        const auto &json = *parsed;
         if (json.is_object() && json.contains("before") && json["before"].is_object() &&
             json.contains("requests") && json["requests"].is_array()) {
             try {
@@ -213,11 +216,11 @@ inline CorpusRunResult runSyntheticCorpusDir(const std::filesystem::path& dir) {
                 if (fx.after.has_value() && fx.after->is_object()) {
                     verifyCorpusDocument(*fx.after, fx.id + "#after", res);
                 }
-            } catch (const std::exception& ex) {
+            } catch (const std::exception &ex) {
                 res.errors.push_back(std::format("{}: {}", path.string(), ex.what()));
             }
         } else if (json.is_object() && isGoogleDocSnapshot(json)) {
-            const auto& docObj = (json.contains("document") && json["document"].is_object())
+            const auto &docObj = (json.contains("document") && json["document"].is_object())
                                      ? json["document"]
                                      : json;
             verifyCorpusDocument(docObj, path.stem().string(), res);
@@ -231,9 +234,8 @@ inline std::filesystem::path findCorpusSubdir(std::string_view rel) {
         ".",
         "..",
         "../..",
-        "plugins/gdocsmith-mcp"
-    };
-    for (const auto& prefix : prefixes) {
+        "plugins/gdocsmith-mcp"};
+    for (const auto &prefix : prefixes) {
         auto candidate = prefix / rel;
         if (std::filesystem::exists(candidate) && std::filesystem::is_directory(candidate)) {
             return candidate;
@@ -251,8 +253,8 @@ struct TempCorpusDir {
         std::error_code ec;
         std::filesystem::remove_all(path, ec);
     }
-    TempCorpusDir(const TempCorpusDir&) = delete;
-    TempCorpusDir& operator=(const TempCorpusDir&) = delete;
+    TempCorpusDir(const TempCorpusDir &) = delete;
+    TempCorpusDir &operator=(const TempCorpusDir &) = delete;
 };
 
 TEST_CASE("corpus - unavailable directory classifies unavailable and fails closed") {
@@ -321,7 +323,7 @@ TEST_CASE("corpus - synthetic conformance and parity seed snapshots execute non-
     REQUIRE(!conformanceDir.empty());
     auto confRes = runSyntheticCorpusDir(conformanceDir);
     INFO("conformance docs_executed=" << confRes.docs_executed << " tabs_executed=" << confRes.tabs_executed);
-    for (const auto& err : confRes.errors) {
+    for (const auto &err : confRes.errors) {
         FAIL_CHECK(err);
     }
     CHECK(corpusRequireNonEmpty(confRes));
@@ -332,7 +334,7 @@ TEST_CASE("corpus - synthetic conformance and parity seed snapshots execute non-
     REQUIRE(!seedsDir.empty());
     auto seedRes = runSyntheticCorpusDir(seedsDir);
     INFO("seeds docs_executed=" << seedRes.docs_executed << " tabs_executed=" << seedRes.tabs_executed);
-    for (const auto& err : seedRes.errors) {
+    for (const auto &err : seedRes.errors) {
         FAIL_CHECK(err);
     }
     CHECK(corpusRequireNonEmpty(seedRes));

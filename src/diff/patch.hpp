@@ -11,11 +11,10 @@ template <typename T>
 inline std::vector<T> hunksApply(
     std::span<const T> a,
     std::span<const T> b,
-    const std::vector<Hunk>& hunks
-) {
+    const std::vector<Hunk> &hunks) {
     std::vector<T> out;
     int ai = 0;
-    for (const auto& h : hunks) {
+    for (const auto &h : hunks) {
         while (ai < h.aStart) {
             out.push_back(a[ai++]);
         }
@@ -32,10 +31,9 @@ inline std::vector<T> hunksApply(
 
 template <typename T>
 inline std::vector<T> hunksApply(
-    const std::vector<T>& a,
-    const std::vector<T>& b,
-    const std::vector<Hunk>& hunks
-) {
+    const std::vector<T> &a,
+    const std::vector<T> &b,
+    const std::vector<Hunk> &hunks) {
     return hunksApply(std::span<const T>(a), std::span<const T>(b), hunks);
 }
 

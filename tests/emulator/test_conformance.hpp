@@ -1,9 +1,9 @@
 #pragma once
 
-#include "test.hpp"
-#include "emulator/types.hpp"
-#include "emulator/document_emulator.hpp"
 #include "emulator/conformance.hpp"
+#include "emulator/document_emulator.hpp"
+#include "emulator/types.hpp"
+#include "test.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -19,9 +19,8 @@ inline std::string find_fixture_dir() {
         "tests/fixtures/conformance",
         "../tests/fixtures/conformance",
         "../../tests/fixtures/conformance",
-        "plugins/gdocsmith-mcp/tests/fixtures/conformance"
-    };
-    for (const auto& path : candidates) {
+        "plugins/gdocsmith-mcp/tests/fixtures/conformance"};
+    for (const auto &path : candidates) {
         if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
             return path;
         }
@@ -30,18 +29,21 @@ inline std::string find_fixture_dir() {
 }
 
 // Loading is part of the conformance obligation, not a reason to skip a fixture.
-inline ConformanceFixture read_conformance_fixture(std::istream& input, std::string_view source) {
+inline ConformanceFixture read_conformance_fixture(std::istream &input, std::string_view source) {
     const std::string label(source);
-    if (!input.good()) throw std::runtime_error(label + ": cannot read fixture");
+    if (!input.good())
+        throw std::runtime_error(label + ": cannot read fixture");
     std::string content;
     char buffer[4096];
     while (input.read(buffer, sizeof(buffer)) || input.gcount() > 0) {
         content.append(buffer, static_cast<size_t>(input.gcount()));
     }
-    if (input.bad() || !input.eof()) throw std::runtime_error(label + ": cannot read fixture");
+    if (input.bad() || !input.eof())
+        throw std::runtime_error(label + ": cannot read fixture");
     auto parsed = slimr::parse_json<slimr::Json>(content);
-    if (!parsed) throw std::runtime_error(label + ": malformed fixture JSON");
-    const auto& json = *parsed;
+    if (!parsed)
+        throw std::runtime_error(label + ": malformed fixture JSON");
+    const auto &json = *parsed;
     // Reject invalid shapes before fixture_expand can silently default fields or
     // dereference the absent expansion of a null `before` document.
     if (!json.is_object() ||
@@ -57,12 +59,13 @@ inline ConformanceFixture read_conformance_fixture(std::istream& input, std::str
     return fixture_expand(json);
 }
 
-inline ConformanceFixture load_conformance_fixture(const std::filesystem::path& path) {
+inline ConformanceFixture load_conformance_fixture(const std::filesystem::path &path) {
     std::ifstream input(path);
-    if (!input.is_open()) throw std::runtime_error(path.string() + ": cannot open fixture");
+    if (!input.is_open())
+        throw std::runtime_error(path.string() + ": cannot open fixture");
     try {
         return read_conformance_fixture(input, path.string());
-    } catch (const std::ios_base::failure&) {
+    } catch (const std::ios_base::failure &) {
         throw std::runtime_error(path.string() + ": cannot read fixture");
     }
 }
@@ -73,7 +76,7 @@ TEST_SUITE("emulator::conformance") {
         REQUIRE(!fixture_dir.empty());
 
         std::vector<std::string> json_files;
-        for (const auto& entry : std::filesystem::directory_iterator(fixture_dir)) {
+        for (const auto &entry : std::filesystem::directory_iterator(fixture_dir)) {
             if (entry.path().extension() == ".json") {
                 json_files.push_back(entry.path().string());
             }
@@ -82,20 +85,20 @@ TEST_SUITE("emulator::conformance") {
         CHECK(json_files.size() > 80);
 
         size_t checked = 0;
-        for (const auto& file_path : json_files) {
+        for (const auto &file_path : json_files) {
             INFO("fixture: " << file_path);
             // Report failures per file and keep checking the remaining fixtures.
             try {
                 const auto fx = load_conformance_fixture(file_path);
                 INFO(fx.id << " (" << fx.name << ")");
                 const auto diffs = conformance_compare(fx);
-                for (const auto& diff : diffs) {
+                for (const auto &diff : diffs) {
                     INFO(diff);
                     CHECK(diff.empty());
                 }
                 CHECK(diffs.empty());
                 ++checked;
-            } catch (const std::exception& error) {
+            } catch (const std::exception &error) {
                 FAIL_CHECK(std::string(error.what()));
             }
         }
@@ -103,8 +106,8 @@ TEST_SUITE("emulator::conformance") {
     }
 
     TEST_CASE("fixture loading rejects malformed JSON and invalid shapes") {
-        for (const auto& text : {"{", "", "null", "[]", "{}",
-             R"({"id":"bad","name":"bad","before":null,"after":null,"requests":[]})"}) {
+        for (const auto &text : {"{", "", "null", "[]", "{}",
+                                 R"({"id":"bad","name":"bad","before":null,"after":null,"requests":[]})"}) {
             INFO("invalid input: " << text);
             std::istringstream input(text);
             CHECK_THROWS_AS(read_conformance_fixture(input, "invalid.json"), std::runtime_error);

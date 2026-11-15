@@ -29,30 +29,26 @@ TEST_CASE("objectIdsAssign - tails grow until unique across tabs; counters run a
         .title = "One",
         .blocks = {
             BlockSpec::make_paragraph(std::move(p1)),
-            BlockSpec::make_section_break()
-        }
-    });
+            BlockSpec::make_section_break()}});
     spec.tabs.push_back(TabSpec{
         .tabId = "t.1",
         .title = "Two",
         .blocks = {
             BlockSpec::make_paragraph(std::move(p2)),
-            BlockSpec::make_toc(2)
-        }
-    });
+            BlockSpec::make_toc(2)}});
 
     auto json = docJsonBuild(spec);
     std::vector<std::string> ids = {"kix.aaa1234", "p.xtoc1", "kix.bbb1234"};
     size_t idIdx = 0;
     if (json.contains("tabs") && json["tabs"].holds<slimr::Json::array_t>()) {
-        for (auto& tab : json["tabs"].get<slimr::Json::array_t>()) {
+        for (auto &tab : json["tabs"].get<slimr::Json::array_t>()) {
             if (tab.contains("documentTab") && tab["documentTab"].contains("body") &&
                 tab["documentTab"]["body"].contains("content") &&
                 tab["documentTab"]["body"]["content"].holds<slimr::Json::array_t>()) {
-                for (auto& el : tab["documentTab"]["body"]["content"].get<slimr::Json::array_t>()) {
+                for (auto &el : tab["documentTab"]["body"]["content"].get<slimr::Json::array_t>()) {
                     if (el.contains("paragraph") && el["paragraph"].contains("elements") &&
                         el["paragraph"]["elements"].holds<slimr::Json::array_t>()) {
-                        for (auto& part : el["paragraph"]["elements"].get<slimr::Json::array_t>()) {
+                        for (auto &part : el["paragraph"]["elements"].get<slimr::Json::array_t>()) {
                             if (part.contains("inlineObjectElement") && idIdx < ids.size()) {
                                 part["inlineObjectElement"]["inlineObjectId"] = ids[idIdx++];
                             }
@@ -70,10 +66,11 @@ TEST_CASE("objectIdsAssign - tails grow until unique across tabs; counters run a
     auto doc = docModelParse(json, DocModelParseOptions{.docId = "d", .keys = keys});
     REQUIRE(doc.tabs.size() == 2);
 
-    auto sortedVals = [](const TabModel& tab) {
+    auto sortedVals = [](const TabModel &tab) {
         std::vector<std::string> vals;
         if (tab.objectIds.has_value()) {
-            for (const auto& [_, v] : *tab.objectIds) vals.push_back(v);
+            for (const auto &[_, v] : *tab.objectIds)
+                vals.push_back(v);
         }
         std::sort(vals.begin(), vals.end());
         return vals;

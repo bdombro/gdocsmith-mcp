@@ -7,8 +7,7 @@ namespace gdocsmith::lens::test {
 
 TEST_CASE("mergeCovered computes covered cells") {
     std::vector<TableMerge> merges = {
-        TableMerge{.column = 0, .columnSpan = 2, .row = 0, .rowSpan = 2}
-    };
+        TableMerge{.column = 0, .columnSpan = 2, .row = 0, .rowSpan = 2}};
     auto covered = mergeCovered(merges);
     CHECK(covered.size() == 3u);
     CHECK(!covered.contains({0, 0}));

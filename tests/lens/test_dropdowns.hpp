@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/dropdowns.hpp"
 #include "lens/atom_put.hpp"
+#include "lens/dropdowns.hpp"
 #include "lens/json_helper.hpp"
 #include "test.hpp"
 
@@ -63,11 +63,7 @@ TEST_CASE("source dropdown create select and explicit keys preserve provider opt
     model::TabModel tab;
     tab.dropdownDefinitions["list-1"] = slimr::Json::object_t{
         {"dropdownDefinitionProperties", slimr::Json::object_t{
-            {"title", "Status"}, {"options", slimr::Json::array_t{
-                slimr::Json::object_t{{"displayValue", "Todo"}, {"optionId", "provider-todo"}},
-                slimr::Json::object_t{{"displayValue", "Done"}, {"optionId", "provider-done"}}
-            }}}}
-    };
+                                             {"title", "Status"}, {"options", slimr::Json::array_t{slimr::Json::object_t{{"displayValue", "Todo"}, {"optionId", "provider-todo"}}, slimr::Json::object_t{{"displayValue", "Done"}, {"optionId", "provider-done"}}}}}}};
     model::EditContext context;
     model::EditTarget target{context, tab};
     AtomPutReport report;
@@ -75,11 +71,7 @@ TEST_CASE("source dropdown create select and explicit keys preserve provider opt
     REQUIRE(created.create);
     CHECK(created.create->definitionId == "list-1");
     CHECK(created.create->optionId == "provider-done");
-    model::Atom existing{.key = "chip", .type = "dropdown", .raw = slimr::Json::object_t{
-        {"dropdown", slimr::Json::object_t{
-            {"dropdownId", "provider-chip"}, {"dropdownProperties", slimr::Json::object_t{
-                {"dropdownDefinitionId", "list-1"}, {"selectedOptionId", "provider-todo"}, {"displayValue", "Todo"}}}}}
-    }};
+    model::Atom existing{.key = "chip", .type = "dropdown", .raw = slimr::Json::object_t{{"dropdown", slimr::Json::object_t{{"dropdownId", "provider-chip"}, {"dropdownProperties", slimr::Json::object_t{{"dropdownDefinitionId", "list-1"}, {"selectedOptionId", "provider-todo"}, {"displayValue", "Todo"}}}}}}};
     TokenRef before{.kind = "dropdown", .attrs = directiveAttrsParse("id=chip list=list-1"), .label = "Todo"};
     auto after = before;
     after.label = "Done";

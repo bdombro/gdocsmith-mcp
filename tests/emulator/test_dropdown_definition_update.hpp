@@ -8,55 +8,51 @@ namespace gdocsmith::emulator::test_util {
 inline slimr::Json dropdown_update_fixture() {
     auto doc = make_simple_doc({""});
     slimr::Json::object_t definitions;
-    for (const auto& id : {"def.target", "def.unrelated"}) {
+    for (const auto &id : {"def.target", "def.unrelated"}) {
         definitions[id] = slimr::Json::object_t{
             {"dropdownDefinitionId", id},
             {"dropdownDefinitionProperties", slimr::Json::object_t{
-                {"title", id},
-                {"options", slimr::Json::array_t{
-                    slimr::Json::object_t{{"optionId", "opt.a"}, {"displayValue", "Alpha"}},
-                    slimr::Json::object_t{{"optionId", "opt.b"}, {"displayValue", "Beta"}}
-                }}
-            }}
-        };
+                                                 {"title", id},
+                                                 {"options", slimr::Json::array_t{
+                                                                 slimr::Json::object_t{{"optionId", "opt.a"}, {"displayValue", "Alpha"}},
+                                                                 slimr::Json::object_t{{"optionId", "opt.b"}, {"displayValue", "Beta"}}}}}}};
     }
     doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["dropdownDefinitions"] = definitions;
     std::vector<slimr::Json> requests;
     int index = 1;
-    for (const auto& [definition, option] :
+    for (const auto &[definition, option] :
          std::vector<std::pair<std::string, std::string>>{
              {"def.target", "opt.a"}, {"def.target", "opt.b"}, {"def.unrelated", "opt.a"}}) {
         requests.push_back(slimr::Json::object_t{{"insertDropdown", slimr::Json::object_t{
-            {"location", slimr::Json::object_t{{"index", index++}}},
-            {"dropdownDefinitionId", definition}, {"selectedOptionId", option}
-        }}});
+                                                                        {"location", slimr::Json::object_t{{"index", index++}}},
+                                                                        {"dropdownDefinitionId", definition},
+                                                                        {"selectedOptionId", option}}}});
     }
     return requests_emulate(doc, requests).json;
 }
 
-inline const slimr::Json& dropdown_update_tab(const slimr::Json& doc) {
+inline const slimr::Json &dropdown_update_tab(const slimr::Json &doc) {
     return doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"];
 }
 
-inline std::vector<slimr::Json> dropdown_update_chips(const slimr::Json& doc) {
+inline std::vector<slimr::Json> dropdown_update_chips(const slimr::Json &doc) {
     std::vector<slimr::Json> chips;
-    for (const auto& element : dropdown_update_tab(doc)["body"]["content"]
-             .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>()) {
-        if (element.contains("dropdown")) chips.push_back(element["dropdown"]);
+    for (const auto &element : dropdown_update_tab(doc)["body"]["content"]
+                                   .get<slimr::Json::array_t>()[1]["paragraph"]["elements"]
+                                   .get<slimr::Json::array_t>()) {
+        if (element.contains("dropdown"))
+            chips.push_back(element["dropdown"]);
     }
     return chips;
 }
 
-inline slimr::Json dropdown_options_request(const slimr::Json& options) {
+inline slimr::Json dropdown_options_request(const slimr::Json &options) {
     return slimr::Json::object_t{{"updateDropdownDefinitionProperties", slimr::Json::object_t{
-        {"tabId", "t.0"}, {"dropdownDefinitionId", "def.target"}, {"fields", "options"},
-        {"dropdownDefinitionProperties", slimr::Json::object_t{{"options", options}}}
-    }}};
+                                                                            {"tabId", "t.0"}, {"dropdownDefinitionId", "def.target"}, {"fields", "options"}, {"dropdownDefinitionProperties", slimr::Json::object_t{{"options", options}}}}}};
 }
 
-inline slimr::Json& dropdown_update_first_chip(slimr::Json& doc) {
-    return doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
-        .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>()[0]["dropdown"];
+inline slimr::Json &dropdown_update_first_chip(slimr::Json &doc) {
+    return doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"].get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>()[0]["dropdown"];
 }
 
 } // namespace gdocsmith::emulator::test_util
@@ -67,10 +63,12 @@ TEST_SUITE("emulator::dropdown_definition_update") {
         using namespace gdocsmith::emulator::test_util;
         for (const int shape : {0, 1, 2}) {
             auto doc = dropdown_update_fixture();
-            auto& chip = dropdown_update_first_chip(doc);
+            auto &chip = dropdown_update_first_chip(doc);
             chip.get<slimr::Json::object_t>().erase("textStyle");
-            if (shape == 1) chip["textStyle"] = slimr::Json::object_t{};
-            if (shape == 2) chip["textStyle"] = slimr::Json::object_t{{"bold", true}, {"italic", true}};
+            if (shape == 1)
+                chip["textStyle"] = slimr::Json::object_t{};
+            if (shape == 2)
+                chip["textStyle"] = slimr::Json::object_t{{"bold", true}, {"italic", true}};
             const auto before = dropdown_update_chips(doc);
             const auto result = requests_emulate(doc, {});
             CHECK(dropdown_update_chips(result.json) == before);
@@ -84,10 +82,12 @@ TEST_SUITE("emulator::dropdown_definition_update") {
         using namespace gdocsmith::emulator::test_util;
         for (const int shape : {0, 1, 2}) {
             auto doc = dropdown_update_fixture();
-            auto& chip = dropdown_update_first_chip(doc);
+            auto &chip = dropdown_update_first_chip(doc);
             chip.get<slimr::Json::object_t>().erase("textStyle");
-            if (shape == 1) chip["textStyle"] = slimr::Json::object_t{};
-            if (shape == 2) chip["textStyle"] = slimr::Json::object_t{{"bold", true}, {"italic", true}};
+            if (shape == 1)
+                chip["textStyle"] = slimr::Json::object_t{};
+            if (shape == 2)
+                chip["textStyle"] = slimr::Json::object_t{{"bold", true}, {"italic", true}};
             auto expected = dropdown_update_chips(doc);
             expected[0]["dropdownProperties"]["displayValue"] = "Renamed";
             auto options = dropdown_update_tab(doc)["dropdownDefinitions"]["def.target"]["dropdownDefinitionProperties"]["options"];
@@ -102,17 +102,16 @@ TEST_SUITE("emulator::dropdown_definition_update") {
         using namespace gdocsmith::emulator::test_util;
         for (const bool initially_absent : {true, false}) {
             auto doc = dropdown_update_fixture();
-            auto& chip = dropdown_update_first_chip(doc);
+            auto &chip = dropdown_update_first_chip(doc);
             chip.get<slimr::Json::object_t>().erase("textStyle");
-            if (!initially_absent) chip["textStyle"] = slimr::Json::object_t{{"bold", true}};
+            if (!initially_absent)
+                chip["textStyle"] = slimr::Json::object_t{{"bold", true}};
             auto expected = dropdown_update_chips(doc);
             expected[0]["textStyle"] = slimr::Json::object_t{};
-            const auto result = requests_emulate(doc, {
-                slimr::Json::object_t{{"updateTextStyle", slimr::Json::object_t{
-                    {"range", slimr::Json::object_t{{"tabId", "t.0"}, {"startIndex", 1}, {"endIndex", 2}}},
-                    {"fields", "bold"}, {"textStyle", slimr::Json::object_t{}}
-                }}}
-            });
+            const auto result = requests_emulate(doc, {slimr::Json::object_t{{"updateTextStyle", slimr::Json::object_t{
+                                                                                                     {"range", slimr::Json::object_t{{"tabId", "t.0"}, {"startIndex", 1}, {"endIndex", 2}}},
+                                                                                                     {"fields", "bold"},
+                                                                                                     {"textStyle", slimr::Json::object_t{}}}}}});
             CHECK(dropdown_update_chips(result.json) == expected);
             CHECK(dropdown_update_chips(requests_emulate(result.json, {}).json) == expected);
         }
@@ -147,9 +146,7 @@ TEST_SUITE("emulator::dropdown_definition_update") {
         auto options = dropdown_update_tab(doc)["dropdownDefinitions"]["def.target"]["dropdownDefinitionProperties"]["options"];
         options.get<slimr::Json::array_t>()[0]["textStyle"] = slimr::Json::object_t{
             {"foregroundColor", slimr::Json::object_t{
-                {"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"green", 1.0}}}}}
-            }}
-        };
+                                    {"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"green", 1.0}}}}}}}};
         const auto result = requests_emulate(doc, {dropdown_options_request(options)});
         CHECK(dropdown_update_chips(result.json) == dropdown_update_chips(doc));
         CHECK(dropdown_update_tab(result.json)["dropdownDefinitions"]["def.target"]["dropdownDefinitionProperties"]["options"] == options);
@@ -189,7 +186,7 @@ TEST_SUITE("emulator::dropdown_definition_update") {
         const auto doc = dropdown_update_fixture();
         for (const size_t count : {size_t{0}, size_t{1}, size_t{51}}) {
             slimr::Json::array_t options(count, slimr::Json::object_t{
-                {"optionId", "opt.a"}, {"displayValue", "Alpha"}});
+                                                    {"optionId", "opt.a"}, {"displayValue", "Alpha"}});
             CHECK_THROWS_AS(requests_emulate(doc, {dropdown_options_request(options)}), EmulatorError);
         }
     }

@@ -31,7 +31,7 @@
 #include <utility>
 #include <vector>
 
-extern char** environ;
+extern char **environ;
 
 namespace gdocsmith {
 
@@ -49,10 +49,10 @@ struct HttpCallResponse {
     std::string body;
 };
 
-using HttpTransport = std::function<HttpCallResponse(const HttpCall&)>;
-using GwsRunner = std::function<std::string(const std::vector<std::string>& args)>;
+using HttpTransport = std::function<HttpCallResponse(const HttpCall &)>;
+using GwsRunner = std::function<std::string(const std::vector<std::string> &args)>;
 
-inline HttpCallResponse default_curl_transport(const HttpCall& req) {
+inline HttpCallResponse default_curl_transport(const HttpCall &req) {
     slimr::HttpRequest r;
     r.method = req.method;
     r.url = req.url;
@@ -74,10 +74,10 @@ struct UniqueFd {
     UniqueFd() = default;
     explicit UniqueFd(int f) noexcept : fd(f) {}
     ~UniqueFd() { reset(); }
-    UniqueFd(const UniqueFd&) = delete;
-    UniqueFd& operator=(const UniqueFd&) = delete;
-    UniqueFd(UniqueFd&& other) noexcept : fd(std::exchange(other.fd, -1)) {}
-    UniqueFd& operator=(UniqueFd&& other) noexcept {
+    UniqueFd(const UniqueFd &) = delete;
+    UniqueFd &operator=(const UniqueFd &) = delete;
+    UniqueFd(UniqueFd &&other) noexcept : fd(std::exchange(other.fd, -1)) {}
+    UniqueFd &operator=(UniqueFd &&other) noexcept {
         if (this != &other) {
             reset();
             fd = std::exchange(other.fd, -1);
@@ -108,16 +108,16 @@ struct SpawnActionsGuard {
             posix_spawn_file_actions_destroy(&actions);
         }
     }
-    SpawnActionsGuard(const SpawnActionsGuard&) = delete;
-    SpawnActionsGuard& operator=(const SpawnActionsGuard&) = delete;
+    SpawnActionsGuard(const SpawnActionsGuard &) = delete;
+    SpawnActionsGuard &operator=(const SpawnActionsGuard &) = delete;
 };
 
-inline void write_uint16_le(std::string& out, uint16_t val) {
+inline void write_uint16_le(std::string &out, uint16_t val) {
     out.push_back(static_cast<char>(val & 0xff));
     out.push_back(static_cast<char>((val >> 8) & 0xff));
 }
 
-inline void write_uint32_le(std::string& out, uint32_t val) {
+inline void write_uint32_le(std::string &out, uint32_t val) {
     out.push_back(static_cast<char>(val & 0xff));
     out.push_back(static_cast<char>((val >> 8) & 0xff));
     out.push_back(static_cast<char>((val >> 16) & 0xff));
@@ -126,8 +126,8 @@ inline void write_uint32_le(std::string& out, uint32_t val) {
 
 } // namespace detail
 
-inline std::string exec_gws(const std::vector<std::string>& args) {
-    const char* bin_env = getenv("GWS_BIN");
+inline std::string exec_gws(const std::vector<std::string> &args) {
+    const char *bin_env = getenv("GWS_BIN");
     std::string bin = (bin_env && *bin_env) ? bin_env : "gws";
 
     int stdout_raw[2]{-1, -1};
@@ -153,11 +153,11 @@ inline std::string exec_gws(const std::vector<std::string>& args) {
     posix_spawn_file_actions_adddup2(&actions.actions, stderr_write.get(), STDERR_FILENO);
     posix_spawn_file_actions_addclose(&actions.actions, stderr_write.get());
 
-    std::vector<char*> argv_ptrs;
+    std::vector<char *> argv_ptrs;
     argv_ptrs.reserve(args.size() + 2);
-    argv_ptrs.push_back(const_cast<char*>(bin.c_str()));
-    for (const auto& a : args) {
-        argv_ptrs.push_back(const_cast<char*>(a.c_str()));
+    argv_ptrs.push_back(const_cast<char *>(bin.c_str()));
+    for (const auto &a : args) {
+        argv_ptrs.push_back(const_cast<char *>(a.c_str()));
     }
     argv_ptrs.push_back(nullptr);
 
@@ -185,20 +185,25 @@ inline std::string exec_gws(const std::vector<std::string>& args) {
     while (open_fds > 0) {
         int poll_res = poll(fds, 2, -1);
         if (poll_res < 0) {
-            if (errno == EINTR) continue;
+            if (errno == EINTR)
+                continue;
             break;
         }
         for (int i = 0; i < 2; ++i) {
             if (fds[i].fd >= 0 && (fds[i].revents & (POLLIN | POLLHUP | POLLERR))) {
                 ssize_t n = read(fds[i].fd, buf, sizeof(buf));
                 if (n > 0) {
-                    if (i == 0) stdout_str.append(buf, static_cast<size_t>(n));
-                    else stderr_str.append(buf, static_cast<size_t>(n));
+                    if (i == 0)
+                        stdout_str.append(buf, static_cast<size_t>(n));
+                    else
+                        stderr_str.append(buf, static_cast<size_t>(n));
                 } else if (n < 0 && errno == EINTR) {
                     continue;
                 } else {
-                    if (i == 0) stdout_read.reset();
-                    else stderr_read.reset();
+                    if (i == 0)
+                        stdout_read.reset();
+                    else
+                        stderr_read.reset();
                     fds[i].fd = -1;
                     open_fds--;
                 }
@@ -282,7 +287,7 @@ inline GwsCredentials gws_credentials_get(GwsRunner runner = nullptr) {
         } else {
             stdout_str = exec_gws({"auth", "export", "--unmasked"});
         }
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         throw std::runtime_error("Failed to export credentials from gws: " + std::string(e.what()));
     }
 
@@ -290,7 +295,7 @@ inline GwsCredentials gws_credentials_get(GwsRunner runner = nullptr) {
     if (!parsedOpt) {
         throw std::runtime_error("Invalid gws auth export output: invalid JSON");
     }
-    const auto& j = *parsedOpt;
+    const auto &j = *parsedOpt;
     if (!j.contains("client_id") || !j["client_id"].is_string() ||
         !j.contains("client_secret") || !j["client_secret"].is_string() ||
         !j.contains("refresh_token") || !j["refresh_token"].is_string()) {
@@ -311,8 +316,7 @@ inline GwsCredentials gws_credentials_get(GwsRunner runner = nullptr) {
 inline CachedToken access_token_refresh(
     std::optional<GwsCredentials> credsOpt = std::nullopt,
     HttpTransport transport = nullptr,
-    GwsRunner runner = nullptr
-) {
+    GwsRunner runner = nullptr) {
     GwsCredentials creds = credsOpt.has_value() ? *credsOpt : gws_credentials_get(runner);
 
     std::string post_data = "client_id=" + detail::url_encode(creds.clientId) +
@@ -335,7 +339,7 @@ inline CachedToken access_token_refresh(
         } else {
             res = default_curl_transport(req);
         }
-    } catch (const std::exception& error) {
+    } catch (const std::exception &error) {
         throw std::runtime_error("Google OAuth token refresh failed: " + std::string(error.what()));
     } catch (...) {
         throw std::runtime_error("Google OAuth token refresh failed: unknown transport error");
@@ -349,7 +353,7 @@ inline CachedToken access_token_refresh(
     if (!parsedOpt) {
         throw std::runtime_error("No access_token returned by Google OAuth endpoint: invalid JSON response");
     }
-    const auto& j = *parsedOpt;
+    const auto &j = *parsedOpt;
     if (!j.contains("access_token") || !j["access_token"].is_string()) {
         throw std::runtime_error("No access_token returned by Google OAuth endpoint");
     }
@@ -360,8 +364,8 @@ inline CachedToken access_token_refresh(
     }
 
     auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()
-    ).count();
+                     std::chrono::system_clock::now().time_since_epoch())
+                     .count();
 
     // 60-second safety margin
     int64_t expiresInMs = std::max<int64_t>(0, (expiresInSec - 60) * 1000);
@@ -380,11 +384,10 @@ inline CachedToken access_token_refresh(
 inline std::string valid_access_token_get(
     bool forceRefresh = false,
     HttpTransport transport = nullptr,
-    GwsRunner runner = nullptr
-) {
+    GwsRunner runner = nullptr) {
     auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()
-    ).count();
+                     std::chrono::system_clock::now().time_since_epoch())
+                     .count();
 
     std::shared_ptr<detail::TokenRefresh> refresh;
     bool leading = false;
@@ -408,19 +411,22 @@ inline std::string valid_access_token_get(
             std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
             refresh->token = std::move(token);
             refresh->complete = true;
-            if (detail::g_pending_refresh == refresh) detail::g_pending_refresh.reset();
+            if (detail::g_pending_refresh == refresh)
+                detail::g_pending_refresh.reset();
         } catch (...) {
             std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
             refresh->failure = std::current_exception();
             refresh->complete = true;
-            if (detail::g_pending_refresh == refresh) detail::g_pending_refresh.reset();
+            if (detail::g_pending_refresh == refresh)
+                detail::g_pending_refresh.reset();
         }
         refresh->ready.notify_all();
     }
 
     std::unique_lock<std::mutex> lock(detail::g_auth_mutex);
     refresh->ready.wait(lock, [&refresh] { return refresh->complete; });
-    if (refresh->failure) std::rethrow_exception(refresh->failure);
+    if (refresh->failure)
+        std::rethrow_exception(refresh->failure);
     return refresh->token->accessToken;
 }
 
@@ -448,7 +454,7 @@ inline std::string gws_error_format(std::string_view raw, std::string_view targe
     }
 
     if (parsedOpt && parsedOpt->contains("error") && (*parsedOpt)["error"].is_object()) {
-        const auto& errObj = (*parsedOpt)["error"];
+        const auto &errObj = (*parsedOpt)["error"];
         if (errObj.contains("code") && errObj["code"].is_number()) {
             statusNum = errObj["code"].get<int64_t>();
             statusStr = std::to_string(statusNum);
@@ -500,13 +506,33 @@ inline std::string entities_decode(std::string_view text) {
             size_t semi = text.find(';', i + 1);
             if (semi != std::string_view::npos && semi - i <= 10) {
                 std::string_view entity = text.substr(i + 1, semi - i - 1);
-                if (entity == "quot") { res += '"'; i = semi + 1; continue; }
-                if (entity == "apos" || entity == "#39") { res += '\''; i = semi + 1; continue; }
-                if (entity == "lt") { res += '<'; i = semi + 1; continue; }
-                if (entity == "gt") { res += '>'; i = semi + 1; continue; }
-                if (entity == "amp") { res += '&'; i = semi + 1; continue; }
+                if (entity == "quot") {
+                    res += '"';
+                    i = semi + 1;
+                    continue;
+                }
+                if (entity == "apos" || entity == "#39") {
+                    res += '\'';
+                    i = semi + 1;
+                    continue;
+                }
+                if (entity == "lt") {
+                    res += '<';
+                    i = semi + 1;
+                    continue;
+                }
+                if (entity == "gt") {
+                    res += '>';
+                    i = semi + 1;
+                    continue;
+                }
+                if (entity == "amp") {
+                    res += '&';
+                    i = semi + 1;
+                    continue;
+                }
                 if (entity.starts_with("#x") || entity.starts_with("#X")) {
-                    char* endptr = nullptr;
+                    char *endptr = nullptr;
                     std::string hexStr(entity.substr(2));
                     unsigned long cp = std::strtoul(hexStr.c_str(), &endptr, 16);
                     if (endptr && *endptr == '\0' && cp <= 0x10FFFF) {
@@ -529,7 +555,7 @@ inline std::string entities_decode(std::string_view text) {
                         continue;
                     }
                 } else if (entity.starts_with("#")) {
-                    char* endptr = nullptr;
+                    char *endptr = nullptr;
                     std::string decStr(entity.substr(1));
                     unsigned long cp = std::strtoul(decStr.c_str(), &endptr, 10);
                     if (endptr && *endptr == '\0' && cp <= 0x10FFFF) {
@@ -660,7 +686,7 @@ struct ImagesUploadResult {
 };
 
 class ImagesUploadError : public std::runtime_error {
-public:
+  public:
     std::string documentId;
 
     ImagesUploadError(std::string message, std::string id)
@@ -728,12 +754,12 @@ inline uint32_t zip_crc32(std::string_view data) {
 }
 
 /// Builds an uncompressed (stored) ZIP archive matching Node.js zipStore exactly
-inline std::string zip_store(const std::vector<std::pair<std::string, std::string>>& files) {
+inline std::string zip_store(const std::vector<std::pair<std::string, std::string>> &files) {
     std::string locals;
     std::string centrals;
     uint32_t offset = 0;
 
-    for (const auto& [name, data] : files) {
+    for (const auto &[name, data] : files) {
         uint32_t crc = zip_crc32(data);
         uint32_t dataLen = static_cast<uint32_t>(data.size());
         uint16_t nameLen = static_cast<uint16_t>(name.size());
@@ -809,7 +835,7 @@ inline std::string zip_store(const std::vector<std::pair<std::string, std::strin
 }
 
 /// A .docx package around a document body with images appended as one inline picture per paragraph
-inline std::string docx_build(const std::string& body, const std::vector<DocxImage>& images = {}) {
+inline std::string docx_build(const std::string &body, const std::vector<DocxImage> &images = {}) {
     std::string ns = "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" "
                      "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
                      "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" "
@@ -817,7 +843,7 @@ inline std::string docx_build(const std::string& body, const std::vector<DocxIma
                      "xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"";
     std::string pictures;
     for (size_t i = 0; i < images.size(); ++i) {
-        const auto& image = images[i];
+        const auto &image = images[i];
         int64_t cx = static_cast<int64_t>(image.widthPx) * 9525;
         int64_t cy = static_cast<int64_t>(image.heightPx) * 9525;
         std::string name = "image" + std::to_string(i + 1);
@@ -826,7 +852,8 @@ inline std::string docx_build(const std::string& body, const std::vector<DocxIma
         pictures += "<w:p><w:r><w:drawing><wp:inline><wp:extent cx=\"" + std::to_string(cx) +
                     "\" cy=\"" + std::to_string(cy) + "\"/><wp:docPr id=\"" + idStr +
                     "\" name=\"" + name + "\"/><a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">"
-                    "<pic:pic><pic:nvPicPr><pic:cNvPr id=\"" + idStr + "\" name=\"" + name +
+                                          "<pic:pic><pic:nvPicPr><pic:cNvPr id=\"" +
+                    idStr + "\" name=\"" + name +
                     "\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"" + embedId +
                     "\"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" +
                     std::to_string(cx) + "\" cy=\"" + std::to_string(cy) +
@@ -840,31 +867,23 @@ inline std::string docx_build(const std::string& body, const std::vector<DocxIma
     }
     std::string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
     std::vector<std::pair<std::string, std::string>> files;
-    files.push_back({
-        "[Content_Types].xml",
-        xml + "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
-              "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
-              "<Default Extension=\"xml\" ContentType=\"application/xml\"/>"
-              "<Default Extension=\"png\" ContentType=\"image/png\"/>"
-              "<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>"
-              "<Default Extension=\"gif\" ContentType=\"image/gif\"/>"
-              "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"
-              "</Types>"
-    });
-    files.push_back({
-        "_rels/.rels",
-        xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
-              "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>"
-              "</Relationships>"
-    });
-    files.push_back({
-        "word/_rels/document.xml.rels",
-        xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" + relationships + "</Relationships>"
-    });
-    files.push_back({
-        "word/document.xml",
-        xml + "<w:document " + ns + "><w:body>" + body + pictures + "</w:body></w:document>"
-    });
+    files.push_back({"[Content_Types].xml",
+                     xml + "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
+                           "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
+                           "<Default Extension=\"xml\" ContentType=\"application/xml\"/>"
+                           "<Default Extension=\"png\" ContentType=\"image/png\"/>"
+                           "<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>"
+                           "<Default Extension=\"gif\" ContentType=\"image/gif\"/>"
+                           "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"
+                           "</Types>"});
+    files.push_back({"_rels/.rels",
+                     xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+                           "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>"
+                           "</Relationships>"});
+    files.push_back({"word/_rels/document.xml.rels",
+                     xml + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" + relationships + "</Relationships>"});
+    files.push_back({"word/document.xml",
+                     xml + "<w:document " + ns + "><w:body>" + body + pictures + "</w:body></w:document>"});
     for (size_t i = 0; i < images.size(); ++i) {
         files.push_back({"word/media/image" + std::to_string(i) + "." + images[i].type, images[i].bytes});
     }
@@ -872,9 +891,9 @@ inline std::string docx_build(const std::string& body, const std::vector<DocxIma
 }
 
 class GoogleApiError : public std::runtime_error {
-public:
+  public:
     long status;
-    GoogleApiError(long code, const std::string& message)
+    GoogleApiError(long code, const std::string &message)
         : std::runtime_error(message), status(code) {}
 };
 
@@ -882,12 +901,11 @@ public:
 inline HttpCallResponse google_api_fetch(
     HttpTransport transport,
     GwsRunner runner,
-    const std::string& url,
-    const std::string& method = "GET",
-    const std::string& body = "",
-    const std::map<std::string, std::string>& customHeaders = {},
-    const std::string& targetId = ""
-) {
+    const std::string &url,
+    const std::string &method = "GET",
+    const std::string &body = "",
+    const std::map<std::string, std::string> &customHeaders = {},
+    const std::string &targetId = "") {
     auto fn = transport ? transport : default_curl_transport;
     std::string token = valid_access_token_get(false, transport, runner);
 
@@ -917,12 +935,11 @@ inline HttpCallResponse google_api_fetch(
 inline HttpCallResponse google_api_fetch_checked(
     HttpTransport transport,
     GwsRunner runner,
-    const std::string& url,
-    const std::string& method = "GET",
-    const std::string& body = "",
-    const std::map<std::string, std::string>& customHeaders = {},
-    const std::string& targetId = ""
-) {
+    const std::string &url,
+    const std::string &method = "GET",
+    const std::string &body = "",
+    const std::map<std::string, std::string> &customHeaders = {},
+    const std::string &targetId = "") {
     auto res = google_api_fetch(transport, runner, url, method, body, customHeaders, targetId);
     if (res.status >= 400) {
         throw GoogleApiError(res.status, gws_error_format(res.body, targetId));
@@ -940,13 +957,12 @@ struct FetchRetryOptions {
 inline HttpCallResponse fetch_with_retry(
     HttpTransport transport,
     GwsRunner runner,
-    const std::string& url,
-    const std::string& method = "GET",
-    const std::string& body = "",
-    const std::map<std::string, std::string>& customHeaders = {},
-    const std::string& targetId = "",
-    const FetchRetryOptions& options = {}
-) {
+    const std::string &url,
+    const std::string &method = "GET",
+    const std::string &body = "",
+    const std::map<std::string, std::string> &customHeaders = {},
+    const std::string &targetId = "",
+    const FetchRetryOptions &options = {}) {
     auto fn = transport ? transport : default_curl_transport;
     long backoff = options.backoffMs;
     int maxAttempts = std::max(1, options.retries);
@@ -982,7 +998,7 @@ inline HttpCallResponse fetch_with_retry(
             }
 
             return res;
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             lastError = e.what();
             if (attempt < maxAttempts - 1) {
                 std::string msg = e.what();
@@ -1008,14 +1024,14 @@ inline HttpCallResponse fetch_with_retry(
 
 // Google Docs API client
 class DocsClient {
-public:
+  public:
     HttpTransport transport = nullptr;
     GwsRunner runner = nullptr;
 
     explicit DocsClient(HttpTransport t = nullptr, GwsRunner r = nullptr)
         : transport(t), runner(r) {}
 
-    std::string imageDownload(const std::string& contentUri) {
+    std::string imageDownload(const std::string &contentUri) {
         static const std::regex googleImage(
             R"(^https://(?:[A-Za-z0-9-]+\.)*googleusercontent\.com/[^\s]*$)");
         if (!std::regex_match(contentUri, googleImage)) {
@@ -1026,25 +1042,26 @@ public:
         HttpCallResponse response;
         try {
             response = transport ? transport(request) : default_curl_transport(request);
-        } catch (const std::exception&) {
+        } catch (const std::exception &) {
             // Transport diagnostics may contain the credential-bearing URL.
             throw model::CoreError("operationFailed", "Image download transport failed.");
         }
         if (response.status < 200 || response.status >= 300) {
             throw model::CoreError("operationFailed",
-                                  "Image download failed (HTTP " + std::to_string(response.status) + ").");
+                                   "Image download failed (HTTP " + std::to_string(response.status) + ").");
         }
         return response.body;
     }
 
     /// Executes an arbitrary gws CLI command.
-    std::string run(const std::vector<std::string>& args) {
-        if (runner) return runner(args);
+    std::string run(const std::vector<std::string> &args) {
+        if (runner)
+            return runner(args);
         return exec_gws(args);
     }
 
     /// getDocument: fetches document AST with full tabs content and inline suggestions (with retry)
-    slimr::Json getDocument(const std::string& docId) {
+    slimr::Json getDocument(const std::string &docId) {
         std::string cleanId = document_id(docId);
         std::string url = "https://docs.googleapis.com/v1/documents/" + detail::url_encode(cleanId) +
                           "?includeTabsContent=true&suggestionsViewMode=SUGGESTIONS_INLINE";
@@ -1061,7 +1078,7 @@ public:
     }
 
     /// createDocument: creates a new document with title, optionally moving it into folderId
-    slimr::Json createDocument(const std::string& title, const std::optional<std::string>& folderId = std::nullopt) {
+    slimr::Json createDocument(const std::string &title, const std::optional<std::string> &folderId = std::nullopt) {
         std::string url = "https://docs.googleapis.com/v1/documents";
         slimr::Json body = slimr::Json::object_t{{"title", title}};
         std::string bodyStr = slimr::write_json(body);
@@ -1089,10 +1106,9 @@ public:
 
     /// batchUpdate: sends batchUpdate requests with requiredRevisionId. Never retried.
     slimr::Json batchUpdate(
-        const std::string& docId,
-        const slimr::Json::array_t& requests,
-        const std::optional<std::string>& requiredRevisionId = std::nullopt
-    ) {
+        const std::string &docId,
+        const slimr::Json::array_t &requests,
+        const std::optional<std::string> &requiredRevisionId = std::nullopt) {
         std::string cleanId = document_id(docId);
         std::string url = "https://docs.googleapis.com/v1/documents/" + detail::url_encode(cleanId) + ":batchUpdate";
 
@@ -1113,7 +1129,7 @@ public:
 
 // Google Drive API client
 class DriveClient {
-public:
+  public:
     HttpTransport transport = nullptr;
     GwsRunner runner = nullptr;
 
@@ -1121,8 +1137,9 @@ public:
         : transport(t), runner(r) {}
 
     /// Executes an arbitrary gws CLI command.
-    std::string run(const std::vector<std::string>& args) {
-        if (runner) return runner(args);
+    std::string run(const std::vector<std::string> &args) {
+        if (runner)
+            return runner(args);
         return exec_gws(args);
     }
 
@@ -1138,45 +1155,54 @@ public:
     }
 
     /// getFile: fetches file metadata
-    slimr::Json getFile(const std::string& fileId, const std::string& fields = "id,name,mimeType,trashed") {
+    slimr::Json getFile(const std::string &fileId, const std::string &fields = "id,name,mimeType,trashed") {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "?supportsAllDrives=true&fields=" + detail::url_encode(fields);
         auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from Drive getFile");
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from Drive getFile");
         return *parsed;
     }
 
     /// getFileMetadata: fetches and parses typed file metadata
     DriveFile getFileMetadata(
-        const std::string& fileId,
-        const std::string& fields = "id,name,mimeType,trashed,parents,webViewLink,createdTime,modifiedTime,version,size"
-    ) {
+        const std::string &fileId,
+        const std::string &fields = "id,name,mimeType,trashed,parents,webViewLink,createdTime,modifiedTime,version,size") {
         auto j = getFile(fileId, fields);
         DriveFile df;
-        if (j.contains("id") && j["id"].is_string()) df.id = j["id"].get<std::string>();
-        if (j.contains("name") && j["name"].is_string()) df.name = j["name"].get<std::string>();
-        if (j.contains("mimeType") && j["mimeType"].is_string()) df.mimeType = j["mimeType"].get<std::string>();
-        if (j.contains("trashed") && j["trashed"].is_boolean()) df.trashed = j["trashed"].get<bool>();
+        if (j.contains("id") && j["id"].is_string())
+            df.id = j["id"].get<std::string>();
+        if (j.contains("name") && j["name"].is_string())
+            df.name = j["name"].get<std::string>();
+        if (j.contains("mimeType") && j["mimeType"].is_string())
+            df.mimeType = j["mimeType"].get<std::string>();
+        if (j.contains("trashed") && j["trashed"].is_boolean())
+            df.trashed = j["trashed"].get<bool>();
         if (j.contains("parents") && j["parents"].is_array()) {
-            for (const auto& p : j["parents"].get<slimr::Json::array_t>()) {
-                if (p.is_string()) df.parents.push_back(p.get<std::string>());
+            for (const auto &p : j["parents"].get<slimr::Json::array_t>()) {
+                if (p.is_string())
+                    df.parents.push_back(p.get<std::string>());
             }
         }
-        if (j.contains("webViewLink") && j["webViewLink"].is_string()) df.webViewLink = j["webViewLink"].get<std::string>();
-        if (j.contains("createdTime") && j["createdTime"].is_string()) df.createdTime = j["createdTime"].get<std::string>();
-        if (j.contains("modifiedTime") && j["modifiedTime"].is_string()) df.modifiedTime = j["modifiedTime"].get<std::string>();
-        if (j.contains("version") && j["version"].is_string()) df.version = j["version"].get<std::string>();
-        if (j.contains("size") && j["size"].is_number()) df.size = j["size"].get<int64_t>();
+        if (j.contains("webViewLink") && j["webViewLink"].is_string())
+            df.webViewLink = j["webViewLink"].get<std::string>();
+        if (j.contains("createdTime") && j["createdTime"].is_string())
+            df.createdTime = j["createdTime"].get<std::string>();
+        if (j.contains("modifiedTime") && j["modifiedTime"].is_string())
+            df.modifiedTime = j["modifiedTime"].get<std::string>();
+        if (j.contains("version") && j["version"].is_string())
+            df.version = j["version"].get<std::string>();
+        if (j.contains("size") && j["size"].is_number())
+            df.size = j["size"].get<int64_t>();
         return df;
     }
 
     /// listFiles: queries Drive files matching query (paginated)
     std::vector<DriveFile> listFiles(
-        const std::string& query = "",
-        const std::string& fields = "files(id,name,mimeType,trashed,parents,webViewLink),nextPageToken"
-    ) {
+        const std::string &query = "",
+        const std::string &fields = "files(id,name,mimeType,trashed,parents,webViewLink),nextPageToken") {
         std::string pageToken;
         std::vector<DriveFile> result;
         do {
@@ -1190,7 +1216,8 @@ public:
             std::string url = "https://www.googleapis.com/drive/v3/files?" + q;
             auto res = google_api_fetch_checked(transport, runner, url, "GET");
             auto parsed = slimr::parse_json<slimr::Json>(res.body);
-            if (!parsed) throw std::runtime_error("Invalid JSON from Drive listFiles");
+            if (!parsed)
+                throw std::runtime_error("Invalid JSON from Drive listFiles");
 
             pageToken = "";
             if (parsed->contains("nextPageToken") && (*parsed)["nextPageToken"].is_string()) {
@@ -1198,18 +1225,24 @@ public:
             }
 
             if (parsed->contains("files") && (*parsed)["files"].is_array()) {
-                for (const auto& j : (*parsed)["files"].get<slimr::Json::array_t>()) {
+                for (const auto &j : (*parsed)["files"].get<slimr::Json::array_t>()) {
                     DriveFile df;
-                    if (j.contains("id") && j["id"].is_string()) df.id = j["id"].get<std::string>();
-                    if (j.contains("name") && j["name"].is_string()) df.name = j["name"].get<std::string>();
-                    if (j.contains("mimeType") && j["mimeType"].is_string()) df.mimeType = j["mimeType"].get<std::string>();
-                    if (j.contains("trashed") && j["trashed"].is_boolean()) df.trashed = j["trashed"].get<bool>();
+                    if (j.contains("id") && j["id"].is_string())
+                        df.id = j["id"].get<std::string>();
+                    if (j.contains("name") && j["name"].is_string())
+                        df.name = j["name"].get<std::string>();
+                    if (j.contains("mimeType") && j["mimeType"].is_string())
+                        df.mimeType = j["mimeType"].get<std::string>();
+                    if (j.contains("trashed") && j["trashed"].is_boolean())
+                        df.trashed = j["trashed"].get<bool>();
                     if (j.contains("parents") && j["parents"].is_array()) {
-                        for (const auto& p : j["parents"].get<slimr::Json::array_t>()) {
-                            if (p.is_string()) df.parents.push_back(p.get<std::string>());
+                        for (const auto &p : j["parents"].get<slimr::Json::array_t>()) {
+                            if (p.is_string())
+                                df.parents.push_back(p.get<std::string>());
                         }
                     }
-                    if (j.contains("webViewLink") && j["webViewLink"].is_string()) df.webViewLink = j["webViewLink"].get<std::string>();
+                    if (j.contains("webViewLink") && j["webViewLink"].is_string())
+                        df.webViewLink = j["webViewLink"].get<std::string>();
                     result.push_back(std::move(df));
                 }
             }
@@ -1220,62 +1253,62 @@ public:
 
     /// createFile: creates a new file metadata entry in Drive
     slimr::Json createFile(
-        const std::string& name,
-        const std::string& mimeType,
-        const std::optional<std::string>& folderId = std::nullopt
-    ) {
+        const std::string &name,
+        const std::string &mimeType,
+        const std::optional<std::string> &folderId = std::nullopt) {
         std::string url = "https://www.googleapis.com/drive/v3/files?supportsAllDrives=true";
         slimr::Json body = slimr::Json::object_t{
             {"name", name},
-            {"mimeType", mimeType}
-        };
+            {"mimeType", mimeType}};
         if (folderId.has_value() && !folderId->empty()) {
             body["parents"] = slimr::Json::array_t{*folderId};
         }
         auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}});
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from Drive createFile");
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from Drive createFile");
         return *parsed;
     }
 
     /// createDocument: creates a new Google Doc, optionally inside folderId
     slimr::Json createDocument(
-        const std::string& title,
-        const std::optional<std::string>& folderId = std::nullopt
-    ) {
+        const std::string &title,
+        const std::optional<std::string> &folderId = std::nullopt) {
         return DocsClient(transport, runner).createDocument(title, folderId);
     }
 
     /// copyFile: copies a file
-    slimr::Json copyFile(const std::string& fileId, const std::string& name) {
+    slimr::Json copyFile(const std::string &fileId, const std::string &name) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/copy?supportsAllDrives=true";
         slimr::Json body = slimr::Json::object_t{{"name", name}};
         auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from Drive copyFile");
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from Drive copyFile");
         return *parsed;
     }
 
     /// updateFile: updates file metadata (e.g. trashed or rename)
-    slimr::Json updateFile(const std::string& fileId, const slimr::Json& body) {
+    slimr::Json updateFile(const std::string &fileId, const slimr::Json &body) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "?supportsAllDrives=true";
         auto res = google_api_fetch_checked(transport, runner, url, "PATCH", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from Drive updateFile");
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from Drive updateFile");
         return *parsed;
     }
 
     /// deleteFile: permanently deletes a file
-    void deleteFile(const std::string& fileId) {
+    void deleteFile(const std::string &fileId) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "?supportsAllDrives=true";
         google_api_fetch_checked(transport, runner, url, "DELETE", "", {}, cleanId);
     }
 
     /// listPermissions: lists permissions on a file
-    std::vector<DrivePermission> listPermissions(const std::string& fileId, const std::string& fields = "permissions(id,displayName,emailAddress,domain,role,type)") {
+    std::vector<DrivePermission> listPermissions(const std::string &fileId, const std::string &fields = "permissions(id,displayName,emailAddress,domain,role,type)") {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "/permissions?supportsAllDrives=true&pageSize=100&fields=" + detail::url_encode(fields);
@@ -1283,7 +1316,7 @@ public:
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         std::vector<DrivePermission> result;
         if (parsed && parsed->contains("permissions") && (*parsed)["permissions"].is_array()) {
-            for (const auto& item : (*parsed)["permissions"].get<slimr::Json::array_t>()) {
+            for (const auto &item : (*parsed)["permissions"].get<slimr::Json::array_t>()) {
                 DrivePermission perm{
                     .id = item.contains("id") && item["id"].is_string() ? item["id"].get<std::string>() : "",
                     .role = item.contains("role") && item["role"].is_string() ? item["role"].get<std::string>() : "",
@@ -1300,17 +1333,20 @@ public:
 
     /// createPermission: creates permission on file
     DrivePermission createPermission(
-        const std::string& fileId,
-        const DrivePermission& permission,
-        const std::optional<DrivePermissionCreateOptions>& options = std::nullopt
-    ) {
+        const std::string &fileId,
+        const DrivePermission &permission,
+        const std::optional<DrivePermissionCreateOptions> &options = std::nullopt) {
         std::string cleanId = document_id(fileId);
         std::string q = "fields=id,displayName,emailAddress,domain,role,type&supportsAllDrives=true";
         if (options.has_value()) {
-            if (options->emailMessage.has_value()) q += "&emailMessage=" + detail::url_encode(*options->emailMessage);
-            if (options->moveToNewOwnersRoot.has_value()) q += "&moveToNewOwnersRoot=" + std::string(*options->moveToNewOwnersRoot ? "true" : "false");
-            if (options->sendNotificationEmail.has_value()) q += "&sendNotificationEmail=" + std::string(*options->sendNotificationEmail ? "true" : "false");
-            if (options->transferOwnership.has_value()) q += "&transferOwnership=" + std::string(*options->transferOwnership ? "true" : "false");
+            if (options->emailMessage.has_value())
+                q += "&emailMessage=" + detail::url_encode(*options->emailMessage);
+            if (options->moveToNewOwnersRoot.has_value())
+                q += "&moveToNewOwnersRoot=" + std::string(*options->moveToNewOwnersRoot ? "true" : "false");
+            if (options->sendNotificationEmail.has_value())
+                q += "&sendNotificationEmail=" + std::string(*options->sendNotificationEmail ? "true" : "false");
+            if (options->transferOwnership.has_value())
+                q += "&transferOwnership=" + std::string(*options->transferOwnership ? "true" : "false");
         }
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/permissions?" + q;
 
@@ -1318,12 +1354,16 @@ public:
             {"role", permission.role},
             {"type", permission.type == "internal" ? "domain" : permission.type},
         };
-        if (permission.emailAddress.has_value()) body["emailAddress"] = *permission.emailAddress;
-        if (permission.domain.has_value()) body["domain"] = *permission.domain;
+        if (permission.emailAddress.has_value())
+            body["emailAddress"] = *permission.emailAddress;
+        if (permission.domain.has_value())
+            body["domain"] = *permission.domain;
 
-        auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);        auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from Drive createPermission");
-        const auto& item = *parsed;
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
+        auto parsed = slimr::parse_json<slimr::Json>(res.body);
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from Drive createPermission");
+        const auto &item = *parsed;
         return DrivePermission{
             .id = item.contains("id") && item["id"].is_string() ? item["id"].get<std::string>() : "",
             .role = item.contains("role") && item["role"].is_string() ? item["role"].get<std::string>() : "",
@@ -1335,7 +1375,7 @@ public:
     }
 
     /// deletePermission: deletes permission on file
-    void deletePermission(const std::string& fileId, const std::string& permissionId) {
+    void deletePermission(const std::string &fileId, const std::string &permissionId) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "/permissions/" + detail::url_encode(permissionId) + "?supportsAllDrives=true";
@@ -1343,7 +1383,7 @@ public:
     }
 
     /// commentsList: paginates and decodes HTML entities in quoted content
-    std::vector<DriveComment> commentsList(const std::string& fileId) {
+    std::vector<DriveComment> commentsList(const std::string &fileId) {
         std::string cleanId = document_id(fileId);
         std::vector<DriveComment> comments;
         std::string pageToken;
@@ -1356,7 +1396,8 @@ public:
             std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/comments?" + q;
             auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
             auto parsed = slimr::parse_json<slimr::Json>(res.body);
-            if (!parsed) throw std::runtime_error("Invalid JSON from commentsList");
+            if (!parsed)
+                throw std::runtime_error("Invalid JSON from commentsList");
 
             pageToken = "";
             if (parsed->contains("nextPageToken") && (*parsed)["nextPageToken"].is_string()) {
@@ -1364,7 +1405,7 @@ public:
             }
 
             if (parsed->contains("comments") && (*parsed)["comments"].is_array()) {
-                for (const auto& item : (*parsed)["comments"].get<slimr::Json::array_t>()) {
+                for (const auto &item : (*parsed)["comments"].get<slimr::Json::array_t>()) {
                     if (item.contains("deleted") && item["deleted"].is_boolean() && item["deleted"].get<bool>()) {
                         continue;
                     }
@@ -1382,7 +1423,7 @@ public:
                     };
 
                     if (item.contains("author") && item["author"].is_object()) {
-                        const auto& a = item["author"];
+                        const auto &a = item["author"];
                         c.author = DriveCommentAuthor{
                             .displayName = a.contains("displayName") && a["displayName"].is_string() ? std::make_optional(a["displayName"].get<std::string>()) : std::nullopt,
                             .emailAddress = a.contains("emailAddress") && a["emailAddress"].is_string() ? std::make_optional(a["emailAddress"].get<std::string>()) : std::nullopt,
@@ -1398,7 +1439,7 @@ public:
                     }
 
                     if (item.contains("replies") && item["replies"].is_array()) {
-                        for (const auto& rItem : item["replies"].get<slimr::Json::array_t>()) {
+                        for (const auto &rItem : item["replies"].get<slimr::Json::array_t>()) {
                             DriveCommentReply rep{
                                 .id = rItem.contains("id") && rItem["id"].is_string() ? rItem["id"].get<std::string>() : "",
                                 .content = rItem.contains("content") && rItem["content"].is_string() ? std::make_optional(rItem["content"].get<std::string>()) : std::nullopt,
@@ -1409,7 +1450,7 @@ public:
                                 .modifiedTime = rItem.contains("modifiedTime") && rItem["modifiedTime"].is_string() ? std::make_optional(rItem["modifiedTime"].get<std::string>()) : std::nullopt,
                             };
                             if (rItem.contains("author") && rItem["author"].is_object()) {
-                                const auto& a = rItem["author"];
+                                const auto &a = rItem["author"];
                                 rep.author = DriveCommentAuthor{
                                     .displayName = a.contains("displayName") && a["displayName"].is_string() ? std::make_optional(a["displayName"].get<std::string>()) : std::nullopt,
                                     .emailAddress = a.contains("emailAddress") && a["emailAddress"].is_string() ? std::make_optional(a["emailAddress"].get<std::string>()) : std::nullopt,
@@ -1429,17 +1470,16 @@ public:
     }
 
     /// listComments: alias for commentsList
-    std::vector<DriveComment> listComments(const std::string& fileId) {
+    std::vector<DriveComment> listComments(const std::string &fileId) {
         return commentsList(fileId);
     }
 
     /// Generic comments request helper matching Node.js commentRequest
     slimr::Json commentRequest(
-        const std::string& fileId,
-        const std::string& suffix,
-        const std::string& method,
-        const slimr::Json* body = nullptr
-    ) {
+        const std::string &fileId,
+        const std::string &suffix,
+        const std::string &method,
+        const slimr::Json *body = nullptr) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "/comments" + suffix + (method == "DELETE" ? "" : "?fields=*");
@@ -1453,22 +1493,23 @@ public:
             return slimr::Json::object_t{};
         }
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
-        if (!parsed) throw std::runtime_error("Invalid JSON from commentRequest");
+        if (!parsed)
+            throw std::runtime_error("Invalid JSON from commentRequest");
         return *parsed;
     }
 
     /// commentGet: reads one comment thread
-    slimr::Json commentGet(const std::string& fileId, const std::string& threadId) {
+    slimr::Json commentGet(const std::string &fileId, const std::string &threadId) {
         return commentRequest(fileId, "/" + detail::url_encode(threadId), "GET");
     }
 
     /// getComment: alias for commentGet
-    slimr::Json getComment(const std::string& fileId, const std::string& threadId) {
+    slimr::Json getComment(const std::string &fileId, const std::string &threadId) {
         return commentGet(fileId, threadId);
     }
 
     /// commentCreate: creates comment thread
-    slimr::Json commentCreate(const std::string& fileId, const std::string& text, const std::optional<std::string>& quote = std::nullopt) {
+    slimr::Json commentCreate(const std::string &fileId, const std::string &text, const std::optional<std::string> &quote = std::nullopt) {
         slimr::Json body = slimr::Json::object_t{{"content", text}};
         if (quote.has_value() && !quote->empty()) {
             body["quotedFileContent"] = slimr::Json::object_t{
@@ -1480,82 +1521,81 @@ public:
     }
 
     /// createComment: alias for commentCreate
-    slimr::Json createComment(const std::string& fileId, const std::string& text, const std::optional<std::string>& quote = std::nullopt) {
+    slimr::Json createComment(const std::string &fileId, const std::string &text, const std::optional<std::string> &quote = std::nullopt) {
         return commentCreate(fileId, text, quote);
     }
 
     /// commentReply: replies, resolves, or reopens comment
     slimr::Json commentReply(
-        const std::string& fileId,
-        const std::string& threadId,
-        const std::optional<std::string>& content,
-        const std::optional<std::string>& action = std::nullopt
-    ) {
+        const std::string &fileId,
+        const std::string &threadId,
+        const std::optional<std::string> &content,
+        const std::optional<std::string> &action = std::nullopt) {
         slimr::Json body = slimr::Json::object_t{};
-        if (content.has_value() && !content->empty()) body["content"] = *content;
-        if (action.has_value() && !action->empty()) body["action"] = *action;
+        if (content.has_value() && !content->empty())
+            body["content"] = *content;
+        if (action.has_value() && !action->empty())
+            body["action"] = *action;
         return commentRequest(fileId, "/" + detail::url_encode(threadId) + "/replies", "POST", &body);
     }
 
     /// createReply: alias for commentReply
     slimr::Json createReply(
-        const std::string& fileId,
-        const std::string& threadId,
-        const std::optional<std::string>& content,
-        const std::optional<std::string>& action = std::nullopt
-    ) {
+        const std::string &fileId,
+        const std::string &threadId,
+        const std::optional<std::string> &content,
+        const std::optional<std::string> &action = std::nullopt) {
         return commentReply(fileId, threadId, content, action);
     }
 
     /// commentUpdate: updates author's comment
-    slimr::Json commentUpdate(const std::string& fileId, const std::string& threadId, const std::string& text) {
+    slimr::Json commentUpdate(const std::string &fileId, const std::string &threadId, const std::string &text) {
         slimr::Json body = slimr::Json::object_t{{"content", text}};
         return commentRequest(fileId, "/" + detail::url_encode(threadId), "PATCH", &body);
     }
 
     /// updateComment: alias for commentUpdate
-    slimr::Json updateComment(const std::string& fileId, const std::string& threadId, const std::string& text) {
+    slimr::Json updateComment(const std::string &fileId, const std::string &threadId, const std::string &text) {
         return commentUpdate(fileId, threadId, text);
     }
 
     /// commentDelete: deletes comment thread
-    void commentDelete(const std::string& fileId, const std::string& threadId) {
+    void commentDelete(const std::string &fileId, const std::string &threadId) {
         commentRequest(fileId, "/" + detail::url_encode(threadId), "DELETE");
     }
 
     /// deleteComment: alias for commentDelete
-    void deleteComment(const std::string& fileId, const std::string& threadId) {
+    void deleteComment(const std::string &fileId, const std::string &threadId) {
         commentDelete(fileId, threadId);
     }
 
     /// replyUpdate: edits the author's reply
-    slimr::Json replyUpdate(const std::string& fileId, const std::string& threadId, const std::string& replyId, const std::string& text) {
+    slimr::Json replyUpdate(const std::string &fileId, const std::string &threadId, const std::string &replyId, const std::string &text) {
         slimr::Json body = slimr::Json::object_t{{"content", text}};
         return commentRequest(fileId, "/" + detail::url_encode(threadId) + "/replies/" + detail::url_encode(replyId), "PATCH", &body);
     }
 
     /// updateReply: alias for replyUpdate
-    slimr::Json updateReply(const std::string& fileId, const std::string& threadId, const std::string& replyId, const std::string& text) {
+    slimr::Json updateReply(const std::string &fileId, const std::string &threadId, const std::string &replyId, const std::string &text) {
         return replyUpdate(fileId, threadId, replyId, text);
     }
 
     /// replyDelete: deletes the author's reply
-    void replyDelete(const std::string& fileId, const std::string& threadId, const std::string& replyId) {
+    void replyDelete(const std::string &fileId, const std::string &threadId, const std::string &replyId) {
         commentRequest(fileId, "/" + detail::url_encode(threadId) + "/replies/" + detail::url_encode(replyId), "DELETE");
     }
 
     /// deleteReply: alias for replyDelete
-    void deleteReply(const std::string& fileId, const std::string& threadId, const std::string& replyId) {
+    void deleteReply(const std::string &fileId, const std::string &threadId, const std::string &replyId) {
         replyDelete(fileId, threadId, replyId);
     }
 
     /// imagesUpload: uploads images through a throwaway converted .docx and returns document ID and contentUris
-    ImagesUploadResult imagesUpload(const std::string& name, const std::vector<DocxImage>& images) {
+    ImagesUploadResult imagesUpload(const std::string &name, const std::vector<DocxImage> &images) {
         std::string boundary = "gdocsmith-upload";
         slimr::Json meta = slimr::Json::object_t{
             {"mimeType", "application/vnd.google-apps.document"},
-            {"name", name}
-        };
+            {"name", name}};
         std::string metaStr = slimr::write_json(meta);
 
         std::string docxData = docx_build("", images);
@@ -1571,8 +1611,7 @@ public:
 
         std::string uploadUrl = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true";
         std::map<std::string, std::string> headers = {
-            {"Content-Type", "multipart/related; boundary=" + boundary}
-        };
+            {"Content-Type", "multipart/related; boundary=" + boundary}};
 
         auto res = google_api_fetch_checked(transport, runner, uploadUrl, "POST", body, headers);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
@@ -1582,88 +1621,87 @@ public:
         std::string documentId = (*parsed)["id"].get<std::string>();
         try {
 
-        // Read back document
-        std::string readUrl = "https://docs.googleapis.com/v1/documents/" + detail::url_encode(documentId) + "?includeTabsContent=true";
-        HttpCallResponse readRes;
-        try {
-            readRes = google_api_fetch_checked(transport, runner, readUrl, "GET", "", {}, documentId);
-        } catch (...) {
-            throw;
-        }
-
-        auto readParsed = slimr::parse_json<slimr::Json>(readRes.body);
-        if (!readParsed) {
-            throw std::runtime_error("Invalid JSON reading uploaded document: " + documentId);
-        }
-
-        std::vector<std::string> contentUris;
-        const auto& docJson = *readParsed;
-        slimr::Json documentTab = slimr::Json::object_t{};
-        if (docJson.contains("tabs") && docJson["tabs"].is_array() && !docJson["tabs"].get<slimr::Json::array_t>().empty()) {
-            const auto& tab0 = docJson["tabs"].get<slimr::Json::array_t>()[0];
-            if (tab0.contains("documentTab") && tab0["documentTab"].is_object()) {
-                documentTab = tab0["documentTab"];
+            // Read back document
+            std::string readUrl = "https://docs.googleapis.com/v1/documents/" + detail::url_encode(documentId) + "?includeTabsContent=true";
+            HttpCallResponse readRes;
+            try {
+                readRes = google_api_fetch_checked(transport, runner, readUrl, "GET", "", {}, documentId);
+            } catch (...) {
+                throw;
             }
-        }
 
-        const slimr::Json* inlineObjectsPtr = nullptr;
-        if (documentTab.is_object() && documentTab.contains("inlineObjects") && documentTab["inlineObjects"].is_object()) {
-            inlineObjectsPtr = &documentTab["inlineObjects"];
-        } else if (docJson.contains("inlineObjects") && docJson["inlineObjects"].is_object()) {
-            inlineObjectsPtr = &docJson["inlineObjects"];
-        }
+            auto readParsed = slimr::parse_json<slimr::Json>(readRes.body);
+            if (!readParsed) {
+                throw std::runtime_error("Invalid JSON reading uploaded document: " + documentId);
+            }
 
-        const slimr::Json* bodyContentPtr = nullptr;
-        if (documentTab.is_object() && documentTab.contains("body") && documentTab["body"].is_object() &&
-            documentTab["body"].contains("content") && documentTab["body"]["content"].is_array()) {
-            bodyContentPtr = &documentTab["body"]["content"];
-        } else if (docJson.contains("body") && docJson["body"].is_object() &&
-                   docJson["body"].contains("content") && docJson["body"]["content"].is_array()) {
-            bodyContentPtr = &docJson["body"]["content"];
-        }
+            std::vector<std::string> contentUris;
+            const auto &docJson = *readParsed;
+            slimr::Json documentTab = slimr::Json::object_t{};
+            if (docJson.contains("tabs") && docJson["tabs"].is_array() && !docJson["tabs"].get<slimr::Json::array_t>().empty()) {
+                const auto &tab0 = docJson["tabs"].get<slimr::Json::array_t>()[0];
+                if (tab0.contains("documentTab") && tab0["documentTab"].is_object()) {
+                    documentTab = tab0["documentTab"];
+                }
+            }
 
-        if (bodyContentPtr) {
-            for (const auto& el : bodyContentPtr->get<slimr::Json::array_t>()) {
-                if (el.contains("paragraph") && el["paragraph"].is_object() &&
-                    el["paragraph"].contains("elements") && el["paragraph"]["elements"].is_array()) {
-                    for (const auto& pel : el["paragraph"]["elements"].get<slimr::Json::array_t>()) {
-                        if (pel.contains("inlineObjectElement") && pel["inlineObjectElement"].is_object() &&
-                            pel["inlineObjectElement"].contains("inlineObjectId") && pel["inlineObjectElement"]["inlineObjectId"].is_string()) {
-                            std::string objId = pel["inlineObjectElement"]["inlineObjectId"].get<std::string>();
-                            std::string uri;
-                            if (inlineObjectsPtr && inlineObjectsPtr->contains(objId) && (*inlineObjectsPtr)[objId].is_object()) {
-                                const auto& obj = (*inlineObjectsPtr)[objId];
-                                if (obj.contains("inlineObjectProperties") && obj["inlineObjectProperties"].is_object()) {
-                                    const auto& iop = obj["inlineObjectProperties"];
-                                    if (iop.contains("embeddedObject") && iop["embeddedObject"].is_object()) {
-                                        const auto& eo = iop["embeddedObject"];
-                                        if (eo.contains("imageProperties") && eo["imageProperties"].is_object()) {
-                                            const auto& ip = eo["imageProperties"];
-                                            if (ip.contains("contentUri") && ip["contentUri"].is_string()) {
-                                                uri = ip["contentUri"].get<std::string>();
+            const slimr::Json *inlineObjectsPtr = nullptr;
+            if (documentTab.is_object() && documentTab.contains("inlineObjects") && documentTab["inlineObjects"].is_object()) {
+                inlineObjectsPtr = &documentTab["inlineObjects"];
+            } else if (docJson.contains("inlineObjects") && docJson["inlineObjects"].is_object()) {
+                inlineObjectsPtr = &docJson["inlineObjects"];
+            }
+
+            const slimr::Json *bodyContentPtr = nullptr;
+            if (documentTab.is_object() && documentTab.contains("body") && documentTab["body"].is_object() &&
+                documentTab["body"].contains("content") && documentTab["body"]["content"].is_array()) {
+                bodyContentPtr = &documentTab["body"]["content"];
+            } else if (docJson.contains("body") && docJson["body"].is_object() &&
+                       docJson["body"].contains("content") && docJson["body"]["content"].is_array()) {
+                bodyContentPtr = &docJson["body"]["content"];
+            }
+
+            if (bodyContentPtr) {
+                for (const auto &el : bodyContentPtr->get<slimr::Json::array_t>()) {
+                    if (el.contains("paragraph") && el["paragraph"].is_object() &&
+                        el["paragraph"].contains("elements") && el["paragraph"]["elements"].is_array()) {
+                        for (const auto &pel : el["paragraph"]["elements"].get<slimr::Json::array_t>()) {
+                            if (pel.contains("inlineObjectElement") && pel["inlineObjectElement"].is_object() &&
+                                pel["inlineObjectElement"].contains("inlineObjectId") && pel["inlineObjectElement"]["inlineObjectId"].is_string()) {
+                                std::string objId = pel["inlineObjectElement"]["inlineObjectId"].get<std::string>();
+                                std::string uri;
+                                if (inlineObjectsPtr && inlineObjectsPtr->contains(objId) && (*inlineObjectsPtr)[objId].is_object()) {
+                                    const auto &obj = (*inlineObjectsPtr)[objId];
+                                    if (obj.contains("inlineObjectProperties") && obj["inlineObjectProperties"].is_object()) {
+                                        const auto &iop = obj["inlineObjectProperties"];
+                                        if (iop.contains("embeddedObject") && iop["embeddedObject"].is_object()) {
+                                            const auto &eo = iop["embeddedObject"];
+                                            if (eo.contains("imageProperties") && eo["imageProperties"].is_object()) {
+                                                const auto &ip = eo["imageProperties"];
+                                                if (ip.contains("contentUri") && ip["contentUri"].is_string()) {
+                                                    uri = ip["contentUri"].get<std::string>();
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            if (!uri.empty()) {
-                                contentUris.push_back(uri);
+                                if (!uri.empty()) {
+                                    contentUris.push_back(uri);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if (contentUris.size() != images.size() || std::any_of(contentUris.begin(), contentUris.end(), [](const std::string& u) { return u.empty(); })) {
-            throw std::runtime_error("Google didn't convert every uploaded image");
-        }
+            if (contentUris.size() != images.size() || std::any_of(contentUris.begin(), contentUris.end(), [](const std::string &u) { return u.empty(); })) {
+                throw std::runtime_error("Google didn't convert every uploaded image");
+            }
 
-        return ImagesUploadResult{
-            .contentUris = std::move(contentUris),
-            .documentId = std::move(documentId)
-        };
-        } catch (const std::exception& error) {
+            return ImagesUploadResult{
+                .contentUris = std::move(contentUris),
+                .documentId = std::move(documentId)};
+        } catch (const std::exception &error) {
             throw ImagesUploadError(error.what(), documentId);
         } catch (...) {
             throw ImagesUploadError("The uploaded image document could not be read.", documentId);
@@ -1671,7 +1709,7 @@ public:
     }
 
     /// textExport: plain text export stripped of BOM and \r\n normalized to \n
-    std::string textExport(const std::string& documentId) {
+    std::string textExport(const std::string &documentId) {
         std::string cleanId = document_id(documentId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/export?mimeType=text%2Fplain";
         auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
@@ -1712,22 +1750,24 @@ struct WriteAttempt {
 };
 
 class WriteTracker {
-public:
+  public:
     std::vector<WriteAttempt> writes;
     std::map<std::string, std::string> revisions;
 
     std::string writeState(bool complete) const {
-        for (const auto& w : writes) {
-            if (w.outcome == "unknown" || w.outcome == "pending") return "unknown";
+        for (const auto &w : writes) {
+            if (w.outcome == "unknown" || w.outcome == "pending")
+                return "unknown";
         }
         bool anyConfirmed = false;
-        for (const auto& w : writes) {
+        for (const auto &w : writes) {
             if (w.outcome == "confirmed") {
                 anyConfirmed = true;
                 break;
             }
         }
-        if (!anyConfirmed) return "none";
+        if (!anyConfirmed)
+            return "none";
         return complete ? "complete" : "partial";
     }
 

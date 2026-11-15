@@ -43,7 +43,7 @@ struct TabDiff {
     std::string tabTitle;
     std::string text;
 
-    bool operator==(const TabDiff&) const = default;
+    bool operator==(const TabDiff &) const = default;
 };
 
 /** An operation's plan. */
@@ -55,23 +55,29 @@ struct Plan {
 };
 
 /** Renders a tab's body into clean markdown for unified diffing. */
-inline std::string tabBodyMarkdown(const model::TabModel& tab) {
+inline std::string tabBodyMarkdown(const model::TabModel &tab) {
     std::string md;
-    for (const auto& block : tab.blocks) {
+    for (const auto &block : tab.blocks) {
         if (block.is_paragraph() && block.paragraph) {
             std::string para_text;
             std::string prefix;
             if (block.paragraph->style.contains("namedStyleType") &&
                 block.paragraph->style["namedStyleType"].is_string()) {
                 std::string nst = block.paragraph->style["namedStyleType"].get<std::string>();
-                if (nst == "HEADING_1") prefix = "# ";
-                else if (nst == "HEADING_2") prefix = "## ";
-                else if (nst == "HEADING_3") prefix = "### ";
-                else if (nst == "HEADING_4") prefix = "#### ";
-                else if (nst == "HEADING_5") prefix = "##### ";
-                else if (nst == "HEADING_6") prefix = "###### ";
+                if (nst == "HEADING_1")
+                    prefix = "# ";
+                else if (nst == "HEADING_2")
+                    prefix = "## ";
+                else if (nst == "HEADING_3")
+                    prefix = "### ";
+                else if (nst == "HEADING_4")
+                    prefix = "#### ";
+                else if (nst == "HEADING_5")
+                    prefix = "##### ";
+                else if (nst == "HEADING_6")
+                    prefix = "###### ";
             }
-            for (const auto& in : block.paragraph->inlines) {
+            for (const auto &in : block.paragraph->inlines) {
                 if (in.is_text()) {
                     para_text += in.text;
                 }
@@ -79,8 +85,10 @@ inline std::string tabBodyMarkdown(const model::TabModel& tab) {
             if (!para_text.empty() || !prefix.empty()) {
                 if (!md.empty()) {
                     if (!md.ends_with("\n\n")) {
-                        if (!md.ends_with('\n')) md += "\n\n";
-                        else md += "\n";
+                        if (!md.ends_with('\n'))
+                            md += "\n\n";
+                        else
+                            md += "\n";
                     }
                 }
                 md += prefix + para_text;
@@ -95,25 +103,25 @@ inline std::string tabBodyMarkdown(const model::TabModel& tab) {
 }
 
 /** Document-file diffs of every tab that changed (added and deleted tabs included). */
-inline std::vector<TabDiff> tabDiffs(const model::DocModel& original, const model::DocModel& finalDoc) {
+inline std::vector<TabDiff> tabDiffs(const model::DocModel &original, const model::DocModel &finalDoc) {
     std::map<std::string, std::string> originalBodies;
-    for (const auto& tab : original.tabs) {
+    for (const auto &tab : original.tabs) {
         originalBodies[tab.tabId] = tabBodyMarkdown(tab);
     }
     std::map<std::string, std::string> finalBodies;
-    for (const auto& tab : finalDoc.tabs) {
+    for (const auto &tab : finalDoc.tabs) {
         finalBodies[tab.tabId] = tabBodyMarkdown(tab);
     }
 
     std::set<std::string> idSet;
     std::vector<std::string> ids;
-    for (const auto& t : original.tabs) {
+    for (const auto &t : original.tabs) {
         if (!idSet.contains(t.tabId)) {
             idSet.insert(t.tabId);
             ids.push_back(t.tabId);
         }
     }
-    for (const auto& t : finalDoc.tabs) {
+    for (const auto &t : finalDoc.tabs) {
         if (!idSet.contains(t.tabId)) {
             idSet.insert(t.tabId);
             ids.push_back(t.tabId);
@@ -121,14 +129,20 @@ inline std::vector<TabDiff> tabDiffs(const model::DocModel& original, const mode
     }
 
     std::vector<TabDiff> out;
-    for (const auto& tabId : ids) {
-        const model::TabModel* before = nullptr;
-        for (const auto& t : original.tabs) {
-            if (t.tabId == tabId) { before = &t; break; }
+    for (const auto &tabId : ids) {
+        const model::TabModel *before = nullptr;
+        for (const auto &t : original.tabs) {
+            if (t.tabId == tabId) {
+                before = &t;
+                break;
+            }
         }
-        const model::TabModel* after = nullptr;
-        for (const auto& t : finalDoc.tabs) {
-            if (t.tabId == tabId) { after = &t; break; }
+        const model::TabModel *after = nullptr;
+        for (const auto &t : finalDoc.tabs) {
+            if (t.tabId == tabId) {
+                after = &t;
+                break;
+            }
         }
 
         std::string title = after ? after->title : (before ? before->title : tabId);
@@ -161,26 +175,26 @@ inline std::vector<TabDiff> tabDiffs(const model::DocModel& original, const mode
  * carries existing documents' comment anchors through edits inside them, evaluates the guard
  * across all of them, and diffs each changed tab.
  */
-inline Plan planBuild(CoreSession& session) {
+inline Plan planBuild(CoreSession &session) {
     std::vector<PlannedDoc> docs;
     std::map<std::string, std::vector<CommentAnchor>> anchors;
     std::vector<model::DocModel> intentLinkSources;
-    for (const auto& [id, state] : session.docs) {
+    for (const auto &[id, state] : session.docs) {
         (void)id;
         intentLinkSources.push_back(state.current);
     }
-    for (auto& [id, state] : session.docs) {
+    for (auto &[id, state] : session.docs) {
         (void)id;
         lens::documentLinksResolve(state.current, intentLinkSources);
     }
 
-    for (auto& [docId, state] : session.docs) {
+    for (auto &[docId, state] : session.docs) {
         std::vector<CommentAnchor> comments = session.commentAnchorsFor(state);
         anchors[state.docId] = comments;
 
         std::map<std::string, std::vector<model::Range>> carryRanges;
-        for (const auto& comment : comments) {
-            for (const auto& occ : comment.occurrences) {
+        for (const auto &comment : comments) {
+            for (const auto &occ : comment.occurrences) {
                 carryRanges[occ.tabId].push_back(occ.range);
             }
         }
@@ -198,13 +212,13 @@ inline Plan planBuild(CoreSession& session) {
             std::string diffMsg;
             size_t limit = std::min(size_t{20}, check.diffs.size());
             for (size_t i = 0; i < limit; ++i) {
-                if (!diffMsg.empty()) diffMsg += "\n";
+                if (!diffMsg.empty())
+                    diffMsg += "\n";
                 diffMsg += check.diffs[i];
             }
             throw model::CoreError(
                 "internal",
-                "the plan for " + state.docId + " wouldn't produce the intended document; this plan was not sent\n" + diffMsg
-            );
+                "the plan for " + state.docId + " wouldn't produce the intended document; this plan was not sent\n" + diffMsg);
         }
 
         PlannedDoc pdoc{
@@ -220,10 +234,11 @@ inline Plan planBuild(CoreSession& session) {
     }
 
     std::vector<GuardDoc> guardDocs;
-    for (const auto& doc : docs) {
+    for (const auto &doc : docs) {
         auto it = session.docs.find(doc.docId);
-        if (it == session.docs.end()) continue;
-        const auto& state = it->second;
+        if (it == session.docs.end())
+            continue;
+        const auto &state = it->second;
         auto commIt = anchors.find(doc.docId);
         guardDocs.push_back(GuardDoc{
             .comments = commIt != anchors.end() ? commIt->second : std::vector<CommentAnchor>{},
@@ -237,7 +252,7 @@ inline Plan planBuild(CoreSession& session) {
     }
 
     std::vector<model::DocModel> linkSources;
-    for (const auto& [_, s] : session.docs) {
+    for (const auto &[_, s] : session.docs) {
         linkSources.push_back(s.current);
     }
 
@@ -246,19 +261,20 @@ inline Plan planBuild(CoreSession& session) {
         .allow = session.allow,
         .linkSources = linkSources,
     });
-    for (const auto& f : session.findings) {
+    for (const auto &f : session.findings) {
         findings.push_back(f);
     }
 
     std::vector<TabDiff> diffs;
-    for (const auto& doc : docs) {
+    for (const auto &doc : docs) {
         auto tds = tabDiffs(doc.input.original, doc.input.final);
         diffs.insert(diffs.end(), tds.begin(), tds.end());
     }
 
     std::string combinedDiff;
-    for (const auto& d : diffs) {
-        if (!combinedDiff.empty()) combinedDiff += "\n";
+    for (const auto &d : diffs) {
+        if (!combinedDiff.empty())
+            combinedDiff += "\n";
         combinedDiff += d.text;
     }
 

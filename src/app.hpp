@@ -57,17 +57,20 @@ struct ExportInput {
     slimr::OptField<std::optional<bool>, "Also write resolved comments' blocks; needed to reopen one."> commentsIncludeResolved{false};
     slimr::OptField<std::optional<slimr::Json>,
                     "Also download Drive-hosted images into the export folder to look at them: true for all, or a list of image ids. "
-                    "Returned as images (id to file path)."> imagesDownload;
+                    "Returned as images (id to file path).">
+        imagesDownload;
 };
 
 struct ImportInput {
     slimr::Field<std::string, "Absolute path to a v3 markdown file."> path;
     slimr::OptField<std::optional<std::vector<std::string>>,
-                    "Guard kinds to waive for this import only, each after the user approves what a refusal named; other refusals still stop it."> allow;
+                    "Guard kinds to waive for this import only, each after the user approves what a refusal named; other refusals still stop it.">
+        allow;
     slimr::OptField<std::optional<std::string>,
                     "The styles a new document starts from. Required when the file creates a document (doc: null); refused otherwise. "
                     "generic: Google's built-in styles, for copying, recreating or splitting an export. account: the user's saved default styles, "
-                    "for new content. The file's named style sets apply on top."> newDocStyleBaseline;
+                    "for new content. The file's named style sets apply on top.">
+        newDocStyleBaseline;
 };
 
 struct FilePermissionInput {
@@ -89,7 +92,8 @@ struct FileInput {
     slimr::Field<std::string, "Document ID or canonical document URL."> doc;
     slimr::OptField<std::optional<std::string>, "New title for the copy action."> title;
     slimr::OptField<std::optional<std::vector<std::string>>,
-                    "Operation kinds a file call's allow can waive: [\"delete\"], [\"share\"]."> allow;
+                    "Operation kinds a file call's allow can waive: [\"delete\"], [\"share\"].">
+        allow;
     slimr::OptField<std::optional<std::string>, "Permission ID for the revoke action."> permissionId;
     slimr::OptField<std::optional<FilePermissionInput>, "Sharing target for the grant action."> permission;
     slimr::OptField<std::optional<FilePermissionOptionsInput>, "Sharing options for the grant action."> options;
@@ -105,15 +109,16 @@ inline std::mutex g_doc_queue_mutex;
 inline std::map<std::string, std::shared_ptr<std::mutex>> g_doc_mutexes;
 
 template <typename Func>
-auto document_serialized(const std::string& doc, Func&& task) {
+auto document_serialized(const std::string &doc, Func &&task) {
     if (doc.empty()) {
         return task();
     }
     std::shared_ptr<std::mutex> m;
     {
         std::lock_guard<std::mutex> lock(g_doc_queue_mutex);
-        auto& slot = g_doc_mutexes[doc];
-        if (!slot) slot = std::make_shared<std::mutex>();
+        auto &slot = g_doc_mutexes[doc];
+        if (!slot)
+            slot = std::make_shared<std::mutex>();
         m = slot;
     }
     std::lock_guard<std::mutex> docLock(*m);
@@ -121,8 +126,9 @@ auto document_serialized(const std::string& doc, Func&& task) {
 }
 
 /** Queue key for a doc reference; invalid or empty references get none and fail in the engine. */
-inline std::string document_key(const std::string& reference) {
-    if (reference.empty()) return "";
+inline std::string document_key(const std::string &reference) {
+    if (reference.empty())
+        return "";
     try {
         return engine::documentId(reference);
     } catch (...) {
@@ -131,11 +137,12 @@ inline std::string document_key(const std::string& reference) {
 }
 
 /** Queue key for an import: the file's frontmatter doc, or none for unreadable files and `doc: null`. */
-inline std::string document_key_of_file(const std::string& path) {
+inline std::string document_key_of_file(const std::string &path) {
     try {
         auto snapshot = engine::inputFileRead(path);
         auto file = lens::documentFileParse(snapshot.text);
-        if (file.frontmatter.doc.has_value()) return document_key(*file.frontmatter.doc);
+        if (file.frontmatter.doc.has_value())
+            return document_key(*file.frontmatter.doc);
     } catch (...) {
     }
     return "";
@@ -149,17 +156,21 @@ inline std::optional<std::filesystem::path> executable_dir() {
 #if defined(__APPLE__)
     uint32_t size = 0;
     _NSGetExecutablePath(nullptr, &size);
-    if (size == 0) return std::nullopt;
+    if (size == 0)
+        return std::nullopt;
     std::string buf(size, '\0');
-    if (_NSGetExecutablePath(buf.data(), &size) != 0) return std::nullopt;
+    if (_NSGetExecutablePath(buf.data(), &size) != 0)
+        return std::nullopt;
     std::error_code ec;
     auto canonical = std::filesystem::weakly_canonical(std::filesystem::path(buf.c_str()), ec);
-    if (ec) return std::filesystem::path(buf.c_str()).parent_path();
+    if (ec)
+        return std::filesystem::path(buf.c_str()).parent_path();
     return canonical.parent_path();
 #elif defined(__linux__)
     char buf[4096];
     ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
-    if (len <= 0) return std::nullopt;
+    if (len <= 0)
+        return std::nullopt;
     buf[len] = '\0';
     return std::filesystem::path(buf).parent_path();
 #else
@@ -177,7 +188,7 @@ inline std::string load_guide_content() {
         candidates.push_back(*exeDir / "../share/gdocsmith-mcp/docs/agent-guide.md");
         candidates.push_back(*exeDir / "../../docs/agent-guide.md");
     }
-    for (const auto& path : candidates) {
+    for (const auto &path : candidates) {
         std::ifstream f(path, std::ios::binary);
         if (f.is_open()) {
             std::ostringstream ss;
@@ -193,8 +204,8 @@ inline std::string load_guide_content() {
         }
     }
     return "# gdocsmith agent guide (v" + std::string(GDOCSMITH_VERSION) + ")\n\n"
-           "Use gdocsmith for all Google Docs reading and editing. Use export to obtain the local markdown file, "
-           "edit with local tools, and import to verify and apply.\n";
+                                                                           "Use gdocsmith for all Google Docs reading and editing. Use export to obtain the local markdown file, "
+                                                                           "edit with local tools, and import to verify and apply.\n";
 }
 
 // ---------------------------------------------------------------------------
@@ -210,14 +221,15 @@ struct ListCut {
 };
 
 /** Keeps leading entries while the list's JSON fits LIST_CHARS_MAX; long strings are shortened. */
-inline ListCut list_cut(const slimr::Json::array_t& items) {
+inline ListCut list_cut(const slimr::Json::array_t &items) {
     ListCut out;
     size_t used = 0;
-    for (const auto& item : items) {
+    for (const auto &item : items) {
         slimr::Json entry = item;
         if (item.is_string()) {
-            const auto& s = item.get<std::string>();
-            if (s.size() > LIST_CHARS_MAX) entry = s.substr(0, LIST_CHARS_MAX) + "...";
+            const auto &s = item.get<std::string>();
+            if (s.size() > LIST_CHARS_MAX)
+                entry = s.substr(0, LIST_CHARS_MAX) + "...";
         }
         used += slimr::write_json(entry).size() + 1;
         if (used > LIST_CHARS_MAX && !out.kept.empty()) {
@@ -233,7 +245,8 @@ inline ListCut list_cut(const slimr::Json::array_t& items) {
 inline slimr::McpResult command_result(slimr::Json output) {
     if (output.contains("warnings") && output["warnings"].is_array()) {
         auto cut = list_cut(output["warnings"].get<slimr::Json::array_t>());
-        if (cut.cut) cut.kept.push_back("...");
+        if (cut.cut)
+            cut.kept.push_back("...");
         output["warnings"] = std::move(cut.kept);
     }
     if (output.contains("errors") && output["errors"].is_array()) {
@@ -256,7 +269,7 @@ inline slimr::McpResult command_result(slimr::Json output) {
         }
     }
     if (output.contains("status") && output["status"].is_string()) {
-        const auto& status = output["status"].get<std::string>();
+        const auto &status = output["status"].get<std::string>();
         if (status == "refused" || status == "failed") {
             return slimr::McpResult::error(slimr::write_json(output));
         }
@@ -265,47 +278,58 @@ inline slimr::McpResult command_result(slimr::Json output) {
     return slimr::McpResult::structured(std::move(output), std::move(text));
 }
 
-inline slimr::Json strings_json(const std::vector<std::string>& values) {
+inline slimr::Json strings_json(const std::vector<std::string> &values) {
     slimr::Json::array_t arr;
     arr.reserve(values.size());
-    for (const auto& v : values) arr.push_back(v);
+    for (const auto &v : values)
+        arr.push_back(v);
     return slimr::Json(std::move(arr));
 }
 
-inline slimr::Json result_error_json(const engine::ResultError& e) {
+inline slimr::Json result_error_json(const engine::ResultError &e) {
     slimr::Json out = slimr::Json::object_t{{"code", e.code}, {"message", e.message}};
-    if (e.count) out["count"] = static_cast<int64_t>(*e.count);
-    if (e.line) out["line"] = static_cast<int64_t>(*e.line);
+    if (e.count)
+        out["count"] = static_cast<int64_t>(*e.count);
+    if (e.line)
+        out["line"] = static_cast<int64_t>(*e.line);
     if (e.lines) {
         slimr::Json::array_t lines;
-        for (int l : *e.lines) lines.push_back(static_cast<int64_t>(l));
+        for (int l : *e.lines)
+            lines.push_back(static_cast<int64_t>(l));
         out["lines"] = std::move(lines);
     }
-    if (e.phase) out["phase"] = *e.phase;
-    if (e.tab) out["tab"] = *e.tab;
+    if (e.phase)
+        out["phase"] = *e.phase;
+    if (e.tab)
+        out["tab"] = *e.tab;
     return out;
 }
 
 /** Serializes a write result with the legacy FileWriteResult key set (absent optionals are omitted). */
-inline slimr::Json file_write_result_json(const engine::FileWriteResult& r) {
+inline slimr::Json file_write_result_json(const engine::FileWriteResult &r) {
     slimr::Json out = slimr::Json::object_t{};
-    if (r.commentsLine) out["commentsLine"] = static_cast<int64_t>(*r.commentsLine);
+    if (r.commentsLine)
+        out["commentsLine"] = static_cast<int64_t>(*r.commentsLine);
     if (r.deletedTabs) {
         slimr::Json::array_t tabs;
-        for (const auto& t : *r.deletedTabs) {
+        for (const auto &t : *r.deletedTabs) {
             tabs.push_back(slimr::Json::object_t{{"id", t.id}, {"title", t.title}});
         }
         out["deletedTabs"] = std::move(tabs);
     }
-    if (r.doc) out["doc"] = *r.doc;
+    if (r.doc)
+        out["doc"] = *r.doc;
     if (r.errors) {
         slimr::Json::array_t errs;
-        for (const auto& e : *r.errors) errs.push_back(result_error_json(e));
+        for (const auto &e : *r.errors)
+            errs.push_back(result_error_json(e));
         out["errors"] = std::move(errs);
     }
-    if (r.exportPath) out["exportPath"] = *r.exportPath;
+    if (r.exportPath)
+        out["exportPath"] = *r.exportPath;
     out["status"] = r.status;
-    if (r.suggestionsLine) out["suggestionsLine"] = static_cast<int64_t>(*r.suggestionsLine);
+    if (r.suggestionsLine)
+        out["suggestionsLine"] = static_cast<int64_t>(*r.suggestionsLine);
     out["summary"] = r.summary;
     out["verification"] = r.verification;
     out["warnings"] = strings_json(r.warnings);
@@ -315,21 +339,21 @@ inline slimr::Json file_write_result_json(const engine::FileWriteResult& r) {
 
 /** Consistent failure classification for tracked lifecycle and import actions (port of lifecycleFailure). */
 inline engine::FileWriteResult lifecycle_failure(
-    const std::exception& error,
-    const std::string& doc,
-    const engine::WriteTracker* operation = nullptr,
-    bool complete = false
-) {
-    const auto* core = dynamic_cast<const model::CoreError*>(&error);
+    const std::exception &error,
+    const std::string &doc,
+    const engine::WriteTracker *operation = nullptr,
+    bool complete = false) {
+    const auto *core = dynamic_cast<const model::CoreError *>(&error);
     std::string writeState = operation ? operation->writeState(complete) : "none";
     std::string message = error.what();
 
     engine::FileWriteResult result;
-    if (!doc.empty()) result.doc = doc;
+    if (!doc.empty())
+        result.doc = doc;
 
     std::vector<engine::ResultError> errors;
-    if (const auto* problems = dynamic_cast<const model::FileProblems*>(&error)) {
-        for (const auto& p : problems->problems) {
+    if (const auto *problems = dynamic_cast<const model::FileProblems *>(&error)) {
+        for (const auto &p : problems->problems) {
             engine::ResultError re;
             re.code = p.code;
             re.line = p.line;
@@ -348,11 +372,11 @@ inline engine::FileWriteResult lifecycle_failure(
     const bool refused = writeState == "none" && core != nullptr;
     result.status = refused ? "refused" : "failed";
     result.summary = writeState == "none"
-        ? "No cloud mutation was confirmed."
-        : "Work may have landed; check the document before doing anything else, and don't repeat the action blindly.";
+                         ? "No cloud mutation was confirmed."
+                         : "Work may have landed; check the document before doing anything else, and don't repeat the action blindly.";
     result.verification = message.find("did not match the intended document") != std::string::npos
-        ? "mismatch"
-        : (writeState == "none" ? "notApplicable" : "inconclusive");
+                              ? "mismatch"
+                              : (writeState == "none" ? "notApplicable" : "inconclusive");
     result.writeState = writeState;
     return result;
 }
@@ -361,12 +385,13 @@ inline engine::FileWriteResult lifecycle_failure(
 // Engine adapters (api.hpp Drive types -> engine/load.hpp types)
 // ---------------------------------------------------------------------------
 
-inline std::optional<engine::DriveCommentAuthor> to_engine_author(const std::optional<DriveCommentAuthor>& a) {
-    if (!a) return std::nullopt;
+inline std::optional<engine::DriveCommentAuthor> to_engine_author(const std::optional<DriveCommentAuthor> &a) {
+    if (!a)
+        return std::nullopt;
     return engine::DriveCommentAuthor{.displayName = a->displayName, .emailAddress = a->emailAddress, .me = a->me};
 }
 
-inline engine::DriveComment to_engine_comment(const DriveComment& c) {
+inline engine::DriveComment to_engine_comment(const DriveComment &c) {
     engine::DriveComment out;
     out.id = c.id;
     out.content = c.content;
@@ -379,7 +404,7 @@ inline engine::DriveComment to_engine_comment(const DriveComment& c) {
     if (c.quotedFileContent && c.quotedFileContent->value) {
         out.quotedFileContent = engine::DriveCommentQuoted{.value = *c.quotedFileContent->value};
     }
-    for (const auto& r : c.replies) {
+    for (const auto &r : c.replies) {
         engine::DriveCommentReply rep;
         rep.id = r.id;
         rep.content = r.content;
@@ -395,10 +420,9 @@ inline engine::DriveComment to_engine_comment(const DriveComment& c) {
 
 /** Fresh full-document export with comment blocks, written to the export folder (port of fileExport). */
 inline slimr::Json file_export(
-    const ExportInput& in,
-    const HttpTransport& transport,
-    const GwsRunner& runner
-) {
+    const ExportInput &in,
+    const HttpTransport &transport,
+    const GwsRunner &runner) {
     const std::string doc = engine::documentId(in.doc.get());
 
     DocsClient docs(transport, runner);
@@ -410,19 +434,20 @@ inline slimr::Json file_export(
     model::DocModel model = model::docModelParse(json, std::move(parseOpts));
 
     std::vector<engine::DriveComment> comments;
-    for (const auto& c : drive.commentsList(doc)) comments.push_back(to_engine_comment(c));
+    for (const auto &c : drive.commentsList(doc))
+        comments.push_back(to_engine_comment(c));
 
     engine::ExportOptions options;
     options.commentsIncludeResolved = in.commentsIncludeResolved.get().value_or(false);
     std::vector<std::string> warnings;
     if (in.imagesDownload.get().has_value()) {
-        const auto& v = *in.imagesDownload.get();
+        const auto &v = *in.imagesDownload.get();
         if (v.is_boolean()) {
             options.imagesDownload = v.get<bool>();
         } else if (v.is_array()) {
             options.imagesDownload = true;
             std::vector<std::string> ids;
-            for (const auto& item : v.get<slimr::Json::array_t>()) {
+            for (const auto &item : v.get<slimr::Json::array_t>()) {
                 if (!item.is_string()) {
                     throw model::CoreError("unsupportedSyntax", "imagesDownload IDs must be strings.");
                 }
@@ -434,13 +459,13 @@ inline slimr::Json file_export(
 
     // The plain-text export is only needed to locate quoted comments and name hidden chips.
     std::optional<std::string> plainText;
-    const bool needsText = std::any_of(comments.begin(), comments.end(), [](const engine::DriveComment& c) {
+    const bool needsText = std::any_of(comments.begin(), comments.end(), [](const engine::DriveComment &c) {
         return !c.deleted.value_or(false) && c.quotedFileContent.has_value();
     });
     if (needsText) {
         try {
             plainText = drive.textExport(doc);
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             warnings.push_back(std::string("Comments were located by quote only; the plain-text export failed: ") + e.what());
         }
     }
@@ -449,10 +474,10 @@ inline slimr::Json file_export(
     services.root = engine::artifactRoot();
     try {
         services.apiUser = drive.userEmailGet();
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         warnings.push_back(std::string("Authenticated user email could not be determined: ") + e.what());
     }
-    services.imageDownload = [&docs](const std::string& uri) {
+    services.imageDownload = [&docs](const std::string &uri) {
         auto bytes = docs.imageDownload(uri);
         const auto info = image_info(bytes);
         if (!info) {
@@ -463,15 +488,19 @@ inline slimr::Json file_export(
     engine::ExportWritten written = engine::exportModel(model, comments, services, options, plainText);
 
     slimr::Json out = slimr::Json::object_t{};
-    if (written.commentsLine) out["commentsLine"] = static_cast<int64_t>(*written.commentsLine);
+    if (written.commentsLine)
+        out["commentsLine"] = static_cast<int64_t>(*written.commentsLine);
     out["exportPath"] = written.exportPath;
     if (written.images) {
         slimr::Json::object_t images;
-        for (const auto& [id, path] : *written.images) images[id] = path;
+        for (const auto &[id, path] : *written.images)
+            images[id] = path;
         out["images"] = std::move(images);
     }
-    if (written.imagesDir) out["imagesDir"] = *written.imagesDir;
-    if (written.suggestionsLine) out["suggestionsLine"] = static_cast<int64_t>(*written.suggestionsLine);
+    if (written.imagesDir)
+        out["imagesDir"] = *written.imagesDir;
+    if (written.suggestionsLine)
+        out["suggestionsLine"] = static_cast<int64_t>(*written.suggestionsLine);
     std::vector<std::string> allWarnings = written.warnings;
     allWarnings.insert(allWarnings.end(), warnings.begin(), warnings.end());
     out["warnings"] = strings_json(allWarnings);
@@ -479,8 +508,8 @@ inline slimr::Json file_export(
 }
 
 /** Imports an edited document file; every failure states whether writes may have landed. */
-inline slimr::Json file_import(const ImportInput& in, const HttpTransport& transport = nullptr,
-                              const GwsRunner& runner = nullptr, bool remoteEnabled = false) {
+inline slimr::Json file_import(const ImportInput &in, const HttpTransport &transport = nullptr,
+                               const GwsRunner &runner = nullptr, bool remoteEnabled = false) {
     engine::ImportInput engineInput;
     engineInput.path = in.path.get();
     engineInput.newDocStyleBaseline = in.newDocStyleBaseline.get();
@@ -490,9 +519,10 @@ inline slimr::Json file_import(const ImportInput& in, const HttpTransport& trans
     DriveClient drive(transport, runner);
     engine::ImportServices services;
     services.root = engine::artifactRoot();
-    auto mutation = [](auto&& send) -> slimr::Json {
-        try { return send(); }
-        catch (const GoogleApiError& error) {
+    auto mutation = [](auto &&send) -> slimr::Json {
+        try {
+            return send();
+        } catch (const GoogleApiError &error) {
             if (error.status >= 400 && error.status < 500 && error.status != 408 && error.status != 429) {
                 const std::string message = error.what();
                 const bool revision = message.find("revision") != std::string::npos ||
@@ -505,20 +535,20 @@ inline slimr::Json file_import(const ImportInput& in, const HttpTransport& trans
     if (remoteEnabled) {
         try {
             services.apiUser = drive.userEmailGet();
-        } catch (const std::exception&) {
+        } catch (const std::exception &) {
         }
-        services.getDocument = [&docs](const std::string& id) { return docs.getDocument(id); };
-        services.getFileMetadata = [&drive](const std::string& id) { return drive.getFile(id, "id,name"); };
-        services.createDocument = [&docs, &mutation](const std::string& title) {
+        services.getDocument = [&docs](const std::string &id) { return docs.getDocument(id); };
+        services.getFileMetadata = [&drive](const std::string &id) { return drive.getFile(id, "id,name"); };
+        services.createDocument = [&docs, &mutation](const std::string &title) {
             return mutation([&] { return docs.createDocument(title); });
         };
-        services.deleteFile = [&drive, &mutation](const std::string& id) {
+        services.deleteFile = [&drive, &mutation](const std::string &id) {
             mutation([&] { drive.deleteFile(id); return slimr::Json::object_t{}; });
         };
-        services.imagesUpload = [&drive](const std::string& name, const std::vector<DocxImage>& images) {
+        services.imagesUpload = [&drive](const std::string &name, const std::vector<DocxImage> &images) {
             return drive.imagesUpload(name, images);
         };
-        services.fetchImage = [&transport](const std::string& uri) {
+        services.fetchImage = [&transport](const std::string &uri) {
             const HttpCall request{.url = uri};
             const auto response = transport ? transport(request) : default_curl_transport(request);
             if (response.status < 200 || response.status >= 300) {
@@ -526,33 +556,44 @@ inline slimr::Json file_import(const ImportInput& in, const HttpTransport& trans
             }
             return response.body;
         };
-        services.batchUpdate = [&docs, &mutation](const std::string& id, const std::vector<slimr::Json>& requests,
-                                                  const std::optional<std::string>& revision) {
+        services.batchUpdate = [&docs, &mutation](const std::string &id, const std::vector<slimr::Json> &requests,
+                                                  const std::optional<std::string> &revision) {
             return mutation([&] { return docs.batchUpdate(id, requests, revision); });
         };
-        services.commentsList = [&drive](const std::string& id) {
+        services.commentsList = [&drive](const std::string &id) {
             std::vector<engine::DriveComment> comments;
-            for (const auto& comment : drive.commentsList(id)) comments.push_back(to_engine_comment(comment));
+            for (const auto &comment : drive.commentsList(id))
+                comments.push_back(to_engine_comment(comment));
             return comments;
         };
-        services.textExport = [&drive](const std::string& id) { return drive.textExport(id); };
-        services.rename = [&drive, &mutation](const std::string& id, const std::string& title) {
+        services.textExport = [&drive](const std::string &id) { return drive.textExport(id); };
+        services.rename = [&drive, &mutation](const std::string &id, const std::string &title) {
             auto response = mutation([&] {
                 return drive.updateFile(id, slimr::Json::object_t{{"name", title}});
             });
             return response.contains("name") && response["name"].is_string()
-                ? response["name"].get<std::string>() : "";
+                       ? response["name"].get<std::string>()
+                       : "";
         };
-        services.commentSend = [&drive, &mutation](const std::string& id, const engine::CommentAction& action) {
+        services.commentSend = [&drive, &mutation](const std::string &id, const engine::CommentAction &action) {
             return mutation([&]() -> slimr::Json {
                 const auto thread = action.id.value_or("");
-                if (action.kind == "create") return drive.commentCreate(id, action.text.value_or(""));
-                if (action.kind == "edit") return drive.commentUpdate(id, thread, action.text.value_or(""));
-                if (action.kind == "delete") { drive.commentDelete(id, thread); return slimr::Json::object_t{}; }
-                if (action.kind == "replyEdit") return drive.replyUpdate(id, thread, action.replyId.value_or(""), action.text.value_or(""));
-                if (action.kind == "replyDelete") { drive.replyDelete(id, thread, action.replyId.value_or("")); return slimr::Json::object_t{}; }
+                if (action.kind == "create")
+                    return drive.commentCreate(id, action.text.value_or(""));
+                if (action.kind == "edit")
+                    return drive.commentUpdate(id, thread, action.text.value_or(""));
+                if (action.kind == "delete") {
+                    drive.commentDelete(id, thread);
+                    return slimr::Json::object_t{};
+                }
+                if (action.kind == "replyEdit")
+                    return drive.replyUpdate(id, thread, action.replyId.value_or(""), action.text.value_or(""));
+                if (action.kind == "replyDelete") {
+                    drive.replyDelete(id, thread, action.replyId.value_or(""));
+                    return slimr::Json::object_t{};
+                }
                 return drive.commentReply(id, thread, action.text,
-                    action.kind == "reply" ? std::nullopt : std::make_optional(action.kind));
+                                          action.kind == "reply" ? std::nullopt : std::make_optional(action.kind));
             });
         };
     }
@@ -560,16 +601,16 @@ inline slimr::Json file_import(const ImportInput& in, const HttpTransport& trans
     std::string doc = document_key_of_file(in.path.get());
     try {
         return file_write_result_json(engine::fileImport(engineInput, services));
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         return file_write_result_json(lifecycle_failure(e, doc));
     }
 }
 
-inline std::string permission_string(const std::optional<std::string>& primary, const char* fallback = "") {
+inline std::string permission_string(const std::optional<std::string> &primary, const char *fallback = "") {
     return primary.value_or(fallback);
 }
 
-inline void file_allow_check(const std::string& action, const std::vector<std::string>& allows) {
+inline void file_allow_check(const std::string &action, const std::vector<std::string> &allows) {
     auto has = [&](std::string_view k) { return std::find(allows.begin(), allows.end(), k) != allows.end(); };
     if (action == "delete" && !has("delete")) {
         throw model::CoreError("guardRefused", "File delete needs the user's explicit approval; ask the user, then retry with allow: [\"delete\"].");
@@ -581,10 +622,9 @@ inline void file_allow_check(const std::string& action, const std::vector<std::s
 
 /** Applies one Drive lifecycle action without claiming Docs revision atomicity (port of fileOperate). */
 inline slimr::Json file_operate(
-    const FileInput& in,
-    const HttpTransport& transport,
-    const GwsRunner& runner
-) {
+    const FileInput &in,
+    const HttpTransport &transport,
+    const GwsRunner &runner) {
     const std::string action = in.action.get();
     std::string doc = in.doc.get();
     engine::WriteTracker tracker;
@@ -608,12 +648,12 @@ inline slimr::Json file_operate(
         DrivePermission grantee;
         std::optional<DrivePermissionCreateOptions> grantOptions;
         if (action == "grant") {
-            const auto& p = in.permission.get();
+            const auto &p = in.permission.get();
             grantee.type = p ? permission_string(p->type.get()) : "";
             grantee.role = p ? permission_string(p->role.get()) : "";
             grantee.emailAddress = p ? p->emailAddress.get() : std::nullopt;
             grantee.domain = p ? p->domain.get() : std::nullopt;
-            if (const auto& o = in.options.get()) {
+            if (const auto &o = in.options.get()) {
                 DrivePermissionCreateOptions opts;
                 opts.emailMessage = o->emailMessage.get();
                 opts.moveToNewOwnersRoot = o->moveToNewOwnersRoot.get();
@@ -645,11 +685,14 @@ inline slimr::Json file_operate(
 
         if (action == "permissions") {
             slimr::Json::array_t perms;
-            for (const auto& p : drive.listPermissions(doc)) {
+            for (const auto &p : drive.listPermissions(doc)) {
                 slimr::Json obj = slimr::Json::object_t{{"id", p.id}, {"role", p.role}, {"type", p.type}};
-                if (p.displayName) obj["displayName"] = *p.displayName;
-                if (p.domain) obj["domain"] = *p.domain;
-                if (p.emailAddress) obj["emailAddress"] = *p.emailAddress;
+                if (p.displayName)
+                    obj["displayName"] = *p.displayName;
+                if (p.domain)
+                    obj["domain"] = *p.domain;
+                if (p.emailAddress)
+                    obj["emailAddress"] = *p.emailAddress;
                 perms.push_back(std::move(obj));
             }
             slimr::Json out = slimr::Json::object_t{};
@@ -669,7 +712,7 @@ inline slimr::Json file_operate(
         attempt.doc = doc;
         tracker.writes.push_back(attempt);
         began = true;
-        auto& write = tracker.writes.back();
+        auto &write = tracker.writes.back();
 
         if (action == "copy") {
             auto copied = drive.copyFile(doc, in.title.get().value_or(""));
@@ -702,10 +745,10 @@ inline slimr::Json file_operate(
         out["warnings"] = std::move(warnings);
         out["writeState"] = tracker.writeState(true);
         return out;
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         if (began && !tracker.writes.empty() && tracker.writes.back().outcome == "pending") {
             // The request was sent but its outcome is not known to have failed before reaching Google.
-            const bool refusedLocally = dynamic_cast<const model::CoreError*>(&e) != nullptr;
+            const bool refusedLocally = dynamic_cast<const model::CoreError *>(&e) != nullptr;
             tracker.writes.back().outcome = refusedLocally ? "rejected" : "unknown";
         }
         return file_write_result_json(lifecycle_failure(e, doc, began ? &tracker : nullptr, complete));
@@ -721,8 +764,7 @@ inline slimr::Json file_operate(
 inline slimr::PluginApp make_gdocsmith_app(
     HttpTransport transport = nullptr,
     GwsRunner runner = nullptr,
-    bool remoteImportEnabled = true
-) {
+    bool remoteImportEnabled = true) {
     slimr::PluginApp app("gdocsmith-mcp", std::string(GDOCSMITH_VERSION));
     app.description = "Google Docs file editing and review workflows";
     app.instructions = std::string(MCP_INSTRUCTIONS);
@@ -744,7 +786,7 @@ inline slimr::PluginApp make_gdocsmith_app(
         "status",
         "Show the app version without making Google calls.",
         readOnlyAnn,
-        [](const StatusInput&) -> slimr::McpResult {
+        [](const StatusInput &) -> slimr::McpResult {
             slimr::Json out = slimr::Json::object_t{{"version", std::string(GDOCSMITH_VERSION)}};
             return detail::command_result(std::move(out));
         });
@@ -753,7 +795,7 @@ inline slimr::PluginApp make_gdocsmith_app(
         "export",
         "Export a Google Doc to a local partial Markdown view, with optional image downloads. Rich content preservation is incomplete; this is not a faithful backup.",
         exportAnn,
-        [transport, runner](const ExportInput& in) -> slimr::McpResult {
+        [transport, runner](const ExportInput &in) -> slimr::McpResult {
             const std::string key = detail::document_key(in.doc.get());
             return detail::document_serialized(key, [&]() -> slimr::McpResult {
                 return detail::command_result(detail::file_export(in, transport, runner));
@@ -766,7 +808,7 @@ inline slimr::PluginApp make_gdocsmith_app(
             ? "Import an edited document file through revision-locked guarded writes and authoritative verification."
             : "Validate an edited document file. Remote import is unavailable: returns failure without sending changes or replacing input files.",
         writeAnn,
-        [transport, runner, remoteImportEnabled](const ImportInput& in) -> slimr::McpResult {
+        [transport, runner, remoteImportEnabled](const ImportInput &in) -> slimr::McpResult {
             const std::string key = detail::document_key_of_file(in.path.get());
             return detail::document_serialized(key, [&]() -> slimr::McpResult {
                 return detail::command_result(detail::file_import(in, transport, runner, remoteImportEnabled));
@@ -777,7 +819,7 @@ inline slimr::PluginApp make_gdocsmith_app(
         "file",
         "Copy, trash, delete or share a Google Doc.",
         writeAnn,
-        [transport, runner](const FileInput& in) -> slimr::McpResult {
+        [transport, runner](const FileInput &in) -> slimr::McpResult {
             const std::string key = detail::document_key(in.doc.get());
             return detail::document_serialized(key, [&]() -> slimr::McpResult {
                 return detail::command_result(detail::file_operate(in, transport, runner));

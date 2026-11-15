@@ -8,23 +8,29 @@ namespace gdocsmith::lens::test {
 
 TEST_CASE("Node suggestion export hints match complete ids rather than s1 s10 prefixes") {
     DocumentFile file;
-    file.frontmatter.title="Synthetic";
+    file.frontmatter.title = "Synthetic";
     DocumentFileTab tab;
-    tab.id="t.0";
-    tab.title="Main";
-    tab.markdown="::section{id=s1}\n\n:suggestion{id=s10 start}visible:suggestion{id=s10 end}\n";
+    tab.id = "t.0";
+    tab.title = "Main";
+    tab.markdown = "::section{id=s1}\n\n:suggestion{id=s10 start}visible:suggestion{id=s10 end}\n";
     file.tabs.push_back(tab);
     SuggestionBlock hidden;
-    hidden.id="s1"; hidden.kind="text"; hidden.before=":change[]"; hidden.after=":change[hidden]";
+    hidden.id = "s1";
+    hidden.kind = "text";
+    hidden.before = ":change[]";
+    hidden.after = ":change[hidden]";
     file.suggestions.push_back(hidden);
     SuggestionBlock shown;
-    shown.id="s10"; shown.kind="text"; shown.before="visible"; shown.after="visible";
+    shown.id = "s10";
+    shown.kind = "text";
+    shown.before = "visible";
+    shown.after = "visible";
     file.suggestions.push_back(shown);
-    const auto raw=documentFileExport(file);
-    const auto tabAt=raw.find("::tab{");
-    const auto tabLine=std::count(raw.begin(),raw.begin()+static_cast<std::ptrdiff_t>(tabAt),'\n')+1;
-    CHECK(raw.find("::suggestion{id=s1 kind=text tab=Main exportLine="+std::to_string(tabLine)+"}")!=std::string::npos);
-    CHECK(raw.find("::suggestion{id=s10 kind=text tab=Main}\n")!=std::string::npos);
+    const auto raw = documentFileExport(file);
+    const auto tabAt = raw.find("::tab{");
+    const auto tabLine = std::count(raw.begin(), raw.begin() + static_cast<std::ptrdiff_t>(tabAt), '\n') + 1;
+    CHECK(raw.find("::suggestion{id=s1 kind=text tab=Main exportLine=" + std::to_string(tabLine) + "}") != std::string::npos);
+    CHECK(raw.find("::suggestion{id=s10 kind=text tab=Main}\n") != std::string::npos);
 }
 
 TEST_CASE("Node OB043 raw 3.0.20 envelope retains version declarations nulls and typed edits without normalization") {
@@ -48,7 +54,8 @@ TEST_CASE("Node OB043 raw 3.0.20 envelope retains version declarations nulls and
     model::TabModel tab;
     model::EditContext context;
     CHECK(markdownPut(model::EditTarget{context, tab},
-        documentTabMarkdown(source, source.tabs[0], model::DocModel{}, "t.0")).changed);
+                      documentTabMarkdown(source, source.tabs[0], model::DocModel{}, "t.0"))
+              .changed);
     REQUIRE(tab.blocks.size() == 1);
     CHECK(tab.blocks[0].as_paragraph().inlines[0].text == "body");
     CHECK(tab.blocks[0].as_paragraph().inlines[0].style["bold"] == slimr::Json(true));
@@ -99,9 +106,9 @@ TEST_CASE("Node source review envelope uses double directives quote attributes a
     CHECK(raw.find(":::") == std::string::npos);
     CHECK(raw.find("::comment{id=synthetic-comment quote=\"quoted text\"}") != std::string::npos);
     CHECK(raw.find("\\::literal\n> body text") != std::string::npos);
-    const auto tabAt=raw.find("::tab{");
-    const auto tabLine=std::count(raw.begin(),raw.begin()+static_cast<std::ptrdiff_t>(tabAt),'\n')+1;
-    CHECK(raw.find("::suggestion{id=synthetic-suggestion kind=text tab=Main exportLine="+std::to_string(tabLine)+"}") != std::string::npos);
+    const auto tabAt = raw.find("::tab{");
+    const auto tabLine = std::count(raw.begin(), raw.begin() + static_cast<std::ptrdiff_t>(tabAt), '\n') + 1;
+    CHECK(raw.find("::suggestion{id=synthetic-suggestion kind=text tab=Main exportLine=" + std::to_string(tabLine) + "}") != std::string::npos);
     const auto parsed = documentFileParse(raw);
     REQUIRE(parsed.comments.size() == 1);
     CHECK(parsed.comments[0].quote == comment.quote);
@@ -114,39 +121,41 @@ TEST_CASE("Node source review envelope uses double directives quote attributes a
 }
 
 TEST_CASE("Node dropdown declarations validate roundtrip and new aliases reach typed atom creation") {
-    const auto file=documentFileParse(
+    const auto file = documentFileParse(
         "---\ngdocsmith: 3.0.20\ndoc: synthetic\nrevision: r1\ntitle: Synthetic\n"
         "dropdowns:\n  t.0:\n    new-list:\n      title: Status\n      options:\n        - Ready: {color: '#aabbcc', background: '#112233'}\n"
         "---\n::tab{id=t.0 title=Main}\n\n::section{id=s1}\n\n:dropdown{list=new-list option=Ready}\n");
     CHECK(file.frontmatter.dropdowns["t.0"]["new-list"]["options"][0]["Ready"]["color"] == slimr::Json("#AABBCC"));
     CHECK(documentFileParse(documentFileExport(file)).frontmatter.dropdowns == file.frontmatter.dropdowns);
     model::TabModel tab;
-    tab.tabId="t.0";
-    tab.dropdownDefinitions["new-provider-id"]=slimr::Json::object_t{{"dropdownDefinitionProperties",
-        slimr::Json::object_t{{"options",slimr::Json::array_t{
-            slimr::Json::object_t{{"displayValue","Ready"},{"optionId","new-option-id"}}}}}}};
+    tab.tabId = "t.0";
+    tab.dropdownDefinitions["new-provider-id"] = slimr::Json::object_t{{"dropdownDefinitionProperties",
+                                                                        slimr::Json::object_t{{"options", slimr::Json::array_t{
+                                                                                                              slimr::Json::object_t{{"displayValue", "Ready"}, {"optionId", "new-option-id"}}}}}}};
     model::EditContext context;
     AtomPutOptions options;
-    options.createdDropdownIds["new-list"]="new-provider-id";
-    CHECK(markdownPut(model::EditTarget{context,tab},documentTabMarkdown(file,file.tabs[0],{},"t.0"),options).changed);
+    options.createdDropdownIds["new-list"] = "new-provider-id";
+    CHECK(markdownPut(model::EditTarget{context, tab}, documentTabMarkdown(file, file.tabs[0], {}, "t.0"), options).changed);
     REQUIRE(tab.blocks[0].as_paragraph().inlines[0].create);
     CHECK(tab.blocks[0].as_paragraph().inlines[0].create->definitionId == "new-provider-id");
     CHECK(tab.blocks[0].as_paragraph().inlines[0].create->optionId == "new-option-id");
-    for (const auto* invalid : {
-        "dropdowns: []", "dropdowns: {t.0: {x: {title: Status}}}",
-        "dropdowns: {t.0: {x: {options: ['']}}}",
-        "dropdowns: {t.0: {x: {options: [{Ready: {color: red}}]}}}",
-        "dropdowns: {t.0: {x: {options: [], other: true}}}"})
-        CHECK_THROWS_AS(documentFileParse("---\ngdocsmith: 3.0.20\ntitle: Synthetic\n"+std::string(invalid)+
-            "\n---\n::tab{id=t.0 title=Main}\n\n::section{id=s1}\n\nbody\n"),model::CoreError);
+    for (const auto *invalid : {
+             "dropdowns: []", "dropdowns: {t.0: {x: {title: Status}}}",
+             "dropdowns: {t.0: {x: {options: ['']}}}",
+             "dropdowns: {t.0: {x: {options: [{Ready: {color: red}}]}}}",
+             "dropdowns: {t.0: {x: {options: [], other: true}}}"})
+        CHECK_THROWS_AS(documentFileParse("---\ngdocsmith: 3.0.20\ntitle: Synthetic\n" + std::string(invalid) +
+                                          "\n---\n::tab{id=t.0 title=Main}\n\n::section{id=s1}\n\nbody\n"),
+                        model::CoreError);
 }
 TEST_CASE("Node document120 page settings reject ambiguous invalid and unknown raw attributes") {
-    for (const auto* attrs : {"size=A4", "landscape", "margins=1,1,1,1", "pageful size=a4",
-            "pageful size=0x700", "pageful size=500x700 landscape", "pageful margins=1,1,1",
-            "pageful margins=1,1,-1,1", "pageful=yes", "pageful pageful", "depth=0",
-            "headerMargin=nan", "footerMargin=inf", "pageNumberStart=1.5"}) {
+    for (const auto *attrs : {"size=A4", "landscape", "margins=1,1,1,1", "pageful size=a4",
+                              "pageful size=0x700", "pageful size=500x700 landscape", "pageful margins=1,1,1",
+                              "pageful margins=1,1,-1,1", "pageful=yes", "pageful pageful", "depth=0",
+                              "headerMargin=nan", "footerMargin=inf", "pageNumberStart=1.5"}) {
         CHECK_THROWS_AS(documentFileParse("---\ngdocsmith: 3.0.20\ntitle: Synthetic\n---\n\n::tab{id=t.0 title=Main " +
-            std::string(attrs) + "}\n\n::section{id=s1}\n\nbody\n"), CoreError);
+                                          std::string(attrs) + "}\n\n::section{id=s1}\n\nbody\n"),
+                        CoreError);
     }
 }
 

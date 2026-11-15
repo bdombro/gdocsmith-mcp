@@ -24,8 +24,8 @@ struct EditContext {
 };
 
 struct EditTarget {
-    EditContext& ctx;
-    TabModel& tab;
+    EditContext &ctx;
+    TabModel &tab;
 };
 
 struct ContainerRef {
@@ -49,14 +49,16 @@ struct EditParagraphSpec {
     std::vector<SymSpec> syms;
 };
 
-inline CellModel* cellFindInBlocks(std::vector<Block>& blocks, std::string_view cellKey) {
-    for (auto& b : blocks) {
+inline CellModel *cellFindInBlocks(std::vector<Block> &blocks, std::string_view cellKey) {
+    for (auto &b : blocks) {
         if (b.is_table()) {
-            for (auto& row : b.as_table().rows) {
-                for (auto& cell : row.cells) {
-                    if (cell.key == cellKey) return &cell;
-                    auto* found = cellFindInBlocks(cell.blocks, cellKey);
-                    if (found) return found;
+            for (auto &row : b.as_table().rows) {
+                for (auto &cell : row.cells) {
+                    if (cell.key == cellKey)
+                        return &cell;
+                    auto *found = cellFindInBlocks(cell.blocks, cellKey);
+                    if (found)
+                        return found;
                 }
             }
         }
@@ -64,33 +66,36 @@ inline CellModel* cellFindInBlocks(std::vector<Block>& blocks, std::string_view 
     return nullptr;
 }
 
-inline CellModel* cellFind(TabModel& tab, std::string_view cellKey) {
+inline CellModel *cellFind(TabModel &tab, std::string_view cellKey) {
     return cellFindInBlocks(tab.blocks, cellKey);
 }
 
-inline std::vector<Block>& containerOf(TabModel& tab, const ContainerRef& ref) {
-    if (ref.is_body()) return tab.blocks;
-    auto* cell = cellFind(tab, ref.cellKey);
-    if (!cell) throw CoreError(std::string(error_codes::INTERNAL), std::format("no cell with key {}", ref.cellKey));
+inline std::vector<Block> &containerOf(TabModel &tab, const ContainerRef &ref) {
+    if (ref.is_body())
+        return tab.blocks;
+    auto *cell = cellFind(tab, ref.cellKey);
+    if (!cell)
+        throw CoreError(std::string(error_codes::INTERNAL), std::format("no cell with key {}", ref.cellKey));
     return cell->blocks;
 }
 
 struct BlockLocation {
-    Block* block = nullptr;
+    Block *block = nullptr;
     ContainerRef container;
     int index = -1;
 };
 
-inline std::optional<BlockLocation> blockFindInBlocks(std::vector<Block>& blocks, std::string_view key, const ContainerRef& parentContainer) {
+inline std::optional<BlockLocation> blockFindInBlocks(std::vector<Block> &blocks, std::string_view key, const ContainerRef &parentContainer) {
     for (size_t i = 0; i < blocks.size(); ++i) {
         if (blocks[i].key == key) {
             return BlockLocation{.block = &blocks[i], .container = parentContainer, .index = static_cast<int>(i)};
         }
         if (blocks[i].is_table()) {
-            for (auto& row : blocks[i].as_table().rows) {
-                for (auto& cell : row.cells) {
+            for (auto &row : blocks[i].as_table().rows) {
+                for (auto &cell : row.cells) {
                     auto sub = blockFindInBlocks(cell.blocks, key, ContainerRef{.kind = "cell", .cellKey = cell.key});
-                    if (sub) return sub;
+                    if (sub)
+                        return sub;
                 }
             }
         }
@@ -98,17 +103,16 @@ inline std::optional<BlockLocation> blockFindInBlocks(std::vector<Block>& blocks
     return std::nullopt;
 }
 
-inline std::optional<BlockLocation> blockFind(TabModel& tab, std::string_view key) {
+inline std::optional<BlockLocation> blockFind(TabModel &tab, std::string_view key) {
     return blockFindInBlocks(tab.blocks, key, ContainerRef{.kind = "body"});
 }
 
 inline std::vector<Sym> symbolsFromSpecs(
-    EditContext& ctx,
-    const std::vector<SymSpec>& specs,
-    const JsonObject& inheritedStyle
-) {
+    EditContext &ctx,
+    const std::vector<SymSpec> &specs,
+    const JsonObject &inheritedStyle) {
     std::vector<Sym> out;
-    for (const auto& s : specs) {
+    for (const auto &s : specs) {
         if (s.atomKey.has_value()) {
             throw CoreError(std::string(error_codes::ATOM_MOVE), "atoms cannot be moved between paragraphs");
         }
@@ -119,11 +123,12 @@ inline std::vector<Sym> symbolsFromSpecs(
             a.type = s.create->type;
             a.length = (a.type == "equation") ? 3 : 1;
             a.create = *s.create;
-            if (s.style.has_value()) a.style = styleCanonical(*s.style);
+            if (s.style.has_value())
+                a.style = styleCanonical(*s.style);
             out.push_back(Sym(std::move(a)));
             continue;
         }
-        for (const auto& cp : utf8CodePoints(s.ch)) {
+        for (const auto &cp : utf8CodePoints(s.ch)) {
             CharSym cs;
             cs.ch = cp;
             cs.style = s.style ? styleCanonical(*s.style) : inheritedStyle;
@@ -133,27 +138,28 @@ inline std::vector<Sym> symbolsFromSpecs(
     return out;
 }
 
-inline void containerRenormalize(EditTarget& target, const ContainerRef& ref) {
-    auto& blocks = containerOf(target.tab, ref);
+inline void containerRenormalize(EditTarget &target, const ContainerRef &ref) {
+    auto &blocks = containerOf(target.tab, ref);
     blocks = containerNormalize(blocks, target.ctx.keys, target.ctx.stamp);
 }
 
 inline std::vector<std::string> paragraphsInsert(
-    EditTarget& target,
-    const ContainerRef& ref,
+    EditTarget &target,
+    const ContainerRef &ref,
     int index,
-    const std::vector<EditParagraphSpec>& specs
-) {
-    auto& blocks = containerOf(target.tab, ref);
+    const std::vector<EditParagraphSpec> &specs) {
+    auto &blocks = containerOf(target.tab, ref);
     if (index < 0 || index > static_cast<int>(blocks.size())) {
         throw CoreError(std::string(error_codes::INTERNAL), std::format("insert index {} is out of range", index));
     }
     std::vector<std::string> createdKeys;
     std::vector<Block> created;
-    for (const auto& spec : specs) {
+    for (const auto &spec : specs) {
         auto p = paragraphEmptyCreate(target.ctx.keys, spec.style, target.ctx.stamp);
-        if (spec.bullet.has_value()) p.bullet = spec.bullet;
-        if (spec.newlineStyle.has_value()) p.newline.style = styleCanonical(*spec.newlineStyle);
+        if (spec.bullet.has_value())
+            p.bullet = spec.bullet;
+        if (spec.newlineStyle.has_value())
+            p.newline.style = styleCanonical(*spec.newlineStyle);
         paragraphSymbolsSet(p, symbolsFromSpecs(target.ctx, spec.syms, make_json_object()));
         createdKeys.push_back(p.key);
         created.push_back(Block(std::move(p)));
@@ -163,7 +169,7 @@ inline std::vector<std::string> paragraphsInsert(
     return createdKeys;
 }
 
-inline void tombstonesAdd(EditTarget& target, const Block& block) {
+inline void tombstonesAdd(EditTarget &target, const Block &block) {
     target.ctx.tombstones.push_back(Tombstone{
         .key = block.key,
         .kind = "block",
@@ -171,7 +177,7 @@ inline void tombstonesAdd(EditTarget& target, const Block& block) {
         .tabId = target.tab.tabId,
     });
     if (block.is_paragraph()) {
-        for (const auto& inlineItem : block.as_paragraph().inlines) {
+        for (const auto &inlineItem : block.as_paragraph().inlines) {
             if (inlineItem.is_atom()) {
                 target.ctx.tombstones.push_back(Tombstone{
                     .key = inlineItem.key,
@@ -184,36 +190,36 @@ inline void tombstonesAdd(EditTarget& target, const Block& block) {
     }
 }
 
-inline void blocksDelete(EditTarget& target, const std::vector<std::string>& keys) {
+inline void blocksDelete(EditTarget &target, const std::vector<std::string> &keys) {
     std::vector<ContainerRef> touched;
-    for (const auto& key : keys) {
+    for (const auto &key : keys) {
         auto found = blockFind(target.tab, key);
-        if (!found) throw CoreError(std::string(error_codes::INTERNAL), std::format("no block with key {}", key));
-        auto& blocks = containerOf(target.tab, found->container);
-        auto it = std::find_if(blocks.begin(), blocks.end(), [&](const Block& b) { return b.key == key; });
+        if (!found)
+            throw CoreError(std::string(error_codes::INTERNAL), std::format("no block with key {}", key));
+        auto &blocks = containerOf(target.tab, found->container);
+        auto it = std::find_if(blocks.begin(), blocks.end(), [&](const Block &b) { return b.key == key; });
         if (it != blocks.end()) {
             tombstonesAdd(target, *it);
             blocks.erase(it);
         }
         touched.push_back(found->container);
     }
-    for (const auto& ref : touched) {
+    for (const auto &ref : touched) {
         containerRenormalize(target, ref);
     }
 }
 
 inline void paragraphSplice(
-    EditTarget& target,
+    EditTarget &target,
     std::string_view key,
     int at,
     int deleteCount,
-    const std::vector<SymSpec>& insert
-) {
+    const std::vector<SymSpec> &insert) {
     auto found = blockFind(target.tab, key);
     if (!found || !found->block->is_paragraph()) {
         throw CoreError(std::string(error_codes::INTERNAL), std::format("no paragraph with key {}", key));
     }
-    auto& paragraph = found->block->as_paragraph();
+    auto &paragraph = found->block->as_paragraph();
     auto syms = paragraphSymbols(paragraph);
     if (at < 0 || deleteCount < 0 || at + deleteCount > static_cast<int>(syms.size())) {
         throw CoreError(std::string(error_codes::INTERNAL), std::format("splice [{}, {}) is outside the paragraph", at, at + deleteCount));
@@ -228,7 +234,7 @@ inline void paragraphSplice(
 
     auto inserted = symbolsFromSpecs(target.ctx, insert, inherited);
     for (int i = 0; i < deleteCount; ++i) {
-        const auto& s = syms[at + i];
+        const auto &s = syms[at + i];
         if (s.is_atom() && s.atom.has_value()) {
             target.ctx.tombstones.push_back(Tombstone{
                 .key = s.atom->key,

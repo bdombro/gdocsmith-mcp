@@ -4,7 +4,7 @@
 
 namespace gdocsmith::emulator {
 
-inline EmulateResult requestsEmulate(const slimr::Json& json, const std::vector<slimr::Json>& requests) {
+inline EmulateResult requestsEmulate(const slimr::Json &json, const std::vector<slimr::Json> &requests) {
     return requests_emulate(json, requests);
 }
 

@@ -29,15 +29,15 @@ struct CompareResult {
 };
 
 struct TabCompareOptions : CompareOptions {
-    const TabModel* actualTab = nullptr;
+    const TabModel *actualTab = nullptr;
 };
 
-inline JsonObject gaps(const JsonObject& style) {
+inline JsonObject gaps(const JsonObject &style) {
     if (!style.contains("columnProperties") || !style["columnProperties"].holds<slimr::Json::array_t>()) {
         return style;
     }
     slimr::Json::array_t arr;
-    for (const auto& col : style["columnProperties"].get<slimr::Json::array_t>()) {
+    for (const auto &col : style["columnProperties"].get<slimr::Json::array_t>()) {
         JsonObject c = col;
         if (c.holds<slimr::Json::object_t>()) {
             c.get<slimr::Json::object_t>().erase("width");
@@ -52,25 +52,28 @@ inline JsonObject gaps(const JsonObject& style) {
 inline void styleCompare(
     std::string_view path,
     std::string_view label,
-    const JsonObject& expected,
-    const JsonObject& actual,
-    std::vector<std::string>& diffs
-) {
-    if (styleEqual(expected, actual)) return;
+    const JsonObject &expected,
+    const JsonObject &actual,
+    std::vector<std::string> &diffs) {
+    if (styleEqual(expected, actual))
+        return;
 
     std::set<std::string> allKeys;
     if (expected.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, _] : expected.get<slimr::Json::object_t>()) allKeys.insert(k);
+        for (const auto &[k, _] : expected.get<slimr::Json::object_t>())
+            allKeys.insert(k);
     }
     if (actual.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, _] : actual.get<slimr::Json::object_t>()) allKeys.insert(k);
+        for (const auto &[k, _] : actual.get<slimr::Json::object_t>())
+            allKeys.insert(k);
     }
     std::vector<std::string> fields(allKeys.begin(), allKeys.end());
     std::vector<std::string> changed = styleFieldsChanged(expected, actual, fields);
 
     std::string changedList;
     for (size_t i = 0; i < changed.size(); ++i) {
-        if (i > 0) changedList += ", ";
+        if (i > 0)
+            changedList += ", ";
         changedList += changed[i];
     }
     diffs.push_back(std::format("{}: {} differs ({})", path, label, changedList));
@@ -79,19 +82,20 @@ inline void styleCompare(
 inline void idsCompare(
     std::string_view path,
     std::string_view label,
-    const std::optional<JsonObject>& expected,
-    const std::optional<JsonObject>& actual,
-    std::vector<std::string>& diffs
-) {
-    auto getKeys = [](const std::optional<JsonObject>& obj) {
+    const std::optional<JsonObject> &expected,
+    const std::optional<JsonObject> &actual,
+    std::vector<std::string> &diffs) {
+    auto getKeys = [](const std::optional<JsonObject> &obj) {
         std::vector<std::string> keys;
         if (obj.has_value() && obj->holds<slimr::Json::object_t>()) {
-            for (const auto& [k, _] : obj->get<slimr::Json::object_t>()) keys.push_back(k);
+            for (const auto &[k, _] : obj->get<slimr::Json::object_t>())
+                keys.push_back(k);
             std::sort(keys.begin(), keys.end());
         }
         std::string s;
         for (size_t i = 0; i < keys.size(); ++i) {
-            if (i > 0) s += ", ";
+            if (i > 0)
+                s += ", ";
             s += keys[i];
         }
         return s;
@@ -106,10 +110,9 @@ inline void idsCompare(
 inline void marksCompare(
     std::string_view path,
     std::string_view label,
-    const SuggestionMarks& expected,
-    const SuggestionMarks& actual,
-    std::vector<std::string>& diffs
-) {
+    const SuggestionMarks &expected,
+    const SuggestionMarks &actual,
+    std::vector<std::string> &diffs) {
     std::string want = marksKey(expected);
     std::string got = marksKey(actual);
     if (want != got) {
@@ -118,27 +121,29 @@ inline void marksCompare(
 }
 
 inline JsonObject inheritedFontEquivalent(
-    const JsonObject& expected,
-    const JsonObject& actual,
-    const JsonObject& inherited
-) {
+    const JsonObject &expected,
+    const JsonObject &actual,
+    const JsonObject &inherited) {
     JsonObject normalized = actual;
     std::vector<std::string> checkFields = {"fontSize", "weightedFontFamily"};
     checkFields.insert(checkFields.end(), TEXT_STYLE_INHERIT_DROP_FIELDS.begin(), TEXT_STYLE_INHERIT_DROP_FIELDS.end());
 
-    for (const auto& field : checkFields) {
-        if (actual.contains(field) || !expected.contains(field) || !inherited.contains(field)) continue;
+    for (const auto &field : checkFields) {
+        if (actual.contains(field) || !expected.contains(field) || !inherited.contains(field))
+            continue;
         JsonObject defaultValue = (field == "weightedFontFamily")
                                       ? slimr::Json::object_t{{"weight", static_cast<int64_t>(400)}}
                                       : inherited[field];
         if (field == "weightedFontFamily" && inherited[field].holds<slimr::Json::object_t>()) {
-            for (const auto& [k, v] : inherited[field].get<slimr::Json::object_t>()) defaultValue[k] = v;
+            for (const auto &[k, v] : inherited[field].get<slimr::Json::object_t>())
+                defaultValue[k] = v;
         }
         JsonObject expectedValue = (field == "weightedFontFamily")
                                        ? slimr::Json::object_t{{"weight", static_cast<int64_t>(400)}}
                                        : expected[field];
         if (field == "weightedFontFamily" && expected[field].holds<slimr::Json::object_t>()) {
-            for (const auto& [k, v] : expected[field].get<slimr::Json::object_t>()) expectedValue[k] = v;
+            for (const auto &[k, v] : expected[field].get<slimr::Json::object_t>())
+                expectedValue[k] = v;
         }
         if (styleEqual(expectedValue, defaultValue)) {
             normalized[field] = expected[field];
@@ -148,10 +153,9 @@ inline JsonObject inheritedFontEquivalent(
 }
 
 inline JsonObject inheritedParagraphEquivalent(
-    const JsonObject& expected,
-    const ParagraphBlock& actual,
-    const TabModel& tab
-) {
+    const JsonObject &expected,
+    const ParagraphBlock &actual,
+    const TabModel &tab) {
     std::string type = "NORMAL_TEXT";
     if (actual.style.contains("namedStyleType") && actual.style["namedStyleType"].holds<std::string>()) {
         type = actual.style["namedStyleType"].get<std::string>();
@@ -160,12 +164,13 @@ inline JsonObject inheritedParagraphEquivalent(
     if (type != "NORMAL_TEXT") {
         JsonObject extra = namedTextStyle(tab, type).paragraphStyle;
         if (extra.holds<slimr::Json::object_t>()) {
-            for (const auto& [k, v] : extra.get<slimr::Json::object_t>()) inherited[k] = v;
+            for (const auto &[k, v] : extra.get<slimr::Json::object_t>())
+                inherited[k] = v;
         }
     }
     JsonObject normalized = actual.style;
     if (expected.holds<slimr::Json::object_t>()) {
-        for (const auto& [field, value] : expected.get<slimr::Json::object_t>()) {
+        for (const auto &[field, value] : expected.get<slimr::Json::object_t>()) {
             if (!normalized.contains(field) && inherited.contains(field) && styleEqual(value, inherited[field])) {
                 normalized[field] = value;
             }
@@ -174,22 +179,27 @@ inline JsonObject inheritedParagraphEquivalent(
     return normalized;
 }
 
-inline JsonObject paragraphStyleDefaulted(const JsonObject& style) {
+inline JsonObject paragraphStyleDefaulted(const JsonObject &style) {
     JsonObject out = style;
-    if (!out.contains("direction")) out["direction"] = "LEFT_TO_RIGHT";
-    if (!out.contains("namedStyleType")) out["namedStyleType"] = "NORMAL_TEXT";
-    if (!out.contains("pageBreakBefore")) out["pageBreakBefore"] = false;
+    if (!out.contains("direction"))
+        out["direction"] = "LEFT_TO_RIGHT";
+    if (!out.contains("namedStyleType"))
+        out["namedStyleType"] = "NORMAL_TEXT";
+    if (!out.contains("pageBreakBefore"))
+        out["pageBreakBefore"] = false;
     return out;
 }
 
-inline JsonObject cellStyleDefaulted(const JsonObject& style) {
+inline JsonObject cellStyleDefaulted(const JsonObject &style) {
     JsonObject out = style;
-    if (!out.contains("columnSpan")) out["columnSpan"] = static_cast<int64_t>(1);
-    if (!out.contains("rowSpan")) out["rowSpan"] = static_cast<int64_t>(1);
+    if (!out.contains("columnSpan"))
+        out["columnSpan"] = static_cast<int64_t>(1);
+    if (!out.contains("rowSpan"))
+        out["rowSpan"] = static_cast<int64_t>(1);
     return out;
 }
 
-inline bool atomCreateMatches(const AtomCreate& create, const Atom& actual) {
+inline bool atomCreateMatches(const AtomCreate &create, const Atom &actual) {
     if (actual.create.has_value()) {
         return create == *actual.create;
     }
@@ -223,8 +233,9 @@ inline bool atomCreateMatches(const AtomCreate& create, const Atom& actual) {
     return actual.type == create.type;
 }
 
-inline JsonObject unnumbered(const std::optional<JsonObject>& raw) {
-    if (!raw.has_value()) return make_json_object();
+inline JsonObject unnumbered(const std::optional<JsonObject> &raw) {
+    if (!raw.has_value())
+        return make_json_object();
     JsonObject out = *raw;
     if (out.contains("footnoteReference") && out["footnoteReference"].holds<slimr::Json::object_t>()) {
         out["footnoteReference"].get<slimr::Json::object_t>().erase("footnoteNumber");
@@ -234,19 +245,17 @@ inline JsonObject unnumbered(const std::optional<JsonObject>& raw) {
 
 void blockCompare(
     std::string_view path,
-    const Block& expected,
-    const Block& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-);
+    const Block &expected,
+    const Block &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs);
 
 inline void inlineCompare(
     std::string_view path,
-    const Inline& expected,
-    const Inline& actual,
-    std::vector<std::string>& diffs,
-    const JsonObject& inherited
-) {
+    const Inline &expected,
+    const Inline &actual,
+    std::vector<std::string> &diffs,
+    const JsonObject &inherited) {
     if (expected.kind != actual.kind) {
         diffs.push_back(std::format("{}: kind expected \"{}\", got \"{}\"", path, expected.kind, actual.kind));
         return;
@@ -256,13 +265,14 @@ inline void inlineCompare(
             diffs.push_back(std::format("{}: text expected \"{}\", got \"{}\"", path, expected.text, actual.text));
         }
         marksCompare(path, "text",
-            SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds, .suggestedTextStyleChanges = expected.suggestedTextStyleChanges},
-            SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds, .suggestedTextStyleChanges = actual.suggestedTextStyleChanges},
-            diffs);
+                     SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds, .suggestedTextStyleChanges = expected.suggestedTextStyleChanges},
+                     SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds, .suggestedTextStyleChanges = actual.suggestedTextStyleChanges},
+                     diffs);
         styleCompare(path, "style", expected.style, inheritedFontEquivalent(expected.style, actual.style, inherited), diffs);
         return;
     }
-    if (!expected.is_atom() || !actual.is_atom()) return;
+    if (!expected.is_atom() || !actual.is_atom())
+        return;
     if (expected.type != actual.type) {
         diffs.push_back(std::format("{}: atom type expected \"{}\", got \"{}\"", path, expected.type, actual.type));
     }
@@ -277,11 +287,10 @@ inline void inlineCompare(
 
 inline void headingIdCompare(
     std::string_view path,
-    const ParagraphBlock& expected,
-    const ParagraphBlock& actual,
-    const CompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const ParagraphBlock &expected,
+    const ParagraphBlock &actual,
+    const CompareOptions &opts,
+    std::vector<std::string> &diffs) {
     std::string namedType = "NORMAL_TEXT";
     if (expected.style.contains("namedStyleType") && expected.style["namedStyleType"].holds<std::string>()) {
         namedType = expected.style["namedStyleType"].get<std::string>();
@@ -293,7 +302,7 @@ inline void headingIdCompare(
         }
         return;
     }
-    for (const auto& t : opts.identityTransfers) {
+    for (const auto &t : opts.identityTransfers) {
         if (t.toKey == expected.key && t.headingId.has_value()) {
             if (actual.headingId != t.headingId) {
                 diffs.push_back(std::format("{}: headingId expected \"{}\" (transferred), got \"{}\"", path, *t.headingId, actual.headingId.value_or("")));
@@ -314,12 +323,12 @@ inline void headingIdCompare(
 
 inline void bulletCompare(
     std::string_view path,
-    const std::optional<BulletRef>& expected,
-    const std::optional<BulletRef>& actual,
-    const CompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
-    if (!expected.has_value() && !actual.has_value()) return;
+    const std::optional<BulletRef> &expected,
+    const std::optional<BulletRef> &actual,
+    const CompareOptions &opts,
+    std::vector<std::string> &diffs) {
+    if (!expected.has_value() && !actual.has_value())
+        return;
     if (!expected.has_value() || !actual.has_value()) {
         diffs.push_back(std::format("{}: bullet expected {}, got {}", path, expected ? "present" : "absent", actual ? "present" : "absent"));
         return;
@@ -335,32 +344,31 @@ inline void bulletCompare(
 
 inline void paragraphCompare(
     std::string_view path,
-    const ParagraphBlock& expected,
-    const ParagraphBlock& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const ParagraphBlock &expected,
+    const ParagraphBlock &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs) {
     styleCompare(
         path,
         "style",
         paragraphStyleDefaulted(expected.style),
         paragraphStyleDefaulted(inheritedParagraphEquivalent(expected.style, actual, *opts.actualTab)),
-        diffs
-    );
+        diffs);
     headingIdCompare(path, expected, actual, opts, diffs);
     bulletCompare(path, expected.bullet, actual.bullet, opts, diffs);
 
-    auto getSug = [](const auto& p, std::string_view k) -> std::optional<JsonObject> {
-        if (p.suggestionsRaw && p.suggestionsRaw->contains(k)) return p.suggestionsRaw->operator[](k);
+    auto getSug = [](const auto &p, std::string_view k) -> std::optional<JsonObject> {
+        if (p.suggestionsRaw && p.suggestionsRaw->contains(k))
+            return p.suggestionsRaw->operator[](k);
         return std::nullopt;
     };
-    for (const auto& kind : {"suggestedBulletChanges", "suggestedParagraphStyleChanges", "suggestedPositionedObjectIds"}) {
+    for (const auto &kind : {"suggestedBulletChanges", "suggestedParagraphStyleChanges", "suggestedPositionedObjectIds"}) {
         idsCompare(path, kind, getSug(expected, kind), getSug(actual, kind), diffs);
     }
     marksCompare(path, "newline",
-        SuggestionMarks{.suggestedDeletionIds = expected.newline.suggestedDeletionIds, .suggestedInsertionIds = expected.newline.suggestedInsertionIds, .suggestedTextStyleChanges = expected.newline.suggestedTextStyleChanges},
-        SuggestionMarks{.suggestedDeletionIds = actual.newline.suggestedDeletionIds, .suggestedInsertionIds = actual.newline.suggestedInsertionIds, .suggestedTextStyleChanges = actual.newline.suggestedTextStyleChanges},
-        diffs);
+                 SuggestionMarks{.suggestedDeletionIds = expected.newline.suggestedDeletionIds, .suggestedInsertionIds = expected.newline.suggestedInsertionIds, .suggestedTextStyleChanges = expected.newline.suggestedTextStyleChanges},
+                 SuggestionMarks{.suggestedDeletionIds = actual.newline.suggestedDeletionIds, .suggestedInsertionIds = actual.newline.suggestedInsertionIds, .suggestedTextStyleChanges = actual.newline.suggestedTextStyleChanges},
+                 diffs);
 
     JsonObject inherited = textStyleEffective(*opts.actualTab, actual, make_json_object());
     styleCompare(path, "newline style", expected.newline.style, inheritedFontEquivalent(expected.newline.style, actual.newline.style, inherited), diffs);
@@ -370,8 +378,8 @@ inline void paragraphCompare(
     size_t expectedOffset = 0;
     size_t actualOffset = 0;
     while (expectedIndex < expected.inlines.size() && actualIndex < actual.inlines.size()) {
-        const auto& expIn = expected.inlines[expectedIndex];
-        const auto& actIn = actual.inlines[actualIndex];
+        const auto &expIn = expected.inlines[expectedIndex];
+        const auto &actIn = actual.inlines[actualIndex];
         if (expIn.is_text() && actIn.is_text()) {
             size_t len = std::min(expIn.text.size() - expectedOffset, actIn.text.size() - actualOffset);
             Inline subExp = expIn;
@@ -381,8 +389,14 @@ inline void paragraphCompare(
             inlineCompare(std::format("{} inline {}", path, expectedIndex), subExp, subAct, diffs, inherited);
             expectedOffset += len;
             actualOffset += len;
-            if (expectedOffset == expIn.text.size()) { expectedIndex++; expectedOffset = 0; }
-            if (actualOffset == actIn.text.size()) { actualIndex++; actualOffset = 0; }
+            if (expectedOffset == expIn.text.size()) {
+                expectedIndex++;
+                expectedOffset = 0;
+            }
+            if (actualOffset == actIn.text.size()) {
+                actualIndex++;
+                actualOffset = 0;
+            }
         } else {
             inlineCompare(std::format("{} inline {}", path, expectedIndex), expIn, actIn, diffs, inherited);
             expectedIndex++;
@@ -397,16 +411,15 @@ inline void paragraphCompare(
 
 inline void cellCompare(
     std::string_view path,
-    const CellModel& expected,
-    const CellModel& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const CellModel &expected,
+    const CellModel &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs) {
     styleCompare(path, "style", cellStyleDefaulted(expected.style), cellStyleDefaulted(actual.style), diffs);
     marksCompare(path, "cell",
-        SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
-        SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
-        diffs);
+                 SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
+                 SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
+                 diffs);
     idsCompare(path, "cell-style suggestions", expected.suggestedStyleChanges, actual.suggestedStyleChanges, diffs);
     if (expected.blocks.size() != actual.blocks.size()) {
         diffs.push_back(std::format("{}: block count expected {}, got {}", path, expected.blocks.size(), actual.blocks.size()));
@@ -419,16 +432,15 @@ inline void cellCompare(
 
 inline void rowCompare(
     std::string_view path,
-    const RowModel& expected,
-    const RowModel& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const RowModel &expected,
+    const RowModel &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs) {
     styleCompare(path, "style", expected.style, actual.style, diffs);
     marksCompare(path, "row",
-        SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
-        SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
-        diffs);
+                 SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
+                 SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
+                 diffs);
     idsCompare(path, "row-style suggestions", expected.suggestedStyleChanges, actual.suggestedStyleChanges, diffs);
     if (expected.cells.size() != actual.cells.size()) {
         diffs.push_back(std::format("{}: cell count expected {}, got {}", path, expected.cells.size(), actual.cells.size()));
@@ -441,11 +453,10 @@ inline void rowCompare(
 
 inline void tableCompare(
     std::string_view path,
-    const TableBlock& expected,
-    const TableBlock& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const TableBlock &expected,
+    const TableBlock &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs) {
     if (expected.columns.size() != actual.columns.size()) {
         diffs.push_back(std::format("{}: column count expected {}, got {}", path, expected.columns.size(), actual.columns.size()));
     } else {
@@ -454,9 +465,9 @@ inline void tableCompare(
         }
     }
     marksCompare(path, "table",
-        SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
-        SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
-        diffs);
+                 SuggestionMarks{.suggestedDeletionIds = expected.suggestedDeletionIds, .suggestedInsertionIds = expected.suggestedInsertionIds},
+                 SuggestionMarks{.suggestedDeletionIds = actual.suggestedDeletionIds, .suggestedInsertionIds = actual.suggestedInsertionIds},
+                 diffs);
     if (expected.rows.size() != actual.rows.size()) {
         diffs.push_back(std::format("{}: row count expected {}, got {}", path, expected.rows.size(), actual.rows.size()));
         return;
@@ -468,11 +479,10 @@ inline void tableCompare(
 
 inline void blockCompare(
     std::string_view path,
-    const Block& expected,
-    const Block& actual,
-    const TabCompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const Block &expected,
+    const Block &actual,
+    const TabCompareOptions &opts,
+    std::vector<std::string> &diffs) {
     if (expected.kind != actual.kind) {
         diffs.push_back(std::format("{}: kind expected \"{}\", got \"{}\"", path, expected.kind, actual.kind));
         return;
@@ -491,11 +501,10 @@ inline void blockCompare(
 }
 
 inline void tabCompare(
-    const TabModel& expected,
-    const TabModel& actual,
-    const CompareOptions& opts,
-    std::vector<std::string>& diffs
-) {
+    const TabModel &expected,
+    const TabModel &actual,
+    const CompareOptions &opts,
+    std::vector<std::string> &diffs) {
     std::string path = std::format("tab \"{}\"", expected.title);
     if (expected.title != actual.title) {
         diffs.push_back(std::format("{}: title expected \"{}\", got \"{}\"", path, expected.title, actual.title));
@@ -513,11 +522,11 @@ inline void tabCompare(
     idsCompare(path, "named-style suggestions", expected.suggestedNamedStylesChanges, actual.suggestedNamedStylesChanges, diffs);
 
     if (!opts.skipSegments) {
-        auto sameSeg = [](const SegmentModel& a, const SegmentModel& b) {
+        auto sameSeg = [](const SegmentModel &a, const SegmentModel &b) {
             return a.kind == b.kind && (a.kind == "footnote" ? a.id == b.id : a.type == b.type && a.section == b.section);
         };
-        for (const auto& seg : expected.segments) {
-            auto it = std::find_if(actual.segments.begin(), actual.segments.end(), [&](const SegmentModel& s) {
+        for (const auto &seg : expected.segments) {
+            auto it = std::find_if(actual.segments.begin(), actual.segments.end(), [&](const SegmentModel &s) {
                 return sameSeg(s, seg);
             });
             if (it == actual.segments.end()) {
@@ -526,8 +535,8 @@ inline void tabCompare(
                 tabCompare(*seg.tab, *it->tab, opts, diffs);
             }
         }
-        for (const auto& seg : actual.segments) {
-            auto it = std::find_if(expected.segments.begin(), expected.segments.end(), [&](const SegmentModel& s) {
+        for (const auto &seg : actual.segments) {
+            auto it = std::find_if(expected.segments.begin(), expected.segments.end(), [&](const SegmentModel &s) {
                 return sameSeg(s, seg);
             });
             if (it == expected.segments.end()) {
@@ -537,9 +546,11 @@ inline void tabCompare(
     }
 
     JsonObject expDd = slimr::Json::object_t{};
-    for (const auto& [k, v] : expected.dropdownDefinitions) expDd[k] = v;
+    for (const auto &[k, v] : expected.dropdownDefinitions)
+        expDd[k] = v;
     JsonObject actDd = slimr::Json::object_t{};
-    for (const auto& [k, v] : actual.dropdownDefinitions) actDd[k] = v;
+    for (const auto &[k, v] : actual.dropdownDefinitions)
+        actDd[k] = v;
     styleCompare(path, "dropdownDefinitions", expDd, actDd, diffs);
 
     styleCompare(path, "leadingSectionStyle", gaps(expected.leadingSectionStyle), gaps(actual.leadingSectionStyle), diffs);
@@ -549,7 +560,7 @@ inline void tabCompare(
         return;
     }
     TabCompareOptions tabOpts;
-    static_cast<CompareOptions&>(tabOpts) = opts;
+    static_cast<CompareOptions &>(tabOpts) = opts;
     tabOpts.actualTab = &actual;
     for (size_t i = 0; i < expected.blocks.size(); ++i) {
         blockCompare(std::format("{} block {}", path, i), expected.blocks[i], actual.blocks[i], tabOpts, diffs);
@@ -561,10 +572,9 @@ inline void tabCompare(
  * but revision ids, named ranges, and concrete id values of anything newly created are ignored.
  */
 inline CompareResult docModelsCompare(
-    const DocModel& expected,
-    const DocModel& actual,
-    const CompareOptions& opts = {}
-) {
+    const DocModel &expected,
+    const DocModel &actual,
+    const CompareOptions &opts = {}) {
     std::vector<std::string> diffs;
     if (expected.tabs.size() != actual.tabs.size()) {
         diffs.push_back(std::format("tab count: expected {}, got {}", expected.tabs.size(), actual.tabs.size()));

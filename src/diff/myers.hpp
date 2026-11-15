@@ -21,7 +21,7 @@ struct Hunk {
     int bStart = 0;
     int bEnd = 0;
 
-    bool operator==(const Hunk&) const = default;
+    bool operator==(const Hunk &) const = default;
 };
 
 inline constexpr int LCS_DP_CELLS_MAX = 4'000'000;
@@ -33,8 +33,7 @@ template <typename T, typename Eq = std::equal_to<T>>
 inline std::vector<std::pair<int, int>> matchesMyers(
     std::span<const T> a,
     std::span<const T> b,
-    Eq eq = Eq{}
-) {
+    Eq eq = Eq{}) {
     const int n = static_cast<int>(a.size());
     const int m = static_cast<int>(b.size());
     const int max_d = n + m;
@@ -64,7 +63,7 @@ inline std::vector<std::pair<int, int>> matchesMyers(
     int x = n;
     int y = m;
     for (int d = static_cast<int>(trace.size()) - 1; d >= 0 && (x > 0 || y > 0); --d) {
-        const auto& vd = trace[d];
+        const auto &vd = trace[d];
         const int k = x - y;
         const int prevK = (k == -d || (k != d && vd[offset + k - 1] < vd[offset + k + 1]))
                               ? k + 1
@@ -87,23 +86,21 @@ inline std::vector<std::pair<int, int>> matchesMyers(
 
 /** Turns ordered matched pairs into the changed regions between them. */
 inline std::vector<Hunk> hunksFromMatches(
-    const std::vector<std::pair<int, int>>& pairs,
+    const std::vector<std::pair<int, int>> &pairs,
     int n,
-    int m
-) {
+    int m) {
     std::vector<Hunk> hunks;
     int ai = 0;
     int bi = 0;
     auto all_pairs = pairs;
     all_pairs.push_back({n, m});
-    for (const auto& [i, j] : all_pairs) {
+    for (const auto &[i, j] : all_pairs) {
         if (i > ai || j > bi) {
             hunks.push_back(Hunk{
                 .aStart = ai,
                 .aEnd = i,
                 .bStart = bi,
-                .bEnd = j
-            });
+                .bEnd = j});
         }
         ai = i + 1;
         bi = j + 1;
@@ -119,24 +116,21 @@ template <typename T, typename Eq = std::equal_to<T>>
 inline std::vector<Hunk> diffHunks(
     std::span<const T> a,
     std::span<const T> b,
-    Eq eq = Eq{}
-) {
+    Eq eq = Eq{}) {
     return hunksFromMatches(matchesMyers(a, b, eq), static_cast<int>(a.size()), static_cast<int>(b.size()));
 }
 
 template <typename T, typename Eq = std::equal_to<T>>
 inline std::vector<Hunk> diffHunks(
-    const std::vector<T>& a,
-    const std::vector<T>& b,
-    Eq eq = Eq{}
-) {
+    const std::vector<T> &a,
+    const std::vector<T> &b,
+    Eq eq = Eq{}) {
     return diffHunks(std::span<const T>(a), std::span<const T>(b), eq);
 }
 
 inline std::vector<Hunk> diffHunks(
     std::string_view a,
-    std::string_view b
-) {
+    std::string_view b) {
     return diffHunks(std::span<const char>(a.data(), a.size()), std::span<const char>(b.data(), b.size()));
 }
 
@@ -144,10 +138,9 @@ inline std::vector<Hunk> diffHunks(
 inline std::vector<std::pair<int, int>> lcsWeighted(
     std::span<const std::string> a,
     std::span<const std::string> b,
-    const std::function<double(int)>& weight,
-    const std::function<double(int)>& value,
-    const std::function<void()>& onAmbiguous = nullptr
-) {
+    const std::function<double(int)> &weight,
+    const std::function<double(int)> &value,
+    const std::function<void()> &onAmbiguous = nullptr) {
     const int n = static_cast<int>(a.size());
     const int m = static_cast<int>(b.size());
     std::vector<double> score((n + 1) * (m + 1), 0.0);
@@ -165,7 +158,8 @@ inline std::vector<std::pair<int, int>> lcsWeighted(
     while (i < n && j < m) {
         if (a[i] == b[j] && score[at(i, j)] == score[at(i + 1, j + 1)] + value(i) + LCS_WEIGHT_BONUS * weight(i)) {
             if (weight(i) > 0 && (score[at(i, j)] == score[at(i + 1, j)] || score[at(i, j)] == score[at(i, j + 1)])) {
-                if (onAmbiguous) onAmbiguous();
+                if (onAmbiguous)
+                    onAmbiguous();
             }
             pairs.push_back({i, j});
             i++;
@@ -186,10 +180,9 @@ inline std::vector<std::pair<int, int>> lcsWeighted(
 inline std::vector<std::pair<int, int>> lcsPairs(
     std::span<const std::string> a,
     std::span<const std::string> b,
-    const std::function<double(int)>& weightA = nullptr,
-    const std::function<void()>& onAmbiguous = nullptr,
-    const std::function<double(int)>& valueA = nullptr
-) {
+    const std::function<double(int)> &weightA = nullptr,
+    const std::function<void()> &onAmbiguous = nullptr,
+    const std::function<double(int)> &valueA = nullptr) {
     if (a.size() == b.size()) {
         bool all_equal = true;
         for (size_t k = 0; k < a.size(); ++k) {
@@ -201,7 +194,8 @@ inline std::vector<std::pair<int, int>> lcsPairs(
         if (all_equal) {
             std::vector<std::pair<int, int>> res;
             res.reserve(a.size());
-            for (int k = 0; k < static_cast<int>(a.size()); ++k) res.push_back({k, k});
+            for (int k = 0; k < static_cast<int>(a.size()); ++k)
+                res.push_back({k, k});
             return res;
         }
     }
@@ -210,11 +204,14 @@ inline std::vector<std::pair<int, int>> lcsPairs(
     const int n = static_cast<int>(a.size());
     const int m = static_cast<int>(b.size());
     if (!weightA) {
-        while (pre < n && pre < m && a[pre] == b[pre]) pre++;
-        while (suf < n - pre && suf < m - pre && a[n - 1 - suf] == b[m - 1 - suf]) suf++;
+        while (pre < n && pre < m && a[pre] == b[pre])
+            pre++;
+        while (suf < n - pre && suf < m - pre && a[n - 1 - suf] == b[m - 1 - suf])
+            suf++;
     }
     std::vector<std::pair<int, int>> pairs;
-    for (int i = 0; i < pre; ++i) pairs.push_back({i, i});
+    for (int i = 0; i < pre; ++i)
+        pairs.push_back({i, i});
 
     auto aMid = a.subspan(pre, n - suf - pre);
     auto bMid = b.subspan(pre, m - suf - pre);
@@ -222,7 +219,8 @@ inline std::vector<std::pair<int, int>> lcsPairs(
     if (cells > LCS_DP_CELLS_MAX && weightA) {
         for (size_t idx = 0; idx < aMid.size(); ++idx) {
             if (weightA(static_cast<int>(idx) + pre) > 0) {
-                if (onAmbiguous) onAmbiguous();
+                if (onAmbiguous)
+                    onAmbiguous();
                 break;
             }
         }
@@ -235,18 +233,19 @@ inline std::vector<std::pair<int, int>> lcsPairs(
     } else {
         middle = matchesMyers<std::string>(aMid, bMid);
     }
-    for (const auto& [i, j] : middle) pairs.push_back({i + pre, j + pre});
-    for (int k = suf; k > 0; --k) pairs.push_back({n - k, m - k});
+    for (const auto &[i, j] : middle)
+        pairs.push_back({i + pre, j + pre});
+    for (int k = suf; k > 0; --k)
+        pairs.push_back({n - k, m - k});
     return pairs;
 }
 
 inline std::vector<std::pair<int, int>> lcsPairs(
-    const std::vector<std::string>& a,
-    const std::vector<std::string>& b,
-    const std::function<double(int)>& weightA = nullptr,
-    const std::function<void()>& onAmbiguous = nullptr,
-    const std::function<double(int)>& valueA = nullptr
-) {
+    const std::vector<std::string> &a,
+    const std::vector<std::string> &b,
+    const std::function<double(int)> &weightA = nullptr,
+    const std::function<void()> &onAmbiguous = nullptr,
+    const std::function<double(int)> &valueA = nullptr) {
     return lcsPairs(std::span<const std::string>(a), std::span<const std::string>(b), weightA, onAmbiguous, valueA);
 }
 
@@ -254,16 +253,14 @@ inline std::vector<std::pair<int, int>> lcsPairs(
 inline std::vector<Hunk> diffHunksValued(
     std::span<const std::string> a,
     std::span<const std::string> b,
-    const std::function<double(int)>& valueA
-) {
+    const std::function<double(int)> &valueA) {
     return hunksFromMatches(lcsPairs(a, b, nullptr, nullptr, valueA), static_cast<int>(a.size()), static_cast<int>(b.size()));
 }
 
 inline std::vector<Hunk> diffHunksValued(
-    const std::vector<std::string>& a,
-    const std::vector<std::string>& b,
-    const std::function<double(int)>& valueA
-) {
+    const std::vector<std::string> &a,
+    const std::vector<std::string> &b,
+    const std::function<double(int)> &valueA) {
     return diffHunksValued(std::span<const std::string>(a), std::span<const std::string>(b), valueA);
 }
 
@@ -286,7 +283,7 @@ struct PairAB {
 };
 
 /** The longest run of pairs increasing in `a`, from pairs sorted by `b` (patience sorting). */
-inline std::vector<PairAB> increasingRun(const std::vector<PairAB>& pairs) {
+inline std::vector<PairAB> increasingRun(const std::vector<PairAB> &pairs) {
     std::vector<int> tails;
     std::vector<int> previous(pairs.size(), -1);
     for (size_t i = 0; i < pairs.size(); ++i) {
@@ -294,12 +291,17 @@ inline std::vector<PairAB> increasingRun(const std::vector<PairAB>& pairs) {
         int high = static_cast<int>(tails.size());
         while (low < high) {
             int mid = (low + high) >> 1;
-            if (pairs[tails[mid]].a < pairs[i].a) low = mid + 1;
-            else high = mid;
+            if (pairs[tails[mid]].a < pairs[i].a)
+                low = mid + 1;
+            else
+                high = mid;
         }
-        if (low > 0) previous[i] = tails[low - 1];
-        if (low == static_cast<int>(tails.size())) tails.push_back(static_cast<int>(i));
-        else tails[low] = static_cast<int>(i);
+        if (low > 0)
+            previous[i] = tails[low - 1];
+        if (low == static_cast<int>(tails.size()))
+            tails.push_back(static_cast<int>(i));
+        else
+            tails[low] = static_cast<int>(i);
     }
     std::vector<PairAB> out;
     int cur = tails.empty() ? -1 : tails.back();
@@ -319,11 +321,9 @@ inline std::vector<std::pair<int, int>> linePairs(std::span<const std::string> a
     for (int i = n - 1; i >= 0; --i) {
         for (int j = m - 1; j >= 0; --j) {
             int common = commonLength(a[i], b[j]);
-            score[at(i, j)] = std::max({
-                score[at(i + 1, j)],
-                score[at(i, j + 1)],
-                score[at(i + 1, j + 1)] + common
-            });
+            score[at(i, j)] = std::max({score[at(i + 1, j)],
+                                        score[at(i, j + 1)],
+                                        score[at(i + 1, j + 1)] + common});
         }
     }
     std::vector<std::pair<int, int>> pairs;
@@ -354,8 +354,7 @@ struct KeptOffsetsOptions {
 inline std::vector<int> keptOffsets(
     std::string_view exported,
     std::string_view edited,
-    KeptOffsetsOptions opts = {}
-) {
+    KeptOffsetsOptions opts = {}) {
     std::vector<int> map(edited.size(), -1);
     auto splitLines = [](std::string_view s) {
         std::vector<std::string> lines;
@@ -373,10 +372,10 @@ inline std::vector<int> keptOffsets(
     };
     auto linesA = splitLines(exported);
     auto linesB = splitLines(edited);
-    auto startsOf = [](const std::vector<std::string>& lines) {
+    auto startsOf = [](const std::vector<std::string> &lines) {
         std::vector<int> starts;
         int at = 0;
-        for (const auto& line : lines) {
+        for (const auto &line : lines) {
             starts.push_back(at);
             at += static_cast<int>(line.size()) + 1;
         }
@@ -391,10 +390,15 @@ inline std::vector<int> keptOffsets(
             map[startsB[b] + i] = startsA[a] + i;
         }
     };
-    struct CountEntry { int a = 0; int at = 0; int b = 0; int bt = -1; };
+    struct CountEntry {
+        int a = 0;
+        int at = 0;
+        int b = 0;
+        int bt = -1;
+    };
     std::unordered_map<std::string, CountEntry> counts;
     for (size_t i = 0; i < linesA.size(); ++i) {
-        auto& entry = counts[linesA[i]];
+        auto &entry = counts[linesA[i]];
         entry.a++;
         entry.at = static_cast<int>(i);
     }
@@ -406,12 +410,12 @@ inline std::vector<int> keptOffsets(
         }
     }
     std::vector<PairAB> pairs;
-    for (const auto& [_, entry] : counts) {
+    for (const auto &[_, entry] : counts) {
         if (entry.a == 1 && entry.b == 1) {
             pairs.push_back(PairAB{.a = entry.at, .b = entry.bt});
         }
     }
-    std::sort(pairs.begin(), pairs.end(), [](const PairAB& x, const PairAB& y) { return x.b < y.b; });
+    std::sort(pairs.begin(), pairs.end(), [](const PairAB &x, const PairAB &y) { return x.b < y.b; });
     auto anchors = increasingRun(pairs);
 
     std::vector<int> matched(linesB.size(), -1);
@@ -421,19 +425,23 @@ inline std::vector<int> keptOffsets(
         head++;
     }
     for (int tail = 1; tail <= static_cast<int>(linesA.size()) - head && tail <= static_cast<int>(linesB.size()) - head; ++tail) {
-        if (linesA[linesA.size() - tail] != linesB[linesB.size() - tail]) break;
+        if (linesA[linesA.size() - tail] != linesB[linesB.size() - tail])
+            break;
         matched[linesB.size() - tail] = static_cast<int>(linesA.size()) - tail;
     }
-    for (const auto& [a, b] : anchors) {
-        if (matched[b] < 0) matched[b] = a;
+    for (const auto &[a, b] : anchors) {
+        if (matched[b] < 0)
+            matched[b] = a;
     }
-    for (const auto& [a, b] : anchors) {
+    for (const auto &[a, b] : anchors) {
         for (int i = 1; b + i < static_cast<int>(linesB.size()) && a + i < static_cast<int>(linesA.size()) && matched[b + i] < 0; ++i) {
-            if (linesA[a + i] != linesB[b + i]) break;
+            if (linesA[a + i] != linesB[b + i])
+                break;
             matched[b + i] = a + i;
         }
         for (int i = 1; b - i >= 0 && a - i >= 0 && matched[b - i] < 0; ++i) {
-            if (linesA[a - i] != linesB[b - i]) break;
+            if (linesA[a - i] != linesB[b - i])
+                break;
             matched[b - i] = a - i;
         }
     }
@@ -451,9 +459,8 @@ inline std::vector<int> keptOffsets(
             .aStart = static_cast<int>(charsA.size()),
             .aEnd = static_cast<int>(charsA.size()),
             .bStart = static_cast<int>(charsB.size()),
-            .bEnd = static_cast<int>(charsB.size())
-        });
-        for (const auto& inner : hunks) {
+            .bEnd = static_cast<int>(charsB.size())});
+        for (const auto &inner : hunks) {
             for (int k = 0; k < inner.aStart - i && fromB + j + k < static_cast<int>(map.size()); ++k) {
                 map[fromB + j + k] = fromA + i + k;
             }
@@ -466,27 +473,28 @@ inline std::vector<int> keptOffsets(
         int fromB = startsB[lastB + 1];
         int toA = std::min(startsA[aEnd], static_cast<int>(exported.size()));
         int toB = std::min(startsB[bEnd], static_cast<int>(edited.size()));
-        if (toA <= fromA || toB <= fromB || toA - fromA + toB - fromB > KEPT_CHARS_MAX) return;
+        if (toA <= fromA || toB <= fromB || toA - fromA + toB - fromB > KEPT_CHARS_MAX)
+            return;
         if (!opts.withinLines) {
             charsKeep(fromA, toA, fromB, toB);
             return;
         }
         std::vector<std::string> subA(linesA.begin() + (lastA + 1), linesA.begin() + aEnd);
         std::vector<std::string> subB(linesB.begin() + (lastB + 1), linesB.begin() + bEnd);
-        for (const auto& [i, j] : linePairs(subA, subB)) {
+        for (const auto &[i, j] : linePairs(subA, subB)) {
             int a = lastA + 1 + i;
             int b = lastB + 1 + j;
             charsKeep(
                 startsA[a],
                 std::min(startsA[a + 1], static_cast<int>(exported.size())),
                 startsB[b],
-                std::min(startsB[b + 1], static_cast<int>(edited.size()))
-            );
+                std::min(startsB[b + 1], static_cast<int>(edited.size())));
         }
     };
     for (size_t b = 0; b < linesB.size(); ++b) {
         int a = matched[b];
-        if (a < 0 || a <= lastA) continue;
+        if (a < 0 || a <= lastA)
+            continue;
         gap(a, static_cast<int>(b));
         lineSame(a, static_cast<int>(b));
         lastA = a;

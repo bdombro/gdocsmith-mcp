@@ -11,11 +11,12 @@
 
 namespace gdocsmith::engine::test {
 
-inline std::vector<std::string> findingKinds(const std::vector<GuardFinding>& findings) {
+inline std::vector<std::string> findingKinds(const std::vector<GuardFinding> &findings) {
     std::vector<std::string> res;
-    for (const auto& f : findings) {
+    for (const auto &f : findings) {
         std::string s = f.kind + ":" + f.severity;
-        if (f.waived) s += ":waived";
+        if (f.waived)
+            s += ":waived";
         res.push_back(std::move(s));
     }
     return res;
@@ -32,18 +33,14 @@ TEST_CASE("guard - image recreation requires loss approval but deletion does not
     image.key = "image";
     image.type = "image";
     image.raw = slimr::Json::object_t{
-        {"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "google_image"}}}
-    };
+        {"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "google_image"}}}};
     paragraph.inlines.push_back(model::Inline::from_atom(image));
     tab.blocks.emplace_back(paragraph);
     tab.inlineObjects["google_image"] = slimr::Json::object_t{
         {"inlineObjectProperties", slimr::Json::object_t{
-            {"embeddedObject", slimr::Json::object_t{
-                {"description", "important alt text"},
-                {"imageProperties", slimr::Json::object_t{{"contentUri", "https://example.invalid/image"}}}
-            }}
-        }}
-    };
+                                       {"embeddedObject", slimr::Json::object_t{
+                                                              {"description", "important alt text"},
+                                                              {"imageProperties", slimr::Json::object_t{{"contentUri", "https://example.invalid/image"}}}}}}}};
     original.tabs.push_back(tab);
     GuardDoc document;
     document.original = original;
@@ -107,9 +104,7 @@ TEST_CASE("guard - named ranges block overlaps, boundary insertions and explicit
     document.plan.deletedRanges.clear();
     document.plan.contentRequests.push_back(slimr::Json::object_t{
         {"insertText", slimr::Json::object_t{
-            {"location", slimr::Json::object_t{{"index", int64_t{5}}, {"tabId", "t.0"}}}, {"text", "new"}
-        }}
-    });
+                           {"location", slimr::Json::object_t{{"index", int64_t{5}}, {"tabId", "t.0"}}}, {"text", "new"}}}});
     CHECK(guardEvaluate({.docs = {document}}).size() == 1u);
     document.plan.contentRequests.clear();
     document.final.tabs[0].namedRanges.clear();
@@ -137,24 +132,24 @@ TEST_CASE("guard - exact marker edges permit partial interior edits but never fu
     nr.ranges.emplace_back();
     nr.ranges[0].start = 5;
     nr.ranges[0].end = 10;
-    nr.expect = model::NamedRangeDef::EdgePair{.end={"p", 8}, .start={"p", 4}};
+    nr.expect = model::NamedRangeDef::EdgePair{.end = {"p", 8}, .start = {"p", 4}};
     tab.namedRanges.push_back(nr);
     document.original.tabs.push_back(tab);
     document.original.tabs[0].namedRanges[0].expect.reset();
     document.final = document.original;
     document.final.tabs[0].namedRanges[0].expect = nr.expect;
-    document.plan.deletedRanges.push_back({.range={.end=7, .start=6}, .tabId="t"});
+    document.plan.deletedRanges.push_back({.range = {.end = 7, .start = 6}, .tabId = "t"});
     document.plan.contentRequests.push_back(slimr::Json::object_t{
         {"deleteContentRange", slimr::Json::object_t{{"range", slimr::Json::object_t{
-            {"startIndex", int64_t{6}}, {"endIndex", int64_t{7}}, {"tabId", "t"}}}}}});
-    CHECK(guardEvaluate({.docs={document}}).empty());
+                                                                   {"startIndex", int64_t{6}}, {"endIndex", int64_t{7}}, {"tabId", "t"}}}}}});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
     document.final.tabs[0].namedRanges[0].expect->end.offset = 9;
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u); // wrong prediction isn't a bypass
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u); // wrong prediction isn't a bypass
     document.final.tabs[0].namedRanges[0].expect->end.offset = 8;
-    document.plan.deletedRanges[0].range = {.end=10, .start=5};
+    document.plan.deletedRanges[0].range = {.end = 10, .start = 5};
     document.plan.contentRequests[0]["deleteContentRange"]["range"]["startIndex"] = int64_t{5};
     document.plan.contentRequests[0]["deleteContentRange"]["range"]["endIndex"] = int64_t{10};
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u);
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u);
 }
 
 TEST_CASE("guard - tracked start and end boundary insertions keep Google outside-edge semantics") {
@@ -175,17 +170,18 @@ TEST_CASE("guard - tracked start and end boundary insertions keep Google outside
     document.original.tabs.push_back(tab);
     document.final = document.original;
     document.final.tabs[0].namedRanges[0].expect =
-        model::NamedRangeDef::EdgePair{.end={"p", 11}, .start={"p", 6}};
+        model::NamedRangeDef::EdgePair{.end = {"p", 11}, .start = {"p", 6}};
     document.plan.contentRequests.push_back(slimr::Json::object_t{
         {"insertText", slimr::Json::object_t{{"location", slimr::Json::object_t{
-            {"index", int64_t{5}}, {"tabId", "t"}}}, {"text", "xy"}}}});
-    CHECK(guardEvaluate({.docs={document}}).empty());
+                                                              {"index", int64_t{5}}, {"tabId", "t"}}},
+                                             {"text", "xy"}}}});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
     document.final.tabs[0].namedRanges[0].expect->start.offset = 4;
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u); // typed inside means recreate
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u); // typed inside means recreate
     document.plan.contentRequests[0]["insertText"]["location"]["index"] = int64_t{10};
     document.final.tabs[0].namedRanges[0].expect = model::NamedRangeDef::EdgePair{
-        .end={"p", 9}, .start={"p", 4}};
-    CHECK(guardEvaluate({.docs={document}}).empty());
+        .end = {"p", 9}, .start = {"p", 4}};
+    CHECK(guardEvaluate({.docs = {document}}).empty());
 }
 
 TEST_CASE("guard - only explicitly managed absent ranges may be removed without damage approval") {
@@ -202,15 +198,15 @@ TEST_CASE("guard - only explicitly managed absent ranges may be removed without 
     document.original.tabs.push_back(tab);
     document.final = document.original;
     document.final.tabs[0].namedRanges.clear();
-    document.plan.deletedRanges.push_back({.range={.end=10, .start=5}, .tabId="t"});
-    REQUIRE(guardEvaluate({.docs={document}}).size() == 1u);
+    document.plan.deletedRanges.push_back({.range = {.end = 10, .start = 5}, .tabId = "t"});
+    REQUIRE(guardEvaluate({.docs = {document}}).size() == 1u);
     document.managedNamedRangeIds.insert("different");
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u);
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u);
     document.managedNamedRangeIds.insert("nr");
-    CHECK(guardEvaluate({.docs={document}}).empty());
+    CHECK(guardEvaluate({.docs = {document}}).empty());
     // Sidecar is not a blanket damage waiver for retained identities.
     document.final = document.original;
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u);
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u);
 }
 
 TEST_CASE("guard - structural cell deletion cannot silently destroy a retained named range") {
@@ -242,37 +238,34 @@ TEST_CASE("guard - structural cell deletion cannot silently destroy a retained n
     document.original.tabs.push_back(tab);
     document.final = document.original;
     document.final.tabs[0].blocks[0].as_table().rows.clear();
-    document.plan.contentRequests.push_back(reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "t", .tableStart = layout.blockRanges.at("table").start}));
+    document.plan.contentRequests.push_back(reconcile::RequestBuilder::deleteTableRow({.tabId = "t", .tableStart = layout.blockRanges.at("table").start}));
     REQUIRE(document.plan.deletedRanges.empty());
-    auto findings = guardEvaluate({.docs={document}, .allow={"namedRangeDamage"}});
+    auto findings = guardEvaluate({.docs = {document}, .allow = {"namedRangeDamage"}});
     REQUIRE(findings.size() == 1u);
     CHECK(findings[0].kind == "namedRange");
     CHECK_FALSE(findings[0].allowKind.has_value());
     CHECK_FALSE(findings[0].waived);
 
-    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableColumn({
-        .tabId = "t", .tableStart = layout.blockRanges.at("table").start});
-    findings = guardEvaluate({.docs={document}, .allow={"namedRangeDamage"}});
+    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableColumn({.tabId = "t", .tableStart = layout.blockRanges.at("table").start});
+    findings = guardEvaluate({.docs = {document}, .allow = {"namedRangeDamage"}});
     REQUIRE(findings.size() == 1u);
     CHECK_FALSE(findings[0].waived);
     // Managed-ID provenance only authorizes absence, not retained structural damage.
     document.managedNamedRangeIds.insert("retained");
-    CHECK(guardEvaluate({.docs={document}}).size() == 1u);
+    CHECK(guardEvaluate({.docs = {document}}).size() == 1u);
 
     // An operation on another tab cannot remove this range.
     document.final = document.original;
-    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "other", .tableStart = layout.blockRanges.at("table").start});
-    CHECK(guardEvaluate({.docs={document}}).empty());
+    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableRow({.tabId = "other", .tableStart = layout.blockRanges.at("table").start});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
     // Formatting on this tab preserves indices and remains safe.
     document.plan.contentRequests[0] = slimr::Json::object_t{
         {"updateTextStyle", slimr::Json::object_t{}}};
-    CHECK(guardEvaluate({.docs={document}}).empty());
+    CHECK(guardEvaluate({.docs = {document}}).empty());
     // Unclassified effects do not become safe just because overlap is unknown.
     document.plan.contentRequests[0] = slimr::Json::object_t{
         {"unclassifiedStructuralOperation", slimr::Json::object_t{{"tabId", "other"}}}};
-    findings = guardEvaluate({.docs={document}, .allow={"namedRangeDamage"}});
+    findings = guardEvaluate({.docs = {document}, .allow = {"namedRangeDamage"}});
     REQUIRE(findings.size() == 1u);
     CHECK_FALSE(findings[0].waived);
 }
@@ -308,41 +301,35 @@ TEST_CASE("guard - same-tab later tables are safe in sequential range coordinate
     document.original.tabs.push_back(tab);
     document.final = document.original;
     document.final.tabs[0].blocks[1].as_table().rows.clear();
-    document.plan.contentRequests.push_back(reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "t", .tableStart = tableStart}));
-    CHECK(guardEvaluate({.docs={document}}).empty());
-    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableColumn({
-        .tabId = "t", .tableStart = tableStart});
-    CHECK(guardEvaluate({.docs={document}}).empty());
+    document.plan.contentRequests.push_back(reconcile::RequestBuilder::deleteTableRow({.tabId = "t", .tableStart = tableStart}));
+    CHECK(guardEvaluate({.docs = {document}}).empty());
+    document.plan.contentRequests[0] = reconcile::RequestBuilder::deleteTableColumn({.tabId = "t", .tableStart = tableStart});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
 
     // Prefix insertions move BOTH the retained range and the later table. The
     // spatial proof must use those current UTF-16 coordinates, not origin indices.
     document.final.tabs[0].blocks[0].as_paragraph().inlines[0].text = "\xF0\x9F\x98\x80range";
     document.final.tabs[0].namedRanges[0].expect =
-        model::NamedRangeDef::EdgePair{.end={"p", 6}, .start={"p", 1}};
+        model::NamedRangeDef::EdgePair{.end = {"p", 6}, .start = {"p", 1}};
     document.plan.contentRequests.insert(document.plan.contentRequests.begin(),
-        reconcile::RequestBuilder::insertTextAt(1, "\xF0\x9F\x98\x80", "t"));
-    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "t", .tableStart = tableStart + 2});
-    CHECK(guardEvaluate({.docs={document}}).empty());
-    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableColumn({
-        .tabId = "t", .tableStart = tableStart + 2});
-    CHECK(guardEvaluate({.docs={document}}).empty());
+                                         reconcile::RequestBuilder::insertTextAt(1, "\xF0\x9F\x98\x80", "t"));
+    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({.tabId = "t", .tableStart = tableStart + 2});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
+    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableColumn({.tabId = "t", .tableStart = tableStart + 2});
+    CHECK(guardEvaluate({.docs = {document}}).empty());
 
     // An origin index that was after the old range is now inside the current
     // range. It must not pass the safe-later-table proof.
-    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "t", .tableStart = tableStart});
-    const auto findings = guardEvaluate({.docs={document}, .allow={"namedRangeDamage"}});
-    CHECK(std::any_of(findings.begin(), findings.end(), [](const auto& finding) {
+    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({.tabId = "t", .tableStart = tableStart});
+    const auto findings = guardEvaluate({.docs = {document}, .allow = {"namedRangeDamage"}});
+    CHECK(std::any_of(findings.begin(), findings.end(), [](const auto &finding) {
         return finding.kind == "namedRange" && !finding.allowKind && !finding.waived;
     }));
     // The safe proof is strict: touching/unresolved table boundaries still refuse.
-    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({
-        .tabId = "t", .tableStart = 8});
-    const auto boundaryFindings = guardEvaluate({.docs={document}});
+    document.plan.contentRequests[1] = reconcile::RequestBuilder::deleteTableRow({.tabId = "t", .tableStart = 8});
+    const auto boundaryFindings = guardEvaluate({.docs = {document}});
     CHECK(std::any_of(boundaryFindings.begin(), boundaryFindings.end(),
-        [](const auto& finding) { return !finding.allowKind; }));
+                      [](const auto &finding) { return !finding.allowKind; }));
 }
 
 TEST_CASE("guard - deleting commented text or editing part of it blocks") {
@@ -384,13 +371,10 @@ TEST_CASE("guard - deleting commented text or editing part of it blocks") {
     });
     plan.contentRequests.push_back(slimr::Json::object_t{
         {"deleteContentRange", slimr::Json::object_t{
-            {"range", slimr::Json::object_t{
-                {"startIndex", static_cast<int64_t>(6)},
-                {"endIndex", static_cast<int64_t>(16)},
-                {"tabId", "t.0"}
-            }}
-        }}
-    });
+                                   {"range", slimr::Json::object_t{
+                                                 {"startIndex", static_cast<int64_t>(6)},
+                                                 {"endIndex", static_cast<int64_t>(16)},
+                                                 {"tabId", "t.0"}}}}}});
     plan.origins.push_back(RequestOrigin{.tabIndex = 2});
 
     std::vector<DriveComment> comments = {
@@ -451,13 +435,10 @@ TEST_CASE("guard - an allow kind waives only its own findings") {
     });
     plan.contentRequests.push_back(slimr::Json::object_t{
         {"deleteContentRange", slimr::Json::object_t{
-            {"range", slimr::Json::object_t{
-                {"startIndex", static_cast<int64_t>(3)},
-                {"endIndex", static_cast<int64_t>(9)},
-                {"tabId", "t.0"}
-            }}
-        }}
-    });
+                                   {"range", slimr::Json::object_t{
+                                                 {"startIndex", static_cast<int64_t>(3)},
+                                                 {"endIndex", static_cast<int64_t>(9)},
+                                                 {"tabId", "t.0"}}}}}});
     plan.origins.push_back(RequestOrigin{.tabIndex = 2});
 
     std::vector<DriveComment> comments = {
@@ -511,8 +492,7 @@ TEST_CASE("guard - inbound-linked headings are preserved or explicitly protected
                         .content = {ParagraphTextSpec{
                             .text = "see",
                             .style = slimr::Json::object_t{{"link", slimr::Json::object_t{
-                                {"heading", slimr::Json::object_t{{"id", "h.t"}, {"tabId", "t.0"}}}
-                            }}},
+                                                                        {"heading", slimr::Json::object_t{{"id", "h.t"}, {"tabId", "t.0"}}}}}},
                         }},
                     }),
                     BlockSpec::make_paragraph(ParagraphSpec{.content = {"z"}}),

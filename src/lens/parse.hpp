@@ -1,21 +1,21 @@
 #pragma once
 
+#include "cell_refs.hpp"
+#include "directives.hpp"
+#include "frontmatter.hpp"
+#include "model/lists.hpp"
+#include "review_markers.hpp"
+#include "tables.hpp"
+#include "text_styles.hpp"
+#include "tokens.hpp"
+#include <algorithm>
+#include <cctype>
+#include <map>
+#include <regex>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <map>
-#include <sstream>
-#include <algorithm>
-#include <cctype>
-#include <regex>
-#include "tokens.hpp"
-#include "directives.hpp"
-#include "tables.hpp"
-#include "cell_refs.hpp"
-#include "review_markers.hpp"
-#include "text_styles.hpp"
-#include "frontmatter.hpp"
-#include "model/lists.hpp"
 
 namespace gdocsmith::lens {
 
@@ -37,8 +37,7 @@ inline std::vector<ProjSpan> parseInlines(std::string_view text) {
     static const std::unordered_set<std::string> token_names = {
         "image", "person", "date", "richlink", "richLink", "chip", "footnoteRef",
         "pagebreak", "section", "toc", "horizontalRule", "columnBreak", "equation",
-        "dropdown", "autoText", "namedrange"
-    };
+        "dropdown", "autoText", "namedrange"};
     static const std::unordered_set<std::string> style_names = {"style"};
 
     while (i < text.size()) {
@@ -69,10 +68,13 @@ inline std::vector<ProjSpan> parseInlines(std::string_view text) {
                         if (end > 0) {
                             try {
                                 auto parsed_attrs = directiveAttrsParse(text.substr(next + 1, end - (next + 1)));
-                                for (const auto& [k, v] : parsed_attrs.values) tr.attrs.values.push_back({k, v});
-                                for (const auto& f : parsed_attrs.flags) tr.attrs.flags.push_back(f);
+                                for (const auto &[k, v] : parsed_attrs.values)
+                                    tr.attrs.values.push_back({k, v});
+                                for (const auto &f : parsed_attrs.flags)
+                                    tr.attrs.flags.push_back(f);
                                 next = end + 1;
-                            } catch (...) {}
+                            } catch (...) {
+                            }
                         }
                     }
 
@@ -93,14 +95,15 @@ inline std::vector<ProjSpan> parseInlines(std::string_view text) {
                 flush_text();
                 ProjSpan s;
                 s.kind = "text";
-                for (const auto& part : parseInlines(*match->label)) {
+                for (const auto &part : parseInlines(*match->label)) {
                     if (part.kind != "text" || !part.marks.empty() || part.directive) {
                         throw CoreError("unsupportedSyntax", ":style labels must contain plain text.");
                     }
                     s.text += part.text;
                 }
-                if (!match->attrs.classes.empty()) s.directive = match->attrs.classes[0];
-                for (const auto& [name, value] : match->attrs.values) {
+                if (!match->attrs.classes.empty())
+                    s.directive = match->attrs.classes[0];
+                for (const auto &[name, value] : match->attrs.values) {
                     if (name == "fontFamily" || name == "fontWeight" || name == "fontSize" ||
                         name == "foregroundColor" || name == "backgroundColor" || name == "baselineOffset") {
                         s.formatting.values.emplace_back(name, value);
@@ -116,13 +119,20 @@ inline std::vector<ProjSpan> parseInlines(std::string_view text) {
                         throw CoreError("unsupportedSyntax", ":style marks must be true or false.");
                     }
                     const bool enabled = value == "true";
-                    if (name == "bold") s.marks.bold = enabled;
-                    else if (name == "italic") s.marks.italic = enabled;
-                    else if (name == "underline") s.marks.underline = enabled;
-                    else if (name == "strikethrough") s.marks.strikethrough = enabled;
-                    else if (name == "smallCaps") s.marks.smallCaps = enabled;
-                    else if (name == "code") s.marks.code = enabled;
-                    else throw CoreError("unsupportedSyntax", "Unknown :style mark: " + name);
+                    if (name == "bold")
+                        s.marks.bold = enabled;
+                    else if (name == "italic")
+                        s.marks.italic = enabled;
+                    else if (name == "underline")
+                        s.marks.underline = enabled;
+                    else if (name == "strikethrough")
+                        s.marks.strikethrough = enabled;
+                    else if (name == "smallCaps")
+                        s.marks.smallCaps = enabled;
+                    else if (name == "code")
+                        s.marks.code = enabled;
+                    else
+                        throw CoreError("unsupportedSyntax", "Unknown :style mark: " + name);
                 }
                 spans.push_back(std::move(s));
                 i += match->raw.size();
@@ -267,12 +277,15 @@ inline std::pair<std::string, std::optional<std::string>> extractParagraphStyleM
     return {s, std::nullopt};
 }
 
-inline void tableMergeRegionsResolve(ProjTable& table, const std::map<std::pair<int, int>, std::string>& markers) {
-    if (markers.empty()) return;
+inline void tableMergeRegionsResolve(ProjTable &table, const std::map<std::pair<int, int>, std::string> &markers) {
+    if (markers.empty())
+        return;
     const int rows = static_cast<int>(table.rows.size());
     const int columns = rows ? static_cast<int>(table.rows[0].size()) : 0;
     std::map<std::pair<int, int>, std::pair<int, int>> parent;
-    for (int r = 0; r < rows; ++r) for (int c = 0; c < columns; ++c) parent[{r, c}] = {r, c};
+    for (int r = 0; r < rows; ++r)
+        for (int c = 0; c < columns; ++c)
+            parent[{r, c}] = {r, c};
     auto root = [&](std::pair<int, int> at) {
         while (parent.at(at) != at) {
             parent.at(at) = parent.at(parent.at(at));
@@ -280,36 +293,45 @@ inline void tableMergeRegionsResolve(ProjTable& table, const std::map<std::pair<
         }
         return at;
     };
-    for (const auto& [at, marker] : markers) {
+    for (const auto &[at, marker] : markers) {
         auto neighbor = at;
-        if (marker == MERGE_LEFT) --neighbor.second;
-        else if (marker == MERGE_UP) --neighbor.first;
-        else ++neighbor.first;
-        if (!parent.contains(neighbor)) throw CoreError("unsupportedSyntax", "A merge marker points outside the table.");
+        if (marker == MERGE_LEFT)
+            --neighbor.second;
+        else if (marker == MERGE_UP)
+            --neighbor.first;
+        else
+            ++neighbor.first;
+        if (!parent.contains(neighbor))
+            throw CoreError("unsupportedSyntax", "A merge marker points outside the table.");
         if (table.cellStyles[at.first][at.second] || table.paragraphStyles[at.first][at.second])
             throw CoreError("unsupportedSyntax", "A covered merge cell cannot declare styles.");
         parent.at(root(at)) = root(neighbor);
     }
     std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> regions;
-    for (const auto& [at, unused] : parent) {
+    for (const auto &[at, unused] : parent) {
         (void)unused;
         regions[root(at)].push_back(at);
     }
     table.merges.clear();
-    for (const auto& [unused, cells] : regions) {
+    for (const auto &[unused, cells] : regions) {
         (void)unused;
-        if (cells.size() < 2) continue;
+        if (cells.size() < 2)
+            continue;
         std::optional<std::pair<int, int>> content;
         int top = rows, left = columns, bottom = 0, right = 0;
-        for (const auto& at : cells) {
+        for (const auto &at : cells) {
             if (!markers.contains(at)) {
-                if (content) throw CoreError("unsupportedSyntax", "A merged region must have exactly one content cell.");
+                if (content)
+                    throw CoreError("unsupportedSyntax", "A merged region must have exactly one content cell.");
                 content = at;
             }
-            top = std::min(top, at.first); left = std::min(left, at.second);
-            bottom = std::max(bottom, at.first); right = std::max(right, at.second);
+            top = std::min(top, at.first);
+            left = std::min(left, at.second);
+            bottom = std::max(bottom, at.first);
+            right = std::max(right, at.second);
         }
-        if (!content) throw CoreError("unsupportedSyntax", "Merge markers form a cycle without a content cell.");
+        if (!content)
+            throw CoreError("unsupportedSyntax", "Merge markers form a cycle without a content cell.");
         if (static_cast<size_t>(bottom - top + 1) * static_cast<size_t>(right - left + 1) != cells.size())
             throw CoreError("unsupportedSyntax", "A merged region must form a rectangle.");
         if (*content != std::pair{top, left}) {
@@ -318,19 +340,22 @@ inline void tableMergeRegionsResolve(ProjTable& table, const std::map<std::pair<
             table.cells[top][left] = std::move(table.cells[r][c]);
             table.cellStyles[top][left] = std::move(table.cellStyles[r][c]);
             table.paragraphStyles[top][left] = std::move(table.paragraphStyles[r][c]);
-            table.rows[r][c].clear(); table.cells[r][c].clear();
-            table.cellStyles[r][c].reset(); table.paragraphStyles[r][c].reset();
+            table.rows[r][c].clear();
+            table.cells[r][c].clear();
+            table.cellStyles[r][c].reset();
+            table.paragraphStyles[r][c].reset();
         }
         table.merges.push_back({.column = left, .columnSpan = right - left + 1, .row = top, .rowSpan = bottom - top + 1});
     }
-    std::sort(table.merges.begin(), table.merges.end(), [](const auto& a, const auto& b) {
+    std::sort(table.merges.begin(), table.merges.end(), [](const auto &a, const auto &b) {
         return std::pair{a.row, a.column} < std::pair{b.row, b.column};
     });
 }
 
 inline Projection markdownParse(std::string_view markdown) {
     auto envelope = slimr::parse_frontmatter(markdown);
-    if (!envelope) throw CoreError("unsupportedSyntax", "Invalid Markdown frontmatter.");
+    if (!envelope)
+        throw CoreError("unsupportedSyntax", "Invalid Markdown frontmatter.");
     std::vector<FileProblem> problems;
     auto body = std::string(envelope->body);
     const auto firstBody = body.find_first_not_of("\r\n");
@@ -345,7 +370,7 @@ inline Projection markdownParse(std::string_view markdown) {
     Projection proj;
     if (envelope->frontmatter) {
         const auto declarations = frontmatterValidate(*envelope->frontmatter, "tab");
-        for (const auto& [name, declaration] : declarations.textStyles) {
+        for (const auto &[name, declaration] : declarations.textStyles) {
             proj.styles[name] = styleDeclarationAttrs(declaration);
         }
         proj.paragraphStyles.insert(declarations.paragraphStyles.begin(), declarations.paragraphStyles.end());
@@ -361,13 +386,14 @@ inline Projection markdownParse(std::string_view markdown) {
     std::string line;
     std::vector<std::string> lines;
     while (std::getline(ss, line)) {
-        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
         lines.push_back(line);
     }
 
     std::map<std::string, std::vector<ProjBlock>> referenced_cell_blocks;
     for (size_t li = 0; li < lines.size(); li++) {
-        const auto& l = lines[li];
+        const auto &l = lines[li];
         if (l.starts_with("::cell")) {
             static const std::unordered_set<std::string> cell_set = {"cell"};
             auto ld = lineDirectiveMatch(l, cell_set);
@@ -376,7 +402,7 @@ inline Projection markdownParse(std::string_view markdown) {
                 li++;
                 std::string cell_content;
                 while (li < lines.size()) {
-                    const auto& sub = lines[li];
+                    const auto &sub = lines[li];
                     if (sub.starts_with("::cell")) {
                         auto sub_ld = lineDirectiveMatch(sub, cell_set);
                         if (sub_ld && sub_ld->attrs.has_flag("end") &&
@@ -384,7 +410,8 @@ inline Projection markdownParse(std::string_view markdown) {
                             break;
                         }
                     }
-                    if (!cell_content.empty()) cell_content += "\n";
+                    if (!cell_content.empty())
+                        cell_content += "\n";
                     cell_content += sub;
                     li++;
                 }
@@ -398,13 +425,14 @@ inline Projection markdownParse(std::string_view markdown) {
     size_t i = 0;
     auto lineAt = [&](size_t at) { proj.blockLines.lines.push_back(leadNewlines + static_cast<int>(at) + 1); };
     while (i < lines.size()) {
-        const auto& cur_line = lines[i];
+        const auto &cur_line = lines[i];
         const size_t blockStart = i;
         if (cur_line.starts_with("::comment") || cur_line.starts_with(":::comment") ||
             cur_line.starts_with("::suggestion") || cur_line.starts_with(":::suggestion") ||
             cur_line.starts_with("::header") || cur_line.starts_with("::footer") ||
             cur_line.starts_with("::footnote") || cur_line.starts_with(":::header") ||
-            cur_line.starts_with(":::footer") || cur_line.starts_with(":::footnote")) proj.unsupportedReview = true;
+            cur_line.starts_with(":::footer") || cur_line.starts_with(":::footnote"))
+            proj.unsupportedReview = true;
 
         // Empty line
         if (cur_line.find_first_not_of(" \t\r\n") == std::string::npos) {
@@ -417,7 +445,8 @@ inline Projection markdownParse(std::string_view markdown) {
             throw CoreError("unsupportedSyntax", "A ::table line must come directly before its table.");
         }
         if (activeListPreset && !listItemLine && !cur_line.starts_with("::list")) {
-            if (!listPresetAttached) throw CoreError("unsupportedSyntax", "A ::list line must come directly before its list.");
+            if (!listPresetAttached)
+                throw CoreError("unsupportedSyntax", "A ::list line must come directly before its list.");
             activeListPreset.reset();
             listPresetAttached = false;
         }
@@ -428,7 +457,7 @@ inline Projection markdownParse(std::string_view markdown) {
             std::string fence = cur_line.substr(non_ws, 3);
             i++;
             while (i < lines.size()) {
-                const auto& sub = lines[i];
+                const auto &sub = lines[i];
                 size_t sub_ws = sub.find_first_not_of(" \t");
                 if (sub_ws != std::string::npos && sub.substr(sub_ws, 3) == fence) {
                     i++;
@@ -455,7 +484,7 @@ inline Projection markdownParse(std::string_view markdown) {
                 std::string cell_id = *ld->attrs.get_value("id");
                 i++;
                 while (i < lines.size()) {
-                    const auto& sub = lines[i];
+                    const auto &sub = lines[i];
                     if (sub.starts_with("::cell")) {
                         auto sub_ld = lineDirectiveMatch(sub, cell_set);
                         if (sub_ld && sub_ld->attrs.has_flag("end") &&
@@ -474,7 +503,8 @@ inline Projection markdownParse(std::string_view markdown) {
         if (cur_line.starts_with("::table")) {
             static const std::unordered_set<std::string> tableNames = {"table"};
             const auto directive = lineDirectiveMatch(cur_line, tableNames);
-            if (!directive || directive->label || tableSettingsPending) proj.unsupportedReview = true;
+            if (!directive || directive->label || tableSettingsPending)
+                proj.unsupportedReview = true;
             else {
                 pendingTableSettings = directive->attrs;
                 tableSettingsPending = true;
@@ -517,7 +547,8 @@ inline Projection markdownParse(std::string_view markdown) {
         // Heading: # H1, ## H2, etc.
         if (cur_line.starts_with("#")) {
             size_t hashes = 0;
-            while (hashes < cur_line.size() && cur_line[hashes] == '#') hashes++;
+            while (hashes < cur_line.size() && cur_line[hashes] == '#')
+                hashes++;
             if (hashes <= 6 && hashes < cur_line.size() && cur_line[hashes] == ' ') {
                 auto [text, style] = extractParagraphStyleMarker(cur_line.substr(hashes + 1));
                 ProjBlock hb;
@@ -534,14 +565,16 @@ inline Projection markdownParse(std::string_view markdown) {
 
         // List item: - item, * item, 1. item
         size_t indent = 0;
-        while (indent < cur_line.size() && cur_line[indent] == ' ') indent++;
+        while (indent < cur_line.size() && cur_line[indent] == ' ')
+            indent++;
         std::string_view trimmed_line = std::string_view(cur_line).substr(indent);
         bool is_bullet = (trimmed_line.starts_with("- ") || trimmed_line.starts_with("* "));
         bool is_numbered = false;
         size_t num_prefix = 0;
         if (!is_bullet && std::isdigit(static_cast<unsigned char>(trimmed_line[0]))) {
             size_t d = 0;
-            while (d < trimmed_line.size() && std::isdigit(static_cast<unsigned char>(trimmed_line[d]))) d++;
+            while (d < trimmed_line.size() && std::isdigit(static_cast<unsigned char>(trimmed_line[d])))
+                d++;
             if (d < trimmed_line.size() && trimmed_line[d] == '.' && d + 1 < trimmed_line.size() && trimmed_line[d + 1] == ' ') {
                 is_numbered = true;
                 num_prefix = d + 2;
@@ -594,12 +627,16 @@ inline Projection markdownParse(std::string_view markdown) {
                         std::vector<std::string> aligns;
                         while (std::getline(ss_del, seg, '|')) {
                             size_t s_pos = seg.find_first_not_of(" \t");
-                            if (s_pos == std::string::npos) continue;
+                            if (s_pos == std::string::npos)
+                                continue;
                             size_t e_pos = seg.find_last_not_of(" \t");
                             std::string part = seg.substr(s_pos, e_pos - s_pos + 1);
-                            if (part.starts_with(":") && part.ends_with(":")) aligns.push_back("CENTER");
-                            else if (part.ends_with(":")) aligns.push_back("RIGHT");
-                            else aligns.push_back("LEFT");
+                            if (part.starts_with(":") && part.ends_with(":"))
+                                aligns.push_back("CENTER");
+                            else if (part.ends_with(":"))
+                                aligns.push_back("RIGHT");
+                            else
+                                aligns.push_back("LEFT");
                         }
                         pt.alignments = std::move(aligns);
                         continue;
@@ -610,7 +647,10 @@ inline Projection markdownParse(std::string_view markdown) {
                     std::vector<std::string> cells;
                     bool first = true;
                     while (std::getline(ss_row, seg, '|')) {
-                        if (first) { first = false; continue; } // Before first '|'
+                        if (first) {
+                            first = false;
+                            continue;
+                        } // Before first '|'
                         size_t s_pos = seg.find_first_not_of(" \t");
                         if (s_pos == std::string::npos) {
                             cells.push_back("");
@@ -619,14 +659,16 @@ inline Projection markdownParse(std::string_view markdown) {
                             cells.push_back(seg.substr(s_pos, e_pos - s_pos + 1));
                         }
                     }
-                    if (!cells.empty()) raw_cells.push_back(std::move(cells));
+                    if (!cells.empty())
+                        raw_cells.push_back(std::move(cells));
                 }
 
                 // Process rows, merges, and cell references
                 if (raw_cells.empty() || raw_cells.front().empty() || pt.alignments.size() != raw_cells.front().size()) {
                     throw CoreError("unsupportedSyntax", "A table's header and delimiter must have the same columns.");
                 }
-                for (auto& row : raw_cells) row.resize(raw_cells.front().size());
+                for (auto &row : raw_cells)
+                    row.resize(raw_cells.front().size());
                 std::map<std::pair<int, int>, std::string> mergeTokens;
                 pt.rows.resize(raw_cells.size());
                 pt.cellStyles.resize(raw_cells.size());
@@ -665,8 +707,10 @@ inline Projection markdownParse(std::string_view markdown) {
                                 auto it = referenced_cell_blocks.find(ref_id);
                                 if (it != referenced_cell_blocks.end()) {
                                     pt.cells[r][c] = it->second;
-                                } else throw CoreError("unsupportedSyntax", "A referenced table cell has no definition.");
-                            } else throw CoreError("unsupportedSyntax", "Invalid table cell reference.");
+                                } else
+                                    throw CoreError("unsupportedSyntax", "A referenced table cell has no definition.");
+                            } else
+                                throw CoreError("unsupportedSyntax", "Invalid table cell reference.");
                         } else {
                             // Check cell style marker :cell{.name}
                             static const std::regex c_re(R"(\s*:cell\{\.([A-Za-z0-9_+.-]+)\}\s*$)");
@@ -694,7 +738,7 @@ inline Projection markdownParse(std::string_view markdown) {
         std::string p_text = cur_line;
         i++;
         while (i < lines.size()) {
-            const auto& next_line = lines[i];
+            const auto &next_line = lines[i];
             if (next_line.find_first_not_of(" \t\r\n") == std::string::npos ||
                 next_line.starts_with("#") || next_line.starts_with("```") ||
                 next_line.starts_with("~~~") || next_line.starts_with("|") ||
@@ -715,7 +759,8 @@ inline Projection markdownParse(std::string_view markdown) {
         lineAt(blockStart);
     }
 
-    if (!pendingTableSettings.values.empty() || !pendingTableSettings.flags.empty()) proj.unsupportedReview = true;
+    if (!pendingTableSettings.values.empty() || !pendingTableSettings.flags.empty())
+        proj.unsupportedReview = true;
     if (tableSettingsPending || (activeListPreset && !listPresetAttached)) {
         throw CoreError("unsupportedSyntax", "A settings directive needs its table or list.");
     }

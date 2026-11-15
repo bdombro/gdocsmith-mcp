@@ -26,18 +26,18 @@ inline std::string tabKeySuffix(std::string_view tabId) {
  * `o<N>` for blocks/atoms read from existing JSON, `n<N>` for ones an edit creates.
  */
 class KeyAllocator {
-public:
+  public:
     struct State {
         int n = 0;
         int o = 0;
     };
 
-private:
+  private:
     std::shared_ptr<int> sharedN;
     int oCounter = 0;
     std::string suffix;
 
-public:
+  public:
     KeyAllocator()
         : sharedN(std::make_shared<int>(0)), oCounter(0), suffix("") {}
 

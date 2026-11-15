@@ -109,20 +109,20 @@ struct DocReconcileInput {
     std::map<std::string, std::vector<Range>> carryRanges;
 };
 
-inline void indicesShift(slimr::Json& value, int by) {
+inline void indicesShift(slimr::Json &value, int by) {
     if (value.is_array()) {
-        for (auto& entry : value.get<slimr::Json::array_t>()) {
+        for (auto &entry : value.get<slimr::Json::array_t>()) {
             indicesShift(entry, by);
         }
     } else if (value.is_object()) {
-        auto& record = value.get<slimr::Json::object_t>();
+        auto &record = value.get<slimr::Json::object_t>();
         if (record.contains("startIndex") && record["startIndex"].is_number()) {
             record["startIndex"] = record["startIndex"].as<int>() + by;
         }
         if (record.contains("endIndex") && record["endIndex"].is_number()) {
             record["endIndex"] = record["endIndex"].as<int>() + by;
         }
-        for (auto& [_, entry] : record) {
+        for (auto &[_, entry] : record) {
             if (entry.is_array() || entry.is_object()) {
                 indicesShift(entry, by);
             }
@@ -132,7 +132,7 @@ inline void indicesShift(slimr::Json& value, int by) {
 
 inline slimr::Json make_footnote_blank_content() {
     static const auto content = []() -> slimr::Json {
-        const char* raw = R"json([
+        const char *raw = R"json([
   {
     "endIndex": 2,
     "paragraph": {
@@ -159,7 +159,7 @@ inline slimr::Json make_footnote_blank_content() {
     return content;
 }
 
-inline JsonObject footnoteBlankJson(const std::string& tabId, const std::string& title, const JsonObject& namedStyles) {
+inline JsonObject footnoteBlankJson(const std::string &tabId, const std::string &title, const JsonObject &namedStyles) {
     slimr::Json content = make_footnote_blank_content();
     indicesShift(content, 1);
 
@@ -167,49 +167,39 @@ inline JsonObject footnoteBlankJson(const std::string& tabId, const std::string&
         {"startIndex", 0},
         {"endIndex", 1},
         {"sectionBreak", slimr::Json::object_t{
-            {"sectionStyle", slimr::Json::object_t{}}
-        }}
-    };
+                             {"sectionStyle", slimr::Json::object_t{}}}}};
     slimr::Json bodyContent = slimr::Json::array_t{secBreak};
-    for (const auto& item : content.get<slimr::Json::array_t>()) {
+    for (const auto &item : content.get<slimr::Json::array_t>()) {
         bodyContent.get<slimr::Json::array_t>().push_back(item);
     }
 
     slimr::Json docJson = slimr::Json::object_t{
         {"title", ""},
         {"tabs", slimr::Json::array_t{
-            slimr::Json::object_t{
-                {"tabProperties", slimr::Json::object_t{
-                    {"tabId", tabId},
-                    {"title", title}
-                }},
-                {"documentTab", slimr::Json::object_t{
-                    {"body", slimr::Json::object_t{
-                        {"content", std::move(bodyContent)}
-                    }},
-                    {"namedStyles", namedStyles}
-                }}
-            }
-        }}
-    };
+                     slimr::Json::object_t{
+                         {"tabProperties", slimr::Json::object_t{
+                                               {"tabId", tabId},
+                                               {"title", title}}},
+                         {"documentTab", slimr::Json::object_t{{"body", slimr::Json::object_t{{"content", std::move(bodyContent)}}}, {"namedStyles", namedStyles}}}}}}};
     return docJson;
 }
 
-inline slimr::Json segmentRequest(const slimr::Json& req, std::string_view segmentId) {
+inline slimr::Json segmentRequest(const slimr::Json &req, std::string_view segmentId) {
     if (req.is_array()) {
         slimr::Json arr = slimr::Json::array_t{};
-        for (const auto& item : req.get<slimr::Json::array_t>()) {
+        for (const auto &item : req.get<slimr::Json::array_t>()) {
             arr.get<slimr::Json::array_t>().push_back(segmentRequest(item, segmentId));
         }
         return arr;
     }
-    if (!req.is_object()) return req;
+    if (!req.is_object())
+        return req;
     slimr::Json out = slimr::Json::object_t{};
-    for (const auto& [k, v] : req.get<slimr::Json::object_t>()) {
+    for (const auto &[k, v] : req.get<slimr::Json::object_t>()) {
         out[k] = segmentRequest(v, segmentId);
     }
     if (out.contains("tabId") && (out.contains("index") || out.contains("startIndex") || out.contains("endIndex"))) {
-        for (const auto& field : {"index", "startIndex", "endIndex"}) {
+        for (const auto &field : {"index", "startIndex", "endIndex"}) {
             if (out.contains(field) && out[field].is_number()) {
                 out[field] = out[field].as<int>() - 1;
             }
@@ -219,32 +209,37 @@ inline slimr::Json segmentRequest(const slimr::Json& req, std::string_view segme
     return out;
 }
 
-inline bool segmentRequestIs(const slimr::Json& req) {
+inline bool segmentRequestIs(const slimr::Json &req) {
     if (req.is_object()) {
-        if (req.contains("segmentId")) return true;
-        for (const auto& [_, v] : req.get<slimr::Json::object_t>()) {
-            if (segmentRequestIs(v)) return true;
+        if (req.contains("segmentId"))
+            return true;
+        for (const auto &[_, v] : req.get<slimr::Json::object_t>()) {
+            if (segmentRequestIs(v))
+                return true;
         }
     } else if (req.is_array()) {
-        for (const auto& item : req.get<slimr::Json::array_t>()) {
-            if (segmentRequestIs(item)) return true;
+        for (const auto &item : req.get<slimr::Json::array_t>()) {
+            if (segmentRequestIs(item))
+                return true;
         }
     }
     return false;
 }
 
-inline slimr::Json tabIdsRewrite(const slimr::Json& req, const std::map<std::string, std::string>& map) {
-    if (map.empty()) return req;
+inline slimr::Json tabIdsRewrite(const slimr::Json &req, const std::map<std::string, std::string> &map) {
+    if (map.empty())
+        return req;
     if (req.is_array()) {
         slimr::Json arr = slimr::Json::array_t{};
-        for (const auto& item : req.get<slimr::Json::array_t>()) {
+        for (const auto &item : req.get<slimr::Json::array_t>()) {
             arr.get<slimr::Json::array_t>().push_back(tabIdsRewrite(item, map));
         }
         return arr;
     }
-    if (!req.is_object()) return req;
+    if (!req.is_object())
+        return req;
     slimr::Json out = slimr::Json::object_t{};
-    for (const auto& [k, v] : req.get<slimr::Json::object_t>()) {
+    for (const auto &[k, v] : req.get<slimr::Json::object_t>()) {
         if ((k == "tabId" || k == "parentTabId") && v.is_string()) {
             auto it = map.find(v.get<std::string>());
             out[k] = (it != map.end()) ? it->second : v.get<std::string>();
@@ -255,10 +250,10 @@ inline slimr::Json tabIdsRewrite(const slimr::Json& req, const std::map<std::str
     return out;
 }
 
-inline slimr::Json withParent(const slimr::Json& add, const std::string& parentTabId) {
+inline slimr::Json withParent(const slimr::Json &add, const std::string &parentTabId) {
     slimr::Json copy = add;
     if (copy.contains("addDocumentTab") && copy["addDocumentTab"].is_object()) {
-        auto& addDocTab = copy["addDocumentTab"].get<slimr::Json::object_t>();
+        auto &addDocTab = copy["addDocumentTab"].get<slimr::Json::object_t>();
         if (addDocTab.contains("tabProperties") && addDocTab["tabProperties"].is_object()) {
             addDocTab["tabProperties"].get<slimr::Json::object_t>()["parentTabId"] = parentTabId;
         }
@@ -266,26 +261,28 @@ inline slimr::Json withParent(const slimr::Json& add, const std::string& parentT
     return copy;
 }
 
-inline slimr::Json segmentJson(const slimr::Json& json, const std::string& tabId, const std::string& segmentId, const std::string& title) {
-    std::function<const slimr::Json*(const slimr::Json*)> findTab = [&](const slimr::Json* tabs) -> const slimr::Json* {
-        if (!tabs || !tabs->is_array()) return nullptr;
-        for (const auto& t : tabs->get<slimr::Json::array_t>()) {
+inline slimr::Json segmentJson(const slimr::Json &json, const std::string &tabId, const std::string &segmentId, const std::string &title) {
+    std::function<const slimr::Json *(const slimr::Json *)> findTab = [&](const slimr::Json *tabs) -> const slimr::Json * {
+        if (!tabs || !tabs->is_array())
+            return nullptr;
+        for (const auto &t : tabs->get<slimr::Json::array_t>()) {
             if (t.contains("tabProperties") && t["tabProperties"].contains("tabId") &&
                 t["tabProperties"]["tabId"].is_string() && t["tabProperties"]["tabId"].get<std::string>() == tabId) {
                 return &t;
             }
             if (t.contains("childTabs")) {
-                auto* child = findTab(&t["childTabs"]);
-                if (child) return child;
+                auto *child = findTab(&t["childTabs"]);
+                if (child)
+                    return child;
             }
         }
         return nullptr;
     };
-    const slimr::Json* tabNode = json.contains("tabs") ? findTab(&json["tabs"]) : nullptr;
-    const slimr::Json& dt = (tabNode && tabNode->contains("documentTab")) ? (*tabNode)["documentTab"] : json;
+    const slimr::Json *tabNode = json.contains("tabs") ? findTab(&json["tabs"]) : nullptr;
+    const slimr::Json &dt = (tabNode && tabNode->contains("documentTab")) ? (*tabNode)["documentTab"] : json;
 
-    const slimr::Json* segment = nullptr;
-    for (const char* poolName : {"headers", "footers", "footnotes"}) {
+    const slimr::Json *segment = nullptr;
+    for (const char *poolName : {"headers", "footers", "footnotes"}) {
         if (dt.contains(poolName) && dt[poolName].is_object() && dt[poolName].contains(segmentId)) {
             segment = &dt[poolName][segmentId];
             break;
@@ -302,46 +299,42 @@ inline slimr::Json segmentJson(const slimr::Json& json, const std::string& tabId
         {"startIndex", 0},
         {"endIndex", 1},
         {"sectionBreak", slimr::Json::object_t{
-            {"sectionStyle", slimr::Json::object_t{}}
-        }}
-    };
+                             {"sectionStyle", slimr::Json::object_t{}}}}};
     slimr::Json bodyContent = slimr::Json::array_t{secBreak};
-    for (const auto& item : contentArr.get<slimr::Json::array_t>()) {
+    for (const auto &item : contentArr.get<slimr::Json::array_t>()) {
         bodyContent.get<slimr::Json::array_t>().push_back(item);
     }
 
     slimr::Json docTab = slimr::Json::object_t{
         {"body", slimr::Json::object_t{
-            {"content", bodyContent}
-        }}
-    };
-    if (dt.contains("inlineObjects")) docTab["inlineObjects"] = dt["inlineObjects"];
-    if (dt.contains("lists")) docTab["lists"] = dt["lists"];
-    if (dt.contains("namedStyles")) docTab["namedStyles"] = dt["namedStyles"];
+                     {"content", bodyContent}}}};
+    if (dt.contains("inlineObjects"))
+        docTab["inlineObjects"] = dt["inlineObjects"];
+    if (dt.contains("lists"))
+        docTab["lists"] = dt["lists"];
+    if (dt.contains("namedStyles"))
+        docTab["namedStyles"] = dt["namedStyles"];
 
     slimr::Json res = slimr::Json::object_t{
         {"title", ""},
         {"tabs", slimr::Json::array_t{
-            slimr::Json::object_t{
-                {"tabProperties", slimr::Json::object_t{
-                    {"tabId", tabId},
-                    {"title", title}
-                }},
-                {"documentTab", std::move(docTab)}
-            }
-        }}
-    };
-    if (json.contains("revisionId")) res["revisionId"] = json["revisionId"];
+                     slimr::Json::object_t{
+                         {"tabProperties", slimr::Json::object_t{
+                                               {"tabId", tabId},
+                                               {"title", title}}},
+                         {"documentTab", std::move(docTab)}}}}};
+    if (json.contains("revisionId"))
+        res["revisionId"] = json["revisionId"];
     return res;
 }
 
-inline void stripDocLinks(std::vector<Block>& blocks) {
-    for (auto& b : blocks) {
+inline void stripDocLinks(std::vector<Block> &blocks) {
+    for (auto &b : blocks) {
         if (b.is_paragraph()) {
-            auto& p = b.as_paragraph();
-            for (auto& inlineSpan : p.inlines) {
+            auto &p = b.as_paragraph();
+            for (auto &inlineSpan : p.inlines) {
                 if (inlineSpan.style.contains("link") && inlineSpan.style["link"].is_object()) {
-                    const auto& link = inlineSpan.style["link"];
+                    const auto &link = inlineSpan.style["link"];
                     if (link.contains("heading") && link["heading"].is_object() && link["heading"].contains("key")) {
                         if (inlineSpan.style.holds<slimr::Json::object_t>()) {
                             inlineSpan.style.get<slimr::Json::object_t>().erase("link");
@@ -350,9 +343,9 @@ inline void stripDocLinks(std::vector<Block>& blocks) {
                 }
             }
         } else if (b.is_table()) {
-            auto& tbl = b.as_table();
-            for (auto& row : tbl.rows) {
-                for (auto& cell : row.cells) {
+            auto &tbl = b.as_table();
+            for (auto &row : tbl.rows) {
+                for (auto &cell : row.cells) {
                     stripDocLinks(cell.blocks);
                 }
             }
@@ -360,15 +353,15 @@ inline void stripDocLinks(std::vector<Block>& blocks) {
     }
 }
 
-inline DocModel pendingLinksStrip(const DocModel& doc) {
+inline DocModel pendingLinksStrip(const DocModel &doc) {
     DocModel copy = doc;
-    for (auto& tab : copy.tabs) {
+    for (auto &tab : copy.tabs) {
         stripDocLinks(tab.blocks);
     }
     return copy;
 }
 
-inline DocModel docOf(const TabModel& tab, const std::string& tabId) {
+inline DocModel docOf(const TabModel &tab, const std::string &tabId) {
     TabModel copy = tab;
     copy.segments.clear();
     copy.tabId = tabId;
@@ -378,25 +371,22 @@ inline DocModel docOf(const TabModel& tab, const std::string& tabId) {
         .isNew = false,
         .revisionId = std::nullopt,
         .suggestionsViewMode = std::nullopt,
-        .tabs = {std::move(copy)}
-    };
+        .tabs = {std::move(copy)}};
 }
 
 inline CompareResult docPlanSelfCheck(
-    const DocPlan& plan,
-    const DocReconcileInput& input
-) {
+    const DocPlan &plan,
+    const DocReconcileInput &input) {
     std::vector<slimr::Json> adds;
-    for (const auto& t : plan.tabsToAdd) {
+    for (const auto &t : plan.tabsToAdd) {
         adds.push_back(RequestBuilder::documentTabAdd(t.title, RequestBuilder::DocumentTabAddOpts{
-            .index = t.index,
-            .parentTabId = t.parentTabId
-        }));
+                                                                   .index = t.index,
+                                                                   .parentTabId = t.parentTabId}));
     }
     slimr::Json json = input.originalJson;
     std::map<std::string, std::string> tabIdMap;
     for (size_t i = 0; i < adds.size(); ++i) {
-        const auto& parent = plan.tabsToAdd[i].parentTabId;
+        const auto &parent = plan.tabsToAdd[i].parentTabId;
         slimr::Json resolved = (parent && tabIdMap.contains(*parent)) ? withParent(adds[i], tabIdMap[*parent]) : adds[i];
         auto res = emulator::requestsEmulate(json, {resolved});
         std::string minted = res.replies[0]["addDocumentTab"]["tabProperties"]["tabId"].get<std::string>();
@@ -405,12 +395,12 @@ inline CompareResult docPlanSelfCheck(
     }
 
     std::vector<slimr::Json> content;
-    for (const auto& req : plan.contentRequests) {
+    for (const auto &req : plan.contentRequests) {
         if (!segmentRequestIs(req)) {
             content.push_back(tabIdsRewrite(req, tabIdMap));
         }
     }
-    for (const auto& req : plan.tabOps) {
+    for (const auto &req : plan.tabOps) {
         content.push_back(tabIdsRewrite(req, tabIdMap));
     }
     json = emulator::requestsEmulate(json, content).json;
@@ -418,36 +408,32 @@ inline CompareResult docPlanSelfCheck(
     DocModel actual = docModelParse(json, DocModelParseOptions{.docId = plan.docId, .keys = KeyAllocator{}});
 
     std::set<std::string> listsRebuilt;
-    for (const auto& r : plan.listRebuilds) listsRebuilt.insert(r.listId);
+    for (const auto &r : plan.listRebuilds)
+        listsRebuilt.insert(r.listId);
 
     DocModel finalStripped = pendingLinksStrip(input.final);
-    auto result = docModelsCompare(finalStripped, actual, CompareOptions{
-        .identityTransfers = plan.identityTransfers,
-        .listsRebuilt = listsRebuilt,
-        .tabIdMap = tabIdMap,
-        .skipSegments = true
-    });
+    auto result = docModelsCompare(finalStripped, actual, CompareOptions{.identityTransfers = plan.identityTransfers, .listsRebuilt = listsRebuilt, .tabIdMap = tabIdMap, .skipSegments = true});
 
-    for (const auto& check : plan.segmentChecks) {
+    for (const auto &check : plan.segmentChecks) {
         auto emulated = emulator::requestsEmulate(
-            segmentJson(input.originalJson, check.tabId, check.segmentId, check.final.title),
-            check.requests
-        ).json;
+                            segmentJson(input.originalJson, check.tabId, check.segmentId, check.final.title),
+                            check.requests)
+                            .json;
         DocModel after = docModelParse(emulated, DocModelParseOptions{.docId = plan.docId, .keys = KeyAllocator{}});
         auto compared = docModelsCompare(docOf(check.final, check.tabId), after, CompareOptions{.skipSegments = true});
-        for (const auto& diff : compared.diffs) {
+        for (const auto &diff : compared.diffs) {
             result.diffs.push_back(std::format("header/footer {}: {}", check.segmentId, diff));
         }
     }
 
-    for (const auto& body : plan.footnoteBodies) {
+    for (const auto &body : plan.footnoteBodies) {
         auto emulated = emulator::requestsEmulate(
-            footnoteBlankJson(body.tabId, body.final.title, body.final.namedStyles),
-            body.requests
-        ).json;
+                            footnoteBlankJson(body.tabId, body.final.title, body.final.namedStyles),
+                            body.requests)
+                            .json;
         DocModel after = docModelParse(emulated, DocModelParseOptions{.docId = plan.docId, .keys = KeyAllocator{}});
         auto compared = docModelsCompare(docOf(body.final, body.tabId), after, CompareOptions{.skipSegments = true});
-        for (const auto& diff : compared.diffs) {
+        for (const auto &diff : compared.diffs) {
             result.diffs.push_back(std::format("footnote {}: {}", body.id, diff));
         }
     }
@@ -455,12 +441,12 @@ inline CompareResult docPlanSelfCheck(
     return CompareResult{.diffs = result.diffs, .equal = result.diffs.empty()};
 }
 
-inline void segmentsReconcile(const TabModel& o, const TabModel& f, DocPlan& plan) {
-    for (const auto& segment : f.segments) {
+inline void segmentsReconcile(const TabModel &o, const TabModel &f, DocPlan &plan) {
+    for (const auto &segment : f.segments) {
         if (segment.kind == "footnote" && segment.id.starts_with("new:")) {
             ReconcileContext ctx = reconcileContextCreate(f.tabId);
             if (segment.original && segment.tab) {
-                const TabModel& blank = *segment.original;
+                const TabModel &blank = *segment.original;
                 inCellRun(ctx, [&]() {
                     containerReconcile(blank.blocks, segment.tab->blocks, ctx);
                 });
@@ -468,8 +454,7 @@ inline void segmentsReconcile(const TabModel& o, const TabModel& f, DocPlan& pla
                     .final = *segment.tab,
                     .id = segment.id,
                     .requests = std::move(ctx.requests),
-                    .tabId = f.tabId
-                });
+                    .tabId = f.tabId});
             }
             continue;
         }
@@ -477,7 +462,7 @@ inline void segmentsReconcile(const TabModel& o, const TabModel& f, DocPlan& pla
             std::optional<int> breakIndex;
             if (segment.section) {
                 int secCount = 0;
-                for (const auto& block : f.blocks) {
+                for (const auto &block : f.blocks) {
                     if (block.is_section_break()) {
                         secCount++;
                         if (secCount == *segment.section - 1) { // segment.section - 2 (0-indexed break)
@@ -493,58 +478,62 @@ inline void segmentsReconcile(const TabModel& o, const TabModel& f, DocPlan& pla
                 throw CoreError(
                     "unsupportedSyntax",
                     std::format("section {} is new, so its {} can be added only after this import creates it; import, then add the {}",
-                        *segment.section, segment.kind, segment.kind)
-                );
+                                *segment.section, segment.kind, segment.kind));
             }
             plan.segmentsToAdd.push_back(SegmentToAdd{
                 .breakIndex = breakIndex,
                 .kind = segment.kind,
-                .tabId = f.tabId
-            });
+                .tabId = f.tabId});
             continue;
         }
-        auto wasIt = std::find_if(o.segments.begin(), o.segments.end(), [&](const auto& s) { return s.id == segment.id; });
-        if (wasIt == o.segments.end()) continue;
-        const auto& was = *wasIt;
-        if (!was.tab || !segment.tab) continue;
+        auto wasIt = std::find_if(o.segments.begin(), o.segments.end(), [&](const auto &s) { return s.id == segment.id; });
+        if (wasIt == o.segments.end())
+            continue;
+        const auto &was = *wasIt;
+        if (!was.tab || !segment.tab)
+            continue;
         ReconcileContext ctx = reconcileContextCreate(f.tabId);
         inCellRun(ctx, [&]() {
             containerReconcile(was.tab->blocks, segment.tab->blocks, ctx);
         });
-        if (ctx.requests.empty()) continue;
+        if (ctx.requests.empty())
+            continue;
         plan.segmentChecks.push_back(SegmentCheck{
             .final = *segment.tab,
             .original = *was.tab,
             .requests = ctx.requests,
             .segmentId = segment.id,
-            .tabId = f.tabId
-        });
-        for (const auto& req : ctx.requests) {
+            .tabId = f.tabId});
+        for (const auto &req : ctx.requests) {
             plan.contentRequests.push_back(segmentRequest(req, segment.id));
         }
-        for (const auto& orig : ctx.origins) {
+        for (const auto &orig : ctx.origins) {
             plan.origins.push_back(orig);
         }
     }
-    for (const auto& segment : o.segments) {
-        if (segment.kind == "footnote") continue;
-        bool inFinal = std::any_of(f.segments.begin(), f.segments.end(), [&](const auto& s) { return s.id == segment.id; });
-        if (inFinal) continue;
+    for (const auto &segment : o.segments) {
+        if (segment.kind == "footnote")
+            continue;
+        bool inFinal = std::any_of(f.segments.begin(), f.segments.end(), [&](const auto &s) { return s.id == segment.id; });
+        if (inFinal)
+            continue;
         plan.contentRequests.push_back(RequestBuilder::segmentDelete(segment.kind, segment.id, f.tabId));
         plan.origins.push_back(RequestOrigin{});
     }
 }
 
-inline std::vector<std::string> changedFields(const JsonObject& a, const JsonObject& b) {
+inline std::vector<std::string> changedFields(const JsonObject &a, const JsonObject &b) {
     std::set<std::string> keys;
     if (a.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, _] : a.get<slimr::Json::object_t>()) keys.insert(k);
+        for (const auto &[k, _] : a.get<slimr::Json::object_t>())
+            keys.insert(k);
     }
     if (b.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, _] : b.get<slimr::Json::object_t>()) keys.insert(k);
+        for (const auto &[k, _] : b.get<slimr::Json::object_t>())
+            keys.insert(k);
     }
     std::vector<std::string> diffs;
-    for (const auto& k : keys) {
+    for (const auto &k : keys) {
         JsonObject aVal = a.contains(k) ? a[k] : make_json_object();
         JsonObject bVal = b.contains(k) ? b[k] : make_json_object();
         if (!styleEqual(aVal, bVal)) {
@@ -561,10 +550,10 @@ struct NamedStyleEntry {
     JsonObject textStyle;
 };
 
-inline std::vector<NamedStyleEntry> namedStyleEntries(const JsonObject& namedStyles) {
+inline std::vector<NamedStyleEntry> namedStyleEntries(const JsonObject &namedStyles) {
     std::vector<NamedStyleEntry> res;
     if (namedStyles.contains("styles") && namedStyles["styles"].holds<slimr::Json::array_t>()) {
-        for (const auto& item : namedStyles["styles"].get<slimr::Json::array_t>()) {
+        for (const auto &item : namedStyles["styles"].get<slimr::Json::array_t>()) {
             NamedStyleEntry entry;
             if (item.contains("namedStyleType") && item["namedStyleType"].holds<std::string>()) {
                 entry.namedStyleType = item["namedStyleType"].get<std::string>();
@@ -591,19 +580,20 @@ struct NamedStyleFieldsChangedResult {
 };
 
 inline NamedStyleFieldsChangedResult namedStyleFieldsChanged(
-    const NamedStyleEntry* before,
-    const NamedStyleEntry& after
-) {
-    auto diff = [](const JsonObject& a, const JsonObject& b) {
+    const NamedStyleEntry *before,
+    const NamedStyleEntry &after) {
+    auto diff = [](const JsonObject &a, const JsonObject &b) {
         std::set<std::string> keys;
         if (a.holds<slimr::Json::object_t>()) {
-            for (const auto& [k, _] : a.get<slimr::Json::object_t>()) keys.insert(k);
+            for (const auto &[k, _] : a.get<slimr::Json::object_t>())
+                keys.insert(k);
         }
         if (b.holds<slimr::Json::object_t>()) {
-            for (const auto& [k, _] : b.get<slimr::Json::object_t>()) keys.insert(k);
+            for (const auto &[k, _] : b.get<slimr::Json::object_t>())
+                keys.insert(k);
         }
         std::vector<std::string> diffs;
-        for (const auto& k : keys) {
+        for (const auto &k : keys) {
             JsonObject aVal = a.contains(k) ? a[k] : make_json_object();
             JsonObject bVal = b.contains(k) ? b[k] : make_json_object();
             if (!styleEqual(aVal, bVal)) {
@@ -617,21 +607,21 @@ inline NamedStyleFieldsChangedResult namedStyleFieldsChanged(
     JsonObject beforeText = before ? before->textStyle : make_json_object();
     auto paraDiff = diff(beforePara, after.paragraphStyle);
     std::vector<std::string> paraFiltered;
-    for (const auto& f : paraDiff) {
-        if (f != "namedStyleType") paraFiltered.push_back(f);
+    for (const auto &f : paraDiff) {
+        if (f != "namedStyleType")
+            paraFiltered.push_back(f);
     }
     return NamedStyleFieldsChangedResult{
         .paragraph = std::move(paraFiltered),
-        .text = diff(beforeText, after.textStyle)
-    };
+        .text = diff(beforeText, after.textStyle)};
 }
 
-inline std::vector<JsonObject> dropdownOptions(const JsonObject& definition) {
+inline std::vector<JsonObject> dropdownOptions(const JsonObject &definition) {
     if (definition.contains("dropdownDefinitionProperties")) {
-        const auto& props = definition["dropdownDefinitionProperties"];
+        const auto &props = definition["dropdownDefinitionProperties"];
         if (props.contains("options") && props["options"].holds<slimr::Json::array_t>()) {
             std::vector<JsonObject> res;
-            for (const auto& item : props["options"].get<slimr::Json::array_t>()) {
+            for (const auto &item : props["options"].get<slimr::Json::array_t>()) {
                 res.push_back(item);
             }
             return res;
@@ -641,37 +631,36 @@ inline std::vector<JsonObject> dropdownOptions(const JsonObject& definition) {
 }
 
 inline std::vector<std::string> dropdownsWiden(
-    const TabModel& o,
-    const TabModel& f,
-    ReconcileContext& ctx
-) {
+    const TabModel &o,
+    const TabModel &f,
+    ReconcileContext &ctx) {
     std::vector<std::string> narrowed;
-    for (const auto& [id, definition] : f.dropdownDefinitions) {
+    for (const auto &[id, definition] : f.dropdownDefinitions) {
         auto it = o.dropdownDefinitions.find(id);
         JsonObject properties = definition.contains("dropdownDefinitionProperties") ? definition["dropdownDefinitionProperties"] : make_json_object();
         if (it == o.dropdownDefinitions.end()) {
             JsonObject defObj = slimr::Json::object_t{
                 {"dropdownDefinitionId", id},
-                {"dropdownDefinitionProperties", properties}
-            };
+                {"dropdownDefinitionProperties", properties}};
             ctx.requests.push_back(RequestBuilder::dropdownDefinitionCreate(defObj, ctx.tabId));
             ctx.origins.push_back(RequestOrigin{});
             continue;
         }
-        const auto& was = it->second;
+        const auto &was = it->second;
         JsonObject wasProps = was.contains("dropdownDefinitionProperties") ? was["dropdownDefinitionProperties"] : make_json_object();
-        if (styleEqual(wasProps, properties)) continue;
+        if (styleEqual(wasProps, properties))
+            continue;
 
         auto finalOptions = dropdownOptions(definition);
         auto wasOptions = dropdownOptions(was);
         std::set<std::string> kept;
-        for (const auto& opt : finalOptions) {
+        for (const auto &opt : finalOptions) {
             if (opt.contains("optionId") && opt["optionId"].holds<std::string>()) {
                 kept.insert(opt["optionId"].get<std::string>());
             }
         }
         std::vector<JsonObject> dropped;
-        for (const auto& opt : wasOptions) {
+        for (const auto &opt : wasOptions) {
             if (opt.contains("optionId") && opt["optionId"].holds<std::string>()) {
                 if (!kept.contains(opt["optionId"].get<std::string>())) {
                     dropped.push_back(opt);
@@ -682,11 +671,13 @@ inline std::vector<std::string> dropdownsWiden(
             narrowed.push_back(id);
         }
         auto combinedOptions = finalOptions;
-        for (const auto& d : dropped) combinedOptions.push_back(d);
+        for (const auto &d : dropped)
+            combinedOptions.push_back(d);
 
         JsonObject mergedProps = properties;
         slimr::Json::array_t optArr;
-        for (const auto& opt : combinedOptions) optArr.push_back(opt);
+        for (const auto &opt : combinedOptions)
+            optArr.push_back(opt);
         mergedProps["options"] = std::move(optArr);
 
         ctx.requests.push_back(RequestBuilder::dropdownDefinitionUpdate(id, mergedProps, ctx.tabId));
@@ -696,14 +687,13 @@ inline std::vector<std::string> dropdownsWiden(
 }
 
 inline void dropdownsNarrow(
-    const TabModel& o,
-    const TabModel& f,
-    const std::vector<std::string>& narrowed,
-    ReconcileContext& ctx
-) {
-    auto selected = [](const TabModel& tab) {
+    const TabModel &o,
+    const TabModel &f,
+    const std::vector<std::string> &narrowed,
+    ReconcileContext &ctx) {
+    auto selected = [](const TabModel &tab) {
         std::map<std::string, JsonObject> m;
-        for (const auto& atom : atomsDeep(tab.blocks)) {
+        for (const auto &atom : atomsDeep(tab.blocks)) {
             if (atom.type == "dropdown" && atom.raw && atom.raw->contains("dropdown")) {
                 m[atom.key] = (*atom.raw)["dropdown"];
             }
@@ -711,22 +701,27 @@ inline void dropdownsNarrow(
         return m;
     };
     auto before = selected(o);
-    for (const auto& [key, dropdown] : selected(f)) {
+    for (const auto &[key, dropdown] : selected(f)) {
         auto it = before.find(key);
-        if (it == before.end()) continue;
-        const auto& was = it->second;
+        if (it == before.end())
+            continue;
+        const auto &was = it->second;
         std::string option = dropdown.contains("dropdownProperties") && dropdown["dropdownProperties"].contains("selectedOptionId") && dropdown["dropdownProperties"]["selectedOptionId"].holds<std::string>()
-            ? dropdown["dropdownProperties"]["selectedOptionId"].get<std::string>() : "";
+                                 ? dropdown["dropdownProperties"]["selectedOptionId"].get<std::string>()
+                                 : "";
         std::string wasOption = was.contains("dropdownProperties") && was["dropdownProperties"].contains("selectedOptionId") && was["dropdownProperties"]["selectedOptionId"].holds<std::string>()
-            ? was["dropdownProperties"]["selectedOptionId"].get<std::string>() : "";
-        if (wasOption == option) continue;
+                                    ? was["dropdownProperties"]["selectedOptionId"].get<std::string>()
+                                    : "";
+        if (wasOption == option)
+            continue;
 
         std::string dropdownId = dropdown.contains("dropdownId") && dropdown["dropdownId"].holds<std::string>()
-            ? dropdown["dropdownId"].get<std::string>() : "";
+                                     ? dropdown["dropdownId"].get<std::string>()
+                                     : "";
         ctx.requests.push_back(RequestBuilder::dropdownSelect(dropdownId, option, ctx.tabId));
         ctx.origins.push_back(RequestOrigin{.key = key});
     }
-    for (const auto& id : narrowed) {
+    for (const auto &id : narrowed) {
         auto it = f.dropdownDefinitions.find(id);
         if (it != f.dropdownDefinitions.end()) {
             JsonObject props = it->second.contains("dropdownDefinitionProperties") ? it->second["dropdownDefinitionProperties"] : make_json_object();
@@ -734,7 +729,7 @@ inline void dropdownsNarrow(
             ctx.origins.push_back(RequestOrigin{});
         }
     }
-    for (const auto& [id, _] : o.dropdownDefinitions) {
+    for (const auto &[id, _] : o.dropdownDefinitions) {
         if (!f.dropdownDefinitions.contains(id)) {
             ctx.requests.push_back(RequestBuilder::dropdownDefinitionDelete(id, ctx.tabId));
             ctx.origins.push_back(RequestOrigin{});
@@ -742,12 +737,12 @@ inline void dropdownsNarrow(
     }
 }
 
-inline void imagesReplace(const TabModel& f, ReconcileContext& ctx) {
-    for (const auto& atom : atomsDeep(f.blocks)) {
+inline void imagesReplace(const TabModel &f, ReconcileContext &ctx) {
+    for (const auto &atom : atomsDeep(f.blocks)) {
         if (atom.replaceUri) {
             std::string id;
             if (atom.raw && atom.raw->contains("inlineObjectElement")) {
-                const auto& ioe = (*atom.raw)["inlineObjectElement"];
+                const auto &ioe = (*atom.raw)["inlineObjectElement"];
                 if (ioe.contains("inlineObjectId") && ioe["inlineObjectId"].is_string()) {
                     id = ioe["inlineObjectId"].get<std::string>();
                 }
@@ -758,8 +753,8 @@ inline void imagesReplace(const TabModel& f, ReconcileContext& ctx) {
     }
 }
 
-inline void positionedDeletes(const TabModel& o, const TabModel& f, ReconcileContext& ctx) {
-    for (const auto& [id, _] : o.positionedObjects) {
+inline void positionedDeletes(const TabModel &o, const TabModel &f, ReconcileContext &ctx) {
+    for (const auto &[id, _] : o.positionedObjects) {
         if (!f.positionedObjects.contains(id)) {
             ctx.requests.push_back(RequestBuilder::positionedObjectDelete(id, ctx.tabId));
             ctx.origins.push_back(RequestOrigin{});
@@ -767,13 +762,15 @@ inline void positionedDeletes(const TabModel& o, const TabModel& f, ReconcileCon
     }
 }
 
-inline const Block* blockFindConst(const std::vector<Block>& blocks, std::string_view key) {
-    for (const auto& b : blocks) {
-        if (b.key == key) return &b;
+inline const Block *blockFindConst(const std::vector<Block> &blocks, std::string_view key) {
+    for (const auto &b : blocks) {
+        if (b.key == key)
+            return &b;
         if (b.is_table()) {
-            for (const auto& row : b.as_table().rows) {
-                for (const auto& cell : row.cells) {
-                    if (const auto* found = blockFindConst(cell.blocks, key)) return found;
+            for (const auto &row : b.as_table().rows) {
+                for (const auto &cell : row.cells) {
+                    if (const auto *found = blockFindConst(cell.blocks, key))
+                        return found;
                 }
             }
         }
@@ -781,72 +778,76 @@ inline const Block* blockFindConst(const std::vector<Block>& blocks, std::string
     return nullptr;
 }
 
-inline const Block* blockFindConst(const TabModel& tab, std::string_view key) {
+inline const Block *blockFindConst(const TabModel &tab, std::string_view key) {
     return blockFindConst(tab.blocks, key);
 }
 
-inline int rangeEdgeIndex(const TabModel& tab, const Layout& layout, std::string_view key, int offset) {
+inline int rangeEdgeIndex(const TabModel &tab, const Layout &layout, std::string_view key, int offset) {
     return lens::rangeEdgeIndex(tab, layout, NamedRangeDef::Edge{std::string(key), offset});
 }
 
-inline void namedRangesReconcile(const TabModel& o, const TabModel& f, ReconcileContext& ctx) {
-    for (const auto& range : f.namedRanges) {
-        if (range.expect || range.create) (void)lens::namedRangeExpected(f, range);
+inline void namedRangesReconcile(const TabModel &o, const TabModel &f, ReconcileContext &ctx) {
+    for (const auto &range : f.namedRanges) {
+        if (range.expect || range.create)
+            (void)lens::namedRangeExpected(f, range);
     }
     std::set<std::string> kept;
-    for (const auto& range : f.namedRanges) kept.insert(range.namedRangeId);
-    for (const auto& range : o.namedRanges) {
+    for (const auto &range : f.namedRanges)
+        kept.insert(range.namedRangeId);
+    for (const auto &range : o.namedRanges) {
         if (!kept.contains(range.namedRangeId)) {
             ctx.requests.push_back(RequestBuilder::namedRangeDelete(range.namedRangeId, ctx.tabId));
             ctx.origins.push_back(RequestOrigin{});
         }
     }
-    bool hasCreates = std::any_of(f.namedRanges.begin(), f.namedRanges.end(), [](const auto& r) { return r.create.has_value(); });
-    if (!hasCreates) return;
+    bool hasCreates = std::any_of(f.namedRanges.begin(), f.namedRanges.end(), [](const auto &r) { return r.create.has_value(); });
+    if (!hasCreates)
+        return;
 
     Layout layout = layoutCompute(f);
-    for (const auto& range : f.namedRanges) {
-        if (!range.create) continue;
-        const auto& create = *range.create;
+    for (const auto &range : f.namedRanges) {
+        if (!range.create)
+            continue;
+        const auto &create = *range.create;
         int startIndex = rangeEdgeIndex(f, layout, create.start.key, create.start.offset);
         int endIndex = rangeEdgeIndex(f, layout, create.end.key, create.end.offset);
         if (startIndex >= endIndex)
             throw CoreError("unsupportedSyntax", "named range would be empty or reversed");
         ctx.requests.push_back(
-            RequestBuilder::namedRangeCreate(range.name, startIndex, endIndex, ctx.tabId)
-        );
+            RequestBuilder::namedRangeCreate(range.name, startIndex, endIndex, ctx.tabId));
         ctx.origins.push_back(RequestOrigin{});
     }
 }
 
-inline void tabReconcile(const TabModel& o, const TabModel& f, ReconcileContext& ctx) {
+inline void tabReconcile(const TabModel &o, const TabModel &f, ReconcileContext &ctx) {
     auto before = namedStyleEntries(o.namedStyles);
-    for (const auto& entry : namedStyleEntries(f.namedStyles)) {
-        const NamedStyleEntry* was = nullptr;
-        for (const auto& e : before) {
+    for (const auto &entry : namedStyleEntries(f.namedStyles)) {
+        const NamedStyleEntry *was = nullptr;
+        for (const auto &e : before) {
             if (e.namedStyleType == entry.namedStyleType) {
                 was = &e;
                 break;
             }
         }
         auto [paragraphDiff, textDiff] = namedStyleFieldsChanged(was, entry);
-        if (paragraphDiff.empty() && textDiff.empty()) continue;
+        if (paragraphDiff.empty() && textDiff.empty())
+            continue;
 
         std::vector<std::string> fields;
-        for (const auto& field : textDiff) fields.push_back(std::format("textStyle.{}", field));
-        for (const auto& field : paragraphDiff) fields.push_back(std::format("paragraphStyle.{}", field));
+        for (const auto &field : textDiff)
+            fields.push_back(std::format("textStyle.{}", field));
+        for (const auto &field : paragraphDiff)
+            fields.push_back(std::format("paragraphStyle.{}", field));
 
         JsonObject namedStyle = slimr::Json::object_t{
             {"namedStyleType", entry.namedStyleType},
             {"paragraphStyle", pick(entry.paragraphStyle, paragraphDiff)},
-            {"textStyle", pick(entry.textStyle, textDiff)}
-        };
+            {"textStyle", pick(entry.textStyle, textDiff)}};
 
         ctx.requests.push_back(RequestBuilder::updateNamedStyle(RequestBuilder::UpdateNamedStyleOpts{
             .fields = fields,
             .namedStyle = namedStyle,
-            .tabId = ctx.tabId
-        }));
+            .tabId = ctx.tabId}));
         ctx.origins.push_back(RequestOrigin{});
     }
 
@@ -865,8 +866,7 @@ inline void tabReconcile(const TabModel& o, const TabModel& f, ReconcileContext&
             1,
             pick(f.leadingSectionStyle, sectionFields),
             sectionFields,
-            ctx.tabId
-        ));
+            ctx.tabId));
         ctx.origins.push_back(RequestOrigin{});
     }
 
@@ -879,7 +879,7 @@ inline void tabReconcile(const TabModel& o, const TabModel& f, ReconcileContext&
 
     auto docFieldsAll = changedFields(documentBase, f.documentStyle);
     std::vector<std::string> documentFields;
-    for (const auto& field : docFieldsAll) {
+    for (const auto &field : docFieldsAll) {
         if (!field.ends_with("HeaderId") && !field.ends_with("FooterId")) {
             documentFields.push_back(field);
         }
@@ -889,47 +889,52 @@ inline void tabReconcile(const TabModel& o, const TabModel& f, ReconcileContext&
         if (payload.contains("documentSize") && !payload.contains("pageSize")) {
             payload["pageSize"] = payload["documentSize"];
             payload.get<slimr::Json::object_t>().erase("documentSize");
-            for (auto& field : documentFields) {
-                if (field == "documentSize") field = "pageSize";
+            for (auto &field : documentFields) {
+                if (field == "documentSize")
+                    field = "pageSize";
             }
         }
         std::string fieldsJoined;
         for (size_t i = 0; i < documentFields.size(); ++i) {
-            if (i > 0) fieldsJoined += ",";
+            if (i > 0)
+                fieldsJoined += ",";
             fieldsJoined += documentFields[i];
         }
         ctx.requests.push_back(RequestBuilder::updateDocumentStyle(RequestBuilder::UpdateDocumentStyleOpts{
             .documentStyle = std::move(payload),
             .fields = fieldsJoined,
-            .tabId = ctx.tabId
-        }));
+            .tabId = ctx.tabId}));
         ctx.origins.push_back(RequestOrigin{});
     }
 }
 
 inline std::string titleKey(std::string_view title) {
     auto start = title.find_first_not_of(" \t\n\r");
-    if (start == std::string_view::npos) return "";
+    if (start == std::string_view::npos)
+        return "";
     auto end = title.find_last_not_of(" \t\n\r");
     std::string s(title.substr(start, end - start + 1));
-    for (char& c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    for (char &c : s)
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     return s;
 }
 
 inline std::vector<JsonObject> tabOpsPlan(
-    const DocModel& original,
-    const DocModel& final,
-    std::vector<TabToAdd>& adds
-) {
+    const DocModel &original,
+    const DocModel &final,
+    std::vector<TabToAdd> &adds) {
     std::vector<JsonObject> ops;
     std::set<std::string> finalIds;
-    for (const auto& t : final.tabs) finalIds.insert(t.tabId);
+    for (const auto &t : final.tabs)
+        finalIds.insert(t.tabId);
 
     std::set<std::string> used;
-    for (const auto& t : original.tabs) used.insert(titleKey(t.title));
-    for (const auto& t : final.tabs) used.insert(titleKey(t.title));
+    for (const auto &t : original.tabs)
+        used.insert(titleKey(t.title));
+    for (const auto &t : final.tabs)
+        used.insert(titleKey(t.title));
 
-    auto temporary = [&](const std::string& title) -> std::string {
+    auto temporary = [&](const std::string &title) -> std::string {
         std::string candidate = std::format("{} (renaming)", title);
         for (int n = 2; used.contains(titleKey(candidate)); ++n) {
             candidate = std::format("{} (renaming {})", title, n);
@@ -939,8 +944,9 @@ inline std::vector<JsonObject> tabOpsPlan(
     };
 
     std::set<std::string> held;
-    for (const auto& t : original.tabs) held.insert(titleKey(t.title));
-    for (auto& add : adds) {
+    for (const auto &t : original.tabs)
+        held.insert(titleKey(t.title));
+    for (auto &add : adds) {
         if (held.contains(titleKey(add.title))) {
             add.title = temporary(add.title);
         }
@@ -951,19 +957,19 @@ inline std::vector<JsonObject> tabOpsPlan(
     std::map<std::string, std::optional<std::string>> emojiOf;
     std::map<std::optional<std::string>, std::vector<std::string>> children;
 
-    auto siblingsOf = [&](const std::optional<std::string>& parent) -> std::vector<std::string>& {
+    auto siblingsOf = [&](const std::optional<std::string> &parent) -> std::vector<std::string> & {
         return children[parent];
     };
 
-    for (const auto& tab : original.tabs) {
+    for (const auto &tab : original.tabs) {
         siblingsOf(tab.parentTabId).push_back(tab.tabId);
         parentOf[tab.tabId] = tab.parentTabId;
         titleOf[tab.tabId] = tab.title;
         emojiOf[tab.tabId] = tab.iconEmoji;
     }
 
-    for (const auto& add : adds) {
-        auto& siblings = siblingsOf(add.parentTabId);
+    for (const auto &add : adds) {
+        auto &siblings = siblingsOf(add.parentTabId);
         int idx = std::min(add.index, static_cast<int>(siblings.size()));
         siblings.insert(siblings.begin() + idx, add.tabId);
         parentOf[add.tabId] = add.parentTabId;
@@ -971,33 +977,35 @@ inline std::vector<JsonObject> tabOpsPlan(
     }
 
     auto update = [&](
-        const std::string& tabId,
-        const RequestBuilder::DocumentTabPropertiesUpdateOpts& properties,
-        const std::vector<std::string>& fields
-    ) {
+                      const std::string &tabId,
+                      const RequestBuilder::DocumentTabPropertiesUpdateOpts &properties,
+                      const std::vector<std::string> &fields) {
         ops.push_back(RequestBuilder::documentTabPropertiesUpdate(tabId, properties, fields));
     };
 
-    auto within = [&](const std::string& tabId, const std::string& ancestor) -> bool {
+    auto within = [&](const std::string &tabId, const std::string &ancestor) -> bool {
         std::optional<std::string> at = tabId;
         while (at.has_value()) {
-            if (*at == ancestor) return true;
+            if (*at == ancestor)
+                return true;
             auto it = parentOf.find(*at);
             at = (it != parentOf.end()) ? it->second : std::nullopt;
         }
         return false;
     };
 
-    for (const auto& tab : final.tabs) {
+    for (const auto &tab : final.tabs) {
         auto it = parentOf.find(tab.tabId);
-        if (it == parentOf.end() || !it->second.has_value() || finalIds.contains(*it->second)) continue;
+        if (it == parentOf.end() || !it->second.has_value() || finalIds.contains(*it->second))
+            continue;
         auto parent = it->second;
         std::optional<std::string> target = (tab.parentTabId && !within(*tab.parentTabId, tab.tabId)) ? tab.parentTabId : std::nullopt;
 
         update(tab.tabId, RequestBuilder::DocumentTabPropertiesUpdateOpts{.parentTabId = target}, {"parentTabId"});
-        auto& from = siblingsOf(parent);
+        auto &from = siblingsOf(parent);
         auto pos = std::find(from.begin(), from.end(), tab.tabId);
-        if (pos != from.end()) from.erase(pos);
+        if (pos != from.end())
+            from.erase(pos);
         siblingsOf(target).push_back(tab.tabId);
         parentOf[tab.tabId] = target;
     }
@@ -1005,11 +1013,12 @@ inline std::vector<JsonObject> tabOpsPlan(
     std::optional<JsonObject> originalTabDelete;
     const std::string ORIGINAL_TAB_ID = "t.0";
 
-    for (const auto& tab : original.tabs) {
+    for (const auto &tab : original.tabs) {
         auto it = parentOf.find(tab.tabId);
         std::optional<std::string> parent = (it != parentOf.end()) ? it->second : std::nullopt;
-        if (finalIds.contains(tab.tabId) || (parent.has_value() && !finalIds.contains(*parent))) continue;
-        auto& siblings = siblingsOf(parent);
+        if (finalIds.contains(tab.tabId) || (parent.has_value() && !finalIds.contains(*parent)))
+            continue;
+        auto &siblings = siblingsOf(parent);
         if (tab.tabId == ORIGINAL_TAB_ID) {
             originalTabDelete = RequestBuilder::deleteTab(tab.tabId);
             auto pos = std::find(siblings.begin(), siblings.end(), tab.tabId);
@@ -1026,12 +1035,13 @@ inline std::vector<JsonObject> tabOpsPlan(
         }
         ops.push_back(RequestBuilder::deleteTab(tab.tabId));
         auto pos = std::find(siblings.begin(), siblings.end(), tab.tabId);
-        if (pos != siblings.end()) siblings.erase(pos);
+        if (pos != siblings.end())
+            siblings.erase(pos);
     }
 
     std::map<std::string, int> takers;
     for (size_t i = 0; i < final.tabs.size(); ++i) {
-        const auto& t = final.tabs[i];
+        const auto &t = final.tabs[i];
         auto it = titleOf.find(t.tabId);
         if (it != titleOf.end() && it->second != t.title) {
             takers[titleKey(t.title)] = static_cast<int>(i);
@@ -1039,25 +1049,28 @@ inline std::vector<JsonObject> tabOpsPlan(
     }
 
     for (size_t index = 0; index < final.tabs.size(); ++index) {
-        const auto& tab = final.tabs[index];
+        const auto &tab = final.tabs[index];
         auto it = titleOf.find(tab.tabId);
-        if (it == titleOf.end()) continue;
+        if (it == titleOf.end())
+            continue;
         auto takerIt = takers.find(titleKey(it->second));
-        if (takerIt == takers.end() || takerIt->second >= static_cast<int>(index)) continue;
+        if (takerIt == takers.end() || takerIt->second >= static_cast<int>(index))
+            continue;
         std::string title = temporary(tab.title);
         update(tab.tabId, RequestBuilder::DocumentTabPropertiesUpdateOpts{.title = title}, {"title"});
         titleOf[tab.tabId] = title;
     }
 
-    auto order = [&](const std::optional<std::string>& parent) -> std::vector<std::string> {
+    auto order = [&](const std::optional<std::string> &parent) -> std::vector<std::string> {
         std::vector<std::string> ord;
-        for (const auto& t : final.tabs) {
-            if (t.parentTabId == parent) ord.push_back(t.tabId);
+        for (const auto &t : final.tabs) {
+            if (t.parentTabId == parent)
+                ord.push_back(t.tabId);
         }
         return ord;
     };
 
-    for (const auto& tab : final.tabs) {
+    for (const auto &tab : final.tabs) {
         std::vector<std::string> fields;
         RequestBuilder::DocumentTabPropertiesUpdateOpts properties;
 
@@ -1074,12 +1087,13 @@ inline std::vector<JsonObject> tabOpsPlan(
         }
 
         auto before = parentOf[tab.tabId];
-        auto& from = siblingsOf(before);
+        auto &from = siblingsOf(before);
         auto pos = std::find(from.begin(), from.end(), tab.tabId);
         int have = (pos != from.end()) ? static_cast<int>(std::distance(from.begin(), pos)) : -1;
-        if (pos != from.end()) from.erase(pos);
+        if (pos != from.end())
+            from.erase(pos);
 
-        auto& to = siblingsOf(tab.parentTabId);
+        auto &to = siblingsOf(tab.parentTabId);
         auto ord = order(tab.parentTabId);
         auto ordPos = std::find(ord.begin(), ord.end(), tab.tabId);
         int want = (ordPos != ord.end()) ? static_cast<int>(std::distance(ord.begin(), ordPos)) : static_cast<int>(to.size());
@@ -1107,7 +1121,7 @@ inline std::vector<JsonObject> tabOpsPlan(
     return ops;
 }
 
-inline TabModel blankTabModel(const std::string& tabId, const std::optional<TabModel>& first) {
+inline TabModel blankTabModel(const std::string &tabId, const std::optional<TabModel> &first) {
     slimr::Json raw = emulator::blank_tab_template();
     std::optional<slimr::Json> firstDocStyle;
     if (first) {
@@ -1120,81 +1134,81 @@ inline TabModel blankTabModel(const std::string& tabId, const std::optional<TabM
     slimr::Json docJson = slimr::Json::object_t{
         {"title", ""},
         {"tabs", slimr::Json::array_t{
-            slimr::Json::object_t{
-                {"tabProperties", slimr::Json::object_t{
-                    {"tabId", tabId},
-                    {"title", ""}
-                }},
-                {"documentTab", std::move(raw)}
-            }
-        }}
-    };
+                     slimr::Json::object_t{
+                         {"tabProperties", slimr::Json::object_t{
+                                               {"tabId", tabId},
+                                               {"title", ""}}},
+                         {"documentTab", std::move(raw)}}}}};
     auto parsed = docModelParse(docJson, DocModelParseOptions{.docId = "blank", .keys = KeyAllocator{}});
     TabModel tab = std::move(parsed.tabs[0]);
     tab.isNew = true;
     return tab;
 }
 
-inline int siblingIndex(const DocModel& doc, const TabModel& tab) {
+inline int siblingIndex(const DocModel &doc, const TabModel &tab) {
     int count = 0;
-    for (const auto& t : doc.tabs) {
+    for (const auto &t : doc.tabs) {
         if (t.parentTabId == tab.parentTabId) {
-            if (t.tabId == tab.tabId) return count;
+            if (t.tabId == tab.tabId)
+                return count;
             count++;
         }
     }
     return count;
 }
 
-inline DocPlan docReconcile(const DocReconcileInput& input) {
-    const auto& [final, original, originalJson, carryRanges] = input;
+inline DocPlan docReconcile(const DocReconcileInput &input) {
+    const auto &[final, original, originalJson, carryRanges] = input;
     std::map<std::string, TabModel> originalTabs;
-    for (const auto& t : original.tabs) {
+    for (const auto &t : original.tabs) {
         originalTabs.emplace(t.tabId, t);
     }
 
     DocPlan plan;
     plan.docId = final.docId;
 
-    const auto blankOriginal = [&](const TabModel& tab) {
+    const auto blankOriginal = [&](const TabModel &tab) {
         return blankTabModel(tab.tabId, original.tabs.empty() ? std::nullopt : std::optional<TabModel>(original.tabs[0]));
     };
 
-    for (const auto& tab : final.tabs) {
+    for (const auto &tab : final.tabs) {
         auto beforeIt = originalTabs.find(tab.tabId);
-        const TabModel* before = (beforeIt != originalTabs.end()) ? &beforeIt->second : nullptr;
+        const TabModel *before = (beforeIt != originalTabs.end()) ? &beforeIt->second : nullptr;
         if (!before) {
             plan.tabsToAdd.push_back(TabToAdd{
                 .index = siblingIndex(final, tab),
                 .parentTabId = tab.parentTabId,
                 .tabId = tab.tabId,
-                .title = tab.title
-            });
+                .title = tab.title});
         }
         auto carryIt = carryRanges.find(tab.tabId);
         static const std::vector<Range> emptyRanges;
-        const std::vector<Range>& carries = (carryIt != carryRanges.end()) ? carryIt->second : emptyRanges;
+        const std::vector<Range> &carries = (carryIt != carryRanges.end()) ? carryIt->second : emptyRanges;
         ReconcileContext ctx = reconcileContextCreate(tab.tabId, carries);
 
         TabModel beforeModel = before ? *before : blankOriginal(tab);
         tabReconcile(beforeModel, tab, ctx);
 
-        for (auto& req : ctx.requests) plan.contentRequests.push_back(std::move(req));
-        for (auto& orig : ctx.origins) plan.origins.push_back(std::move(orig));
-        for (const auto& range : ctx.deletedRanges) {
+        for (auto &req : ctx.requests)
+            plan.contentRequests.push_back(std::move(req));
+        for (auto &orig : ctx.origins)
+            plan.origins.push_back(std::move(orig));
+        for (const auto &range : ctx.deletedRanges) {
             plan.deletedRanges.push_back(DeletedRange{.range = range, .tabId = tab.tabId});
         }
-        for (auto& transfer : ctx.identityTransfers) plan.identityTransfers.push_back(std::move(transfer));
-        for (auto& rebuild : ctx.listRebuilds) {
+        for (auto &transfer : ctx.identityTransfers)
+            plan.identityTransfers.push_back(std::move(transfer));
+        for (auto &rebuild : ctx.listRebuilds) {
             plan.listRebuilds.push_back(ListRebuildWithTab{
                 .keys = rebuild.keys,
                 .listId = rebuild.listId,
                 .lossy = rebuild.lossy,
-                .tabId = tab.tabId
-            });
+                .tabId = tab.tabId});
         }
-        for (auto& link : ctx.pendingLinks) plan.pendingLinks.push_back(std::move(link));
-        for (auto& touch : ctx.protectedTouches) plan.protectedTouches.push_back(std::move(touch));
+        for (auto &link : ctx.pendingLinks)
+            plan.pendingLinks.push_back(std::move(link));
+        for (auto &touch : ctx.protectedTouches)
+            plan.protectedTouches.push_back(std::move(touch));
 
         if (before) {
             segmentsReconcile(*before, tab, plan);
@@ -1204,17 +1218,21 @@ inline DocPlan docReconcile(const DocReconcileInput& input) {
     plan.tabOps = tabOpsPlan(original, final, plan.tabsToAdd);
 
     std::set<std::string> finalIds;
-    for (const auto& t : final.tabs) finalIds.insert(t.tabId);
-    for (const auto& tab : original.tabs) {
-        if (finalIds.contains(tab.tabId)) continue;
+    for (const auto &t : final.tabs)
+        finalIds.insert(t.tabId);
+    for (const auto &tab : original.tabs) {
+        if (finalIds.contains(tab.tabId))
+            continue;
         std::vector<Range> origins;
-        for (const auto& b : tab.blocks) {
-            if (b.origin) origins.push_back(*b.origin);
+        for (const auto &b : tab.blocks) {
+            if (b.origin)
+                origins.push_back(*b.origin);
         }
-        if (origins.empty()) continue;
+        if (origins.empty())
+            continue;
         int minStart = origins[0].start;
         int maxEnd = origins[0].end;
-        for (const auto& r : origins) {
+        for (const auto &r : origins) {
             minStart = std::min(minStart, r.start);
             maxEnd = std::max(maxEnd, r.end);
         }
@@ -1224,8 +1242,7 @@ inline DocPlan docReconcile(const DocReconcileInput& input) {
     plan.summary = DocPlanSummary{
         .contentRequests = static_cast<int>(plan.contentRequests.size()),
         .tabOps = static_cast<int>(plan.tabOps.size()),
-        .tabsToAdd = static_cast<int>(plan.tabsToAdd.size())
-    };
+        .tabsToAdd = static_cast<int>(plan.tabsToAdd.size())};
 
     return plan;
 }

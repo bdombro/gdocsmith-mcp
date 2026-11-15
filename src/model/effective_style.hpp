@@ -12,13 +12,20 @@
 namespace gdocsmith::model {
 
 inline std::optional<int> headingLevel(std::string_view namedStyleType) {
-    if (namedStyleType == "TITLE") return 0;
-    if (namedStyleType == "SUBTITLE" || namedStyleType == "HEADING_1") return 1;
-    if (namedStyleType == "HEADING_2") return 2;
-    if (namedStyleType == "HEADING_3") return 3;
-    if (namedStyleType == "HEADING_4") return 4;
-    if (namedStyleType == "HEADING_5") return 5;
-    if (namedStyleType == "HEADING_6") return 6;
+    if (namedStyleType == "TITLE")
+        return 0;
+    if (namedStyleType == "SUBTITLE" || namedStyleType == "HEADING_1")
+        return 1;
+    if (namedStyleType == "HEADING_2")
+        return 2;
+    if (namedStyleType == "HEADING_3")
+        return 3;
+    if (namedStyleType == "HEADING_4")
+        return 4;
+    if (namedStyleType == "HEADING_5")
+        return 5;
+    if (namedStyleType == "HEADING_6")
+        return 6;
     return std::nullopt;
 }
 
@@ -31,9 +38,9 @@ struct NamedTextStyle {
     JsonObject textStyle;
 };
 
-inline NamedTextStyle namedTextStyle(const TabModel& tab, std::string_view type) {
+inline NamedTextStyle namedTextStyle(const TabModel &tab, std::string_view type) {
     if (tab.namedStyles.contains("styles") && tab.namedStyles["styles"].holds<slimr::Json::array_t>()) {
-        for (const auto& item : tab.namedStyles["styles"].get<slimr::Json::array_t>()) {
+        for (const auto &item : tab.namedStyles["styles"].get<slimr::Json::array_t>()) {
             if (item.contains("namedStyleType") && item["namedStyleType"].holds<std::string>()) {
                 if (item["namedStyleType"].get<std::string>() == type) {
                     return NamedTextStyle{
@@ -48,10 +55,9 @@ inline NamedTextStyle namedTextStyle(const TabModel& tab, std::string_view type)
 }
 
 inline JsonObject textStyleEffective(
-    const TabModel& tab,
-    const ParagraphBlock& paragraph,
-    const JsonObject& runStyle
-) {
+    const TabModel &tab,
+    const ParagraphBlock &paragraph,
+    const JsonObject &runStyle) {
     std::string namedType = "NORMAL_TEXT";
     if (paragraph.style.contains("namedStyleType") && paragraph.style["namedStyleType"].holds<std::string>()) {
         namedType = paragraph.style["namedStyleType"].get<std::string>();
@@ -61,13 +67,16 @@ inline JsonObject textStyleEffective(
 
     slimr::Json::object_t merged;
     if (base.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : base.get<slimr::Json::object_t>()) merged[k] = v;
+        for (const auto &[k, v] : base.get<slimr::Json::object_t>())
+            merged[k] = v;
     }
     if (named.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : named.get<slimr::Json::object_t>()) merged[k] = v;
+        for (const auto &[k, v] : named.get<slimr::Json::object_t>())
+            merged[k] = v;
     }
     if (runStyle.holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : runStyle.get<slimr::Json::object_t>()) merged[k] = v;
+        for (const auto &[k, v] : runStyle.get<slimr::Json::object_t>())
+            merged[k] = v;
     }
     JsonObject out;
     out.data = std::move(merged);

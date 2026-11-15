@@ -1,14 +1,14 @@
 #pragma once
 
+#include "directives.hpp"
+#include "paragraph_styles.hpp"
+#include "review_markers.hpp"
+#include "tables.hpp"
+#include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <optional>
-#include <map>
-#include "directives.hpp"
-#include "tables.hpp"
-#include "paragraph_styles.hpp"
-#include "review_markers.hpp"
 
 namespace gdocsmith::lens {
 
@@ -21,7 +21,7 @@ struct Marks {
     bool code{false};
     std::optional<std::string> link;
 
-    bool operator==(const Marks& other) const = default;
+    bool operator==(const Marks &other) const = default;
     bool empty() const {
         return !bold && !italic && !underline && !strikethrough && !smallCaps && !code && !link;
     }
@@ -33,7 +33,7 @@ struct TokenRef {
     std::optional<std::string> label;
     int ordinal{0};
 
-    bool operator==(const TokenRef& other) const = default;
+    bool operator==(const TokenRef &other) const = default;
 };
 
 struct ProjSpan {
@@ -44,7 +44,7 @@ struct ProjSpan {
     std::optional<std::string> directive; // Style class
     std::optional<TokenRef> token;
 
-    bool operator==(const ProjSpan& other) const = default;
+    bool operator==(const ProjSpan &other) const = default;
 };
 
 struct ProjBlock;
@@ -55,7 +55,7 @@ struct ProjCell {
     std::optional<std::string> paragraphStyle;
     std::vector<ProjBlock> blocks; // For referenced multi-block cells
 
-    bool operator==(const ProjCell& other) const = default;
+    bool operator==(const ProjCell &other) const = default;
 };
 
 struct ProjTable {
@@ -67,7 +67,7 @@ struct ProjTable {
     std::vector<TableMerge> merges;
     std::vector<std::vector<std::vector<ProjBlock>>> cells; // Referenced cell blocks
 
-    bool operator==(const ProjTable& other) const = default;
+    bool operator==(const ProjTable &other) const = default;
 };
 
 struct ProjBlock {
@@ -87,13 +87,13 @@ struct ProjBlock {
     // Token block properties
     std::optional<TokenRef> token;
 
-    bool operator==(const ProjBlock& other) const = default;
+    bool operator==(const ProjBlock &other) const = default;
 };
 
 // 1-based source line of each top-level block; never part of projection equality
 struct SourceLines {
     std::vector<int> lines;
-    bool operator==(const SourceLines&) const { return true; }
+    bool operator==(const SourceLines &) const { return true; }
 };
 
 struct Projection {
@@ -105,7 +105,7 @@ struct Projection {
     std::vector<ReviewMarker> reviewMarkers;
     SourceLines blockLines;
 
-    bool operator==(const Projection& other) const = default;
+    bool operator==(const Projection &other) const = default;
 };
 
 } // namespace gdocsmith::lens

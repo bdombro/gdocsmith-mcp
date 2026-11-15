@@ -1,9 +1,9 @@
 #pragma once
 
-#include "lens/suggestion_blocks.hpp"
-#include "lens/suggestion_projection.hpp"
 #include "lens/document.hpp"
 #include "lens/put.hpp"
+#include "lens/suggestion_blocks.hpp"
+#include "lens/suggestion_projection.hpp"
 #include "test.hpp"
 
 namespace gdocsmith::lens::test {
@@ -15,8 +15,7 @@ TEST_CASE("suggestionBlockRender renders block fences") {
         .tabIndex = 0,
         .segment = "header default",
         .before = "before text",
-        .after = "after text"
-    };
+        .after = "after text"};
     std::string rendered = suggestionBlockRender(sb);
     CHECK(rendered.find(":::suggestion{id=s1 kind=text segment=\"header default\"}") != std::string::npos);
     CHECK(rendered.find("::before\nbefore text\n") != std::string::npos);
@@ -80,7 +79,7 @@ TEST_CASE("review export applies only the selected text-style proposal and retai
     tab.blocks.emplace_back(paragraph);
     doc.tabs.push_back(tab);
     const auto blocks = suggestionBlocksBuild(doc);
-    const auto found = std::find_if(blocks.begin(), blocks.end(), [](const auto& block) {
+    const auto found = std::find_if(blocks.begin(), blocks.end(), [](const auto &block) {
         return block.id == "style-change";
     });
     REQUIRE(found != blocks.end());
@@ -139,7 +138,8 @@ TEST_CASE("review export keeps table cell and nonbody context and round-trips im
     }
     model::EditContext context;
     CHECK_FALSE(markdownPut(model::EditTarget{context, tab},
-        documentTabMarkdown(parsed,parsed.tabs[0],doc,tab.tabId)).changed);
+                            documentTabMarkdown(parsed, parsed.tabs[0], doc, tab.tabId))
+                    .changed);
     CHECK(doc == original);
 }
 
@@ -149,7 +149,7 @@ TEST_CASE("review export shows actual structural deletion and layout style value
     tab.documentStyle = slimr::Json::object_t{{"marginTop", model::dimensionFromPt(10)}};
     tab.suggestedDocumentStyleChanges = slimr::Json::object_t{
         {"layout", slimr::Json::object_t{{"documentStyle",
-            slimr::Json::object_t{{"marginTop", model::dimensionFromPt(20)}}}}}};
+                                          slimr::Json::object_t{{"marginTop", model::dimensionFromPt(20)}}}}}};
     model::CellModel cell;
     cell.key = "cell";
     model::ParagraphBlock paragraph;
@@ -165,11 +165,11 @@ TEST_CASE("review export shows actual structural deletion and layout style value
     doc.tabs.push_back(tab);
     const auto original = doc;
     const auto blocks = suggestionBlocksBuild(doc);
-    const auto layout = std::find_if(blocks.begin(), blocks.end(), [](const auto& block) { return block.id == "layout"; });
+    const auto layout = std::find_if(blocks.begin(), blocks.end(), [](const auto &block) { return block.id == "layout"; });
     REQUIRE(layout != blocks.end());
     CHECK(layout->before->find("10") != std::string::npos);
     CHECK(layout->after->find("20") != std::string::npos);
-    const auto deleted = std::find_if(blocks.begin(), blocks.end(), [](const auto& block) { return block.id == "row-delete"; });
+    const auto deleted = std::find_if(blocks.begin(), blocks.end(), [](const auto &block) { return block.id == "row-delete"; });
     REQUIRE(deleted != blocks.end());
     CHECK(deleted->before->find(":change[deleted row]") != std::string::npos);
     CHECK(deleted->after->find("deleted row") == std::string::npos);

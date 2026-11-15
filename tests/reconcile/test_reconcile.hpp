@@ -9,7 +9,7 @@
 
 namespace gdocsmith::reconcile::test {
 
-inline JsonObject reconcileDoc(const std::vector<BlockSpec>& blocks) {
+inline JsonObject reconcileDoc(const std::vector<BlockSpec> &blocks) {
     DocSpec spec;
     TabSpec tspec;
     tspec.blocks = blocks;
@@ -23,38 +23,36 @@ struct ReconcileRoundTrip {
 };
 
 inline ReconcileRoundTrip reconcileRun(
-    const JsonObject& json,
-    std::function<void(EditTarget& target, const std::vector<std::string>& keys)> mutate
-) {
+    const JsonObject &json,
+    std::function<void(EditTarget &target, const std::vector<std::string> &keys)> mutate) {
     KeyAllocator keys;
     DocModel original = docModelParse(json, DocModelParseOptions{.docId = "d", .keys = keys});
     DocModel final = original;
-    TabModel& tab = final.tabs[0];
+    TabModel &tab = final.tabs[0];
 
     EditContext editCtx{
         .keys = keys,
         .stamp = EditStamp{.force = false, .tabIndex = 0},
-        .tombstones = {}
-    };
+        .tombstones = {}};
     EditTarget target{.ctx = editCtx, .tab = tab};
 
     std::vector<std::string> origKeys;
-    for (const auto& b : tab.blocks) origKeys.push_back(b.key);
+    for (const auto &b : tab.blocks)
+        origKeys.push_back(b.key);
     mutate(target, origKeys);
 
     DocReconcileInput input{
         .final = std::move(final),
         .original = std::move(original),
         .originalJson = json,
-        .carryRanges = {}
-    };
+        .carryRanges = {}};
     auto plan = docReconcile(input);
     auto check = docPlanSelfCheck(plan, input);
     return ReconcileRoundTrip{.plan = std::move(plan), .check = std::move(check)};
 }
 
 TEST_CASE("docReconcile - no change is an empty plan") {
-    auto r = reconcileRun(reconcileDoc({paraSpec({"a"})}), [](EditTarget&, const std::vector<std::string>&) {});
+    auto r = reconcileRun(reconcileDoc({paraSpec({"a"})}), [](EditTarget &, const std::vector<std::string> &) {});
     CHECK(r.check.equal);
     CHECK(r.plan.contentRequests.empty());
     CHECK(r.plan.tabOps.empty());
@@ -76,7 +74,7 @@ TEST_CASE("named range edges in nested cells borrow the live model and validate 
     table.rows.push_back(row);
     TabModel tab;
     tab.blocks.emplace_back(table);
-    const auto* found = blockFindConst(tab, "nested");
+    const auto *found = blockFindConst(tab, "nested");
     REQUIRE(found != nullptr);
     CHECK(found == &tab.blocks[0].as_table().rows[0].cells[0].blocks[0]);
     const auto layout = layoutCompute(tab);
@@ -88,8 +86,8 @@ TEST_CASE("named range edges in nested cells borrow the live model and validate 
     hidden.blocks[0].as_table().rows[0].cells[0].blocks[0].as_paragraph().inlines[0].suggestedInsertionIds =
         std::vector<std::string>{"suggestion"};
     CHECK_THROWS_AS(rangeEdgeIndex(hidden, layout, "nested", 1), CoreError);
-    auto& nested = tab.blocks[0].as_table().rows[0].cells[0].blocks[0].as_paragraph();
-    nested.origin = Range{.end=start + 4, .start=start};
+    auto &nested = tab.blocks[0].as_table().rows[0].cells[0].blocks[0].as_paragraph();
+    nested.origin = Range{.end = start + 4, .start = start};
     NamedRangeDef nr;
     nr.name = "unicode";
     nr.namedRangeId = "id";
@@ -99,7 +97,7 @@ TEST_CASE("named range edges in nested cells borrow the live model and validate 
     tab.namedRanges.push_back(nr);
     CHECK(lens::namedRangesShown(tab).size() == 1u);
     tab.namedRanges[0].create = NamedRangeDef::EdgePair{
-        .end={"nested", 2}, .start={"nested", 1}};
+        .end = {"nested", 2}, .start = {"nested", 1}};
     ReconcileContext ctx;
     ctx.tabId = "t";
     namedRangesReconcile(TabModel{}, tab, ctx);
@@ -115,12 +113,12 @@ TEST_CASE("named range marker offsets count Unicode scalars and atoms, not bytes
     text.text = "A\xF0\x9F\x98\x80";
     lens::ProjSpan marker;
     marker.kind = "token";
-    marker.token = lens::TokenRef{.kind="namedrange"};
+    marker.token = lens::TokenRef{.kind = "namedrange"};
     marker.token->attrs.values.emplace_back("name", "scope");
     marker.token->attrs.flags.push_back("start");
     lens::ProjSpan atom;
     atom.kind = "token";
-    atom.token = lens::TokenRef{.kind="image"};
+    atom.token = lens::TokenRef{.kind = "image"};
     auto end = marker;
     end.token->attrs.flags = {"end"};
     const auto marks = lens::rangeMarks({text, marker, atom, end});
@@ -200,12 +198,13 @@ TEST_CASE("named range duplicate names pair FIFO in start order and hidden range
     }
     const std::vector<lens::ShownRange> shown{{tab.namedRanges[0], 0}, {tab.namedRanges[1], 0}};
     const std::vector<lens::RangeMark> before{
-        {.edge="start", .key="p", .name="same", .offset=0},
-        {.edge="start", .key="p", .name="same", .offset=1},
-        {.edge="end", .key="p", .name="same", .offset=3},
-        {.edge="end", .key="p", .name="same", .offset=4}};
+        {.edge = "start", .key = "p", .name = "same", .offset = 0},
+        {.edge = "start", .key = "p", .name = "same", .offset = 1},
+        {.edge = "end", .key = "p", .name = "same", .offset = 3},
+        {.edge = "end", .key = "p", .name = "same", .offset = 4}};
     auto after = before;
-    for (auto& m : after) m.same = true;
+    for (auto &m : after)
+        m.same = true;
     lens::namedRangesApply(tab, before, after, shown, [] { return "new"; });
     REQUIRE(tab.namedRanges.size() == 2u);
     CHECK(tab.namedRanges[0].expect->end.offset == 3);
@@ -222,8 +221,8 @@ TEST_CASE("named range malformed empty and multispan changes refuse without muta
     nr.ranges.resize(2);
     tab.namedRanges.push_back(nr);
     std::vector<lens::RangeMark> marks{
-        {.edge="start", .key="p", .name="scope", .offset=0, .same=true},
-        {.edge="end", .key="p", .name="scope", .offset=3, .same=true}};
+        {.edge = "start", .key = "p", .name = "scope", .offset = 0, .same = true},
+        {.edge = "end", .key = "p", .name = "scope", .offset = 3, .same = true}};
     std::vector<lens::ShownRange> shown{{nr, 0}};
     lens::namedRangesApply(tab, marks, marks, shown, [] { return "new"; });
     CHECK(tab.namedRanges[0].namedRangeId == "original");
@@ -242,10 +241,10 @@ TEST_CASE("named range malformed empty and multispan changes refuse without muta
 TEST_CASE("named range predictions use UTF16 and outside-edge insertion semantics") {
     auto insert = [](int at, std::string text) -> JsonObject {
         return slimr::Json::object_t{{"insertText", slimr::Json::object_t{
-            {"location", slimr::Json::object_t{{"index", int64_t{at}}, {"tabId", "t"}}},
-            {"text", std::move(text)}}}};
+                                                        {"location", slimr::Json::object_t{{"index", int64_t{at}}, {"tabId", "t"}}},
+                                                        {"text", std::move(text)}}}};
     };
-    const Range range{.end=10, .start=5};
+    const Range range{.end = 10, .start = 5};
     auto predict = [&](int at) { return lens::namedRangePredict(range, "t", {insert(at, "\xF0\x9F\x98\x80")}); };
     REQUIRE(predict(5).has_value());
     CHECK(predict(5)->start == 7);
@@ -255,7 +254,7 @@ TEST_CASE("named range predictions use UTF16 and outside-edge insertion semantic
     CHECK(predict(10)->end == 10);
     CHECK(predict(11)->end == 10);
     JsonObject erase = slimr::Json::object_t{{"deleteContentRange", slimr::Json::object_t{
-        {"range", slimr::Json::object_t{{"startIndex", int64_t{6}}, {"endIndex", int64_t{8}}, {"tabId", "t"}}}}}};
+                                                                        {"range", slimr::Json::object_t{{"startIndex", int64_t{6}}, {"endIndex", int64_t{8}}, {"tabId", "t"}}}}}};
     CHECK(lens::namedRangePredict(range, "t", {erase})->end == 8);
     erase["deleteContentRange"]["range"]["startIndex"] = int64_t{5};
     erase["deleteContentRange"]["range"]["endIndex"] = int64_t{10};
@@ -264,7 +263,7 @@ TEST_CASE("named range predictions use UTF16 and outside-edge insertion semantic
 }
 
 TEST_CASE("docReconcile - a text edit round-trips through the self-check") {
-    auto r = reconcileRun(reconcileDoc({paraSpec({"the cat"})}), [](EditTarget& t, const std::vector<std::string>& k) {
+    auto r = reconcileRun(reconcileDoc({paraSpec({"the cat"})}), [](EditTarget &t, const std::vector<std::string> &k) {
         paragraphSplice(t, k[0], 4, 3, {SymSpec{.ch = "dog"}});
     });
     CHECK(r.check.equal);
@@ -274,9 +273,9 @@ TEST_CASE("docReconcile - a text edit round-trips through the self-check") {
 
 TEST_CASE("docReconcile - deleting a paragraph records a deleted range") {
     auto r = reconcileRun(reconcileDoc({paraSpec({"a"}), paraSpec({"b"}), paraSpec({"c"})}),
-                          [](EditTarget& t, const std::vector<std::string>& k) {
-        blocksDelete(t, {k[1]});
-    });
+                          [](EditTarget &t, const std::vector<std::string> &k) {
+                              blocksDelete(t, {k[1]});
+                          });
     CHECK(r.check.equal);
     CHECK(!r.plan.deletedRanges.empty());
 }
@@ -292,8 +291,7 @@ TEST_CASE("docReconcile - renaming a tab emits a single tab op") {
         .final = std::move(final),
         .original = std::move(original),
         .originalJson = json,
-        .carryRanges = {}
-    };
+        .carryRanges = {}};
     auto plan = docReconcile(input);
 
     CHECK(plan.tabOps.size() == 1);
@@ -321,8 +319,7 @@ TEST_CASE("docReconcile - a new tab is recorded in tabsToAdd") {
         .final = std::move(final),
         .original = std::move(original),
         .originalJson = json,
-        .carryRanges = {}
-    };
+        .carryRanges = {}};
     auto plan = docReconcile(input);
 
     CHECK(plan.tabsToAdd.size() == 1);

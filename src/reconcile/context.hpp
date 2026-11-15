@@ -20,7 +20,7 @@ struct RequestOrigin {
     std::optional<std::string> key;
     std::optional<int> tabIndex;
 
-    bool operator==(const RequestOrigin&) const = default;
+    bool operator==(const RequestOrigin &) const = default;
 };
 
 struct PendingLink {
@@ -31,7 +31,7 @@ struct PendingLink {
     std::string paragraphKey;
     std::string tabId;
 
-    bool operator==(const PendingLink&) const = default;
+    bool operator==(const PendingLink &) const = default;
 };
 
 struct ListRebuild {
@@ -39,7 +39,7 @@ struct ListRebuild {
     std::string listId;
     bool lossy = false;
 
-    bool operator==(const ListRebuild&) const = default;
+    bool operator==(const ListRebuild &) const = default;
 };
 
 struct ReconcileContext {
@@ -58,8 +58,7 @@ struct ReconcileContext {
 
 inline ReconcileContext reconcileContextCreate(
     std::string_view tabId,
-    const std::vector<Range>& carryRanges = {}
-) {
+    const std::vector<Range> &carryRanges = {}) {
     ReconcileContext ctx;
     ctx.tabId = std::string(tabId);
     ctx.carryRanges = carryRanges;
@@ -68,20 +67,20 @@ inline ReconcileContext reconcileContextCreate(
 }
 
 inline void requestPush(
-    ReconcileContext& ctx,
+    ReconcileContext &ctx,
     JsonObject req,
-    RequestOrigin origin = {}
-) {
+    RequestOrigin origin = {}) {
     ctx.requests.push_back(std::move(req));
     ctx.origins.push_back(std::move(origin));
 }
 
-inline JsonObject pick(const JsonObject& style, const std::vector<std::string>& fields) {
+inline JsonObject pick(const JsonObject &style, const std::vector<std::string> &fields) {
     JsonObject out = slimr::Json::object_t{};
-    if (!style.holds<slimr::Json::object_t>()) return out;
-    const auto& src = style.get<slimr::Json::object_t>();
-    auto& dst = out.get<slimr::Json::object_t>();
-    for (const auto& f : fields) {
+    if (!style.holds<slimr::Json::object_t>())
+        return out;
+    const auto &src = style.get<slimr::Json::object_t>();
+    auto &dst = out.get<slimr::Json::object_t>();
+    for (const auto &f : fields) {
         auto it = src.find(f);
         if (it != src.end()) {
             dst[f] = it->second;
@@ -90,17 +89,19 @@ inline JsonObject pick(const JsonObject& style, const std::vector<std::string>& 
     return out;
 }
 
-inline bool bulletSame(const std::optional<BulletRef>& a, const std::optional<BulletRef>& b) {
-    if (!a.has_value() && !b.has_value()) return true;
-    if (!a.has_value() || !b.has_value()) return false;
+inline bool bulletSame(const std::optional<BulletRef> &a, const std::optional<BulletRef> &b) {
+    if (!a.has_value() && !b.has_value())
+        return true;
+    if (!a.has_value() || !b.has_value())
+        return false;
     return a->listId == b->listId && a->nestingLevel == b->nestingLevel;
 }
 
 template <typename Fn>
-auto inCellRun(ReconcileContext& ctx, Fn&& fn) -> decltype(fn()) {
+auto inCellRun(ReconcileContext &ctx, Fn &&fn) -> decltype(fn()) {
     ctx.inCell++;
     struct Guard {
-        ReconcileContext& c;
+        ReconcileContext &c;
         ~Guard() { c.inCell--; }
     } guard{ctx};
     return fn();

@@ -15,11 +15,8 @@ TEST_SUITE("emulator::fake_google") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertText", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
-                    {"text", "x"}
-                }}
-            }
-        };
+                                   {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
+                                   {"text", "x"}}}}};
         CHECK_THROWS(fake.batch_update("d1", reqs, "rev-99"));
     }
 
@@ -31,11 +28,8 @@ TEST_SUITE("emulator::fake_google") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertText", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
-                    {"text", "x"}
-                }}
-            }
-        };
+                                   {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
+                                   {"text", "x"}}}}};
         std::string res_str = fake.batch_update("d1", reqs, "rev-1");
         auto parsed = slimr::parse_json<slimr::Json>(res_str);
         REQUIRE(parsed.has_value());
@@ -50,7 +44,7 @@ TEST_SUITE("emulator::fake_google") {
         fake.seed_document("d1", doc, 5);
         CHECK(fake.revision_id(fake.get_doc("d1")) == "rev-5");
 
-        fake.external_edit("d1", [](slimr::Json& d) {
+        fake.external_edit("d1", [](slimr::Json &d) {
             d["title"] = "New Title";
         });
         CHECK(fake.revision_id(fake.get_doc("d1")) == "rev-6");
@@ -74,18 +68,15 @@ TEST_SUITE("emulator::fake_google") {
         fake.seed_document("d1", doc, 1);
 
         std::string seen_text;
-        fake.before_batch_update = [&](const std::string& id) {
+        fake.before_batch_update = [&](const std::string &id) {
             seen_text = doc_plain_text(fake.get_doc(id).json);
         };
 
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertText", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
-                    {"text", "x"}
-                }}
-            }
-        };
+                                   {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(1)}}},
+                                   {"text", "x"}}}}};
         fake.batch_update("d1", reqs, "rev-1");
         CHECK(seen_text == "a\n");
         CHECK(doc_plain_text(fake.get_doc("d1").json) == "xa\n");

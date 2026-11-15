@@ -8,9 +8,9 @@
 #include "model/suggestions.hpp"
 #include "model/types.hpp"
 
-#include <stdexcept>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,8 +18,8 @@
 namespace gdocsmith::model {
 
 class ParseError : public std::runtime_error {
-public:
-    explicit ParseError(const std::string& msg) : std::runtime_error(msg) {}
+  public:
+    explicit ParseError(const std::string &msg) : std::runtime_error(msg) {}
 };
 
 struct DocModelParseOptions {
@@ -34,16 +34,15 @@ inline const std::vector<std::string> SEGMENT_STYLE_FIELDS = {
     "evenPageHeaderId",
     "defaultFooterId",
     "firstPageFooterId",
-    "evenPageFooterId"
-};
+    "evenPageFooterId"};
 
 inline std::string segmentTabId(std::string_view tabId, std::string_view segmentId) {
     return std::format("{}::{}", tabId, segmentId);
 }
 
-Block blockParse(const JsonObject& el, KeyAllocator& keys);
+Block blockParse(const JsonObject &el, KeyAllocator &keys);
 
-inline Range requireRange(const JsonObject& el, std::string_view what) {
+inline Range requireRange(const JsonObject &el, std::string_view what) {
     if (!el.contains("startIndex") || !el.contains("endIndex")) {
         throw ParseError(std::format("{} element is missing startIndex/endIndex", what));
     }
@@ -52,7 +51,7 @@ inline Range requireRange(const JsonObject& el, std::string_view what) {
     return Range{.end = end, .start = start};
 }
 
-inline Atom atomFromElement(const JsonObject& el, KeyAllocator& keys) {
+inline Atom atomFromElement(const JsonObject &el, KeyAllocator &keys) {
     static const std::vector<std::pair<std::string, std::string>> VARIANTS = {
         {"person", "person"},
         {"richLink", "richLink"},
@@ -64,13 +63,12 @@ inline Atom atomFromElement(const JsonObject& el, KeyAllocator& keys) {
         {"pageBreak", "pageBreak"},
         {"columnBreak", "columnBreak"},
         {"equation", "equation"},
-        {"autoText", "autoText"}
-    };
+        {"autoText", "autoText"}};
 
     Range rng = requireRange(el, "atom");
-    for (const auto& [jsonKey, typeName] : VARIANTS) {
+    for (const auto &[jsonKey, typeName] : VARIANTS) {
         if (el.contains(jsonKey)) {
-            const auto& payload = el[jsonKey];
+            const auto &payload = el[jsonKey];
             Atom atom;
             atom.kind = "atom";
             atom.key = keys.next("o");
@@ -82,7 +80,7 @@ inline Atom atomFromElement(const JsonObject& el, KeyAllocator& keys) {
             }
             JsonObject raw = el;
             if (raw.holds<slimr::Json::object_t>()) {
-                auto& map = raw.get<slimr::Json::object_t>();
+                auto &map = raw.get<slimr::Json::object_t>();
                 map.erase("startIndex");
                 map.erase("endIndex");
             }
@@ -93,11 +91,11 @@ inline Atom atomFromElement(const JsonObject& el, KeyAllocator& keys) {
     throw ParseError("paragraph element has no recognized non-text variant");
 }
 
-inline std::vector<Inline> mergeAdjacentTextRuns(const std::vector<Inline>& inlines) {
+inline std::vector<Inline> mergeAdjacentTextRuns(const std::vector<Inline> &inlines) {
     std::vector<Inline> out;
-    for (const auto& inlineItem : inlines) {
+    for (const auto &inlineItem : inlines) {
         if (!out.empty() && out.back().is_text() && inlineItem.is_text()) {
-            auto& prev = out.back();
+            auto &prev = out.back();
             if (styleEqual(prev.style, inlineItem.style) &&
                 suggestionIdsEqual(prev.suggestedDeletionIds, inlineItem.suggestedDeletionIds) &&
                 suggestionIdsEqual(prev.suggestedInsertionIds, inlineItem.suggestedInsertionIds) &&
@@ -113,45 +111,49 @@ inline std::vector<Inline> mergeAdjacentTextRuns(const std::vector<Inline>& inli
 }
 
 inline ParagraphBlock paragraphParse(
-    const JsonObject& p,
-    const Range& origin,
-    KeyAllocator& keys
-) {
+    const JsonObject &p,
+    const Range &origin,
+    KeyAllocator &keys) {
     if (!p.contains("elements") || !p["elements"].holds<slimr::Json::array_t>()) {
         throw ParseError("paragraph has no elements");
     }
-    const auto& elements = p["elements"].get<slimr::Json::array_t>();
-    if (elements.empty()) throw ParseError("paragraph has no elements");
+    const auto &elements = p["elements"].get<slimr::Json::array_t>();
+    if (elements.empty())
+        throw ParseError("paragraph has no elements");
 
     std::vector<Inline> rawInlines;
     std::optional<NewlineMark> newline;
 
     for (size_t i = 0; i < elements.size(); ++i) {
         bool isLast = (i == elements.size() - 1);
-        const auto& el = elements[i];
+        const auto &el = elements[i];
         if (!el.contains("textRun")) {
             rawInlines.push_back(Inline(atomFromElement(el, keys)));
             continue;
         }
-        const auto& tr = el["textRun"];
+        const auto &tr = el["textRun"];
         std::string content = tr.contains("content") && tr["content"].holds<std::string>() ? tr["content"].get<std::string>() : "";
         JsonObject style = tr.contains("textStyle") ? styleCanonical(tr["textStyle"]) : make_json_object();
 
         std::optional<std::vector<std::string>> sugDel;
         if (tr.contains("suggestedDeletionIds") && tr["suggestedDeletionIds"].holds<slimr::Json::array_t>()) {
             std::vector<std::string> ids;
-            for (const auto& item : tr["suggestedDeletionIds"].get<slimr::Json::array_t>()) {
-                if (item.holds<std::string>()) ids.push_back(item.get<std::string>());
+            for (const auto &item : tr["suggestedDeletionIds"].get<slimr::Json::array_t>()) {
+                if (item.holds<std::string>())
+                    ids.push_back(item.get<std::string>());
             }
-            if (!ids.empty()) sugDel = ids;
+            if (!ids.empty())
+                sugDel = ids;
         }
         std::optional<std::vector<std::string>> sugIns;
         if (tr.contains("suggestedInsertionIds") && tr["suggestedInsertionIds"].holds<slimr::Json::array_t>()) {
             std::vector<std::string> ids;
-            for (const auto& item : tr["suggestedInsertionIds"].get<slimr::Json::array_t>()) {
-                if (item.holds<std::string>()) ids.push_back(item.get<std::string>());
+            for (const auto &item : tr["suggestedInsertionIds"].get<slimr::Json::array_t>()) {
+                if (item.holds<std::string>())
+                    ids.push_back(item.get<std::string>());
             }
-            if (!ids.empty()) sugIns = ids;
+            if (!ids.empty())
+                sugIns = ids;
         }
         std::optional<JsonObject> sugStyle;
         if (tr.contains("suggestedTextStyleChanges")) {
@@ -192,7 +194,8 @@ inline ParagraphBlock paragraphParse(
         }
     }
 
-    if (!newline) throw ParseError("paragraph has no trailing newline");
+    if (!newline)
+        throw ParseError("paragraph has no trailing newline");
 
     auto inlines = mergeAdjacentTextRuns(rawInlines);
     JsonObject rawStyle = p.contains("paragraphStyle") ? p["paragraphStyle"] : make_json_object();
@@ -206,18 +209,22 @@ inline ParagraphBlock paragraphParse(
 
     std::optional<BulletRef> bullet;
     if (p.contains("bullet") && p["bullet"].holds<slimr::Json::object_t>()) {
-        const auto& b = p["bullet"];
+        const auto &b = p["bullet"];
         BulletRef br;
-        if (b.contains("listId") && b["listId"].holds<std::string>()) br.listId = b["listId"].get<std::string>();
+        if (b.contains("listId") && b["listId"].holds<std::string>())
+            br.listId = b["listId"].get<std::string>();
         if (b.contains("nestingLevel")) {
-            if (b["nestingLevel"].holds<int64_t>()) br.nestingLevel = static_cast<int>(b["nestingLevel"].get<int64_t>());
-            else if (b["nestingLevel"].holds<double>()) br.nestingLevel = static_cast<int>(b["nestingLevel"].get<double>());
+            if (b["nestingLevel"].holds<int64_t>())
+                br.nestingLevel = static_cast<int>(b["nestingLevel"].get<int64_t>());
+            else if (b["nestingLevel"].holds<double>())
+                br.nestingLevel = static_cast<int>(b["nestingLevel"].get<double>());
         }
-        if (b.contains("textStyle")) br.textStyle = styleCanonical(b["textStyle"]);
+        if (b.contains("textStyle"))
+            br.textStyle = styleCanonical(b["textStyle"]);
         bullet = br;
     }
 
-    auto marked = [](const auto& item) {
+    auto marked = [](const auto &item) {
         return (item.suggestedDeletionIds && !item.suggestedDeletionIds->empty()) ||
                (item.suggestedInsertionIds && !item.suggestedInsertionIds->empty()) ||
                (item.suggestedTextStyleChanges && item.suggestedTextStyleChanges->template holds<slimr::Json::object_t>() &&
@@ -229,12 +236,18 @@ inline ParagraphBlock paragraphParse(
                          p.contains("suggestedPositionedObjectIds") ||
                          marked(*newline);
     if (!protectedFlag) {
-        for (const auto& inlineItem : inlines) {
+        for (const auto &inlineItem : inlines) {
             if (inlineItem.is_text()) {
-                if (marked(inlineItem)) { protectedFlag = true; break; }
+                if (marked(inlineItem)) {
+                    protectedFlag = true;
+                    break;
+                }
             } else {
                 auto marks = atomSuggestion(inlineItem.to_atom());
-                if (marked(marks)) { protectedFlag = true; break; }
+                if (marked(marks)) {
+                    protectedFlag = true;
+                    break;
+                }
             }
         }
     }
@@ -252,17 +265,22 @@ inline ParagraphBlock paragraphParse(
 
     if (p.contains("positionedObjectIds") && p["positionedObjectIds"].holds<slimr::Json::array_t>()) {
         std::vector<std::string> ids;
-        for (const auto& item : p["positionedObjectIds"].get<slimr::Json::array_t>()) {
-            if (item.holds<std::string>()) ids.push_back(item.get<std::string>());
+        for (const auto &item : p["positionedObjectIds"].get<slimr::Json::array_t>()) {
+            if (item.holds<std::string>())
+                ids.push_back(item.get<std::string>());
         }
-        if (!ids.empty()) block.positionedObjectIds = ids;
+        if (!ids.empty())
+            block.positionedObjectIds = ids;
     }
 
     if (protectedFlag) {
         slimr::Json::object_t rawSug;
-        if (p.contains("suggestedBulletChanges")) rawSug["suggestedBulletChanges"] = p["suggestedBulletChanges"];
-        if (p.contains("suggestedParagraphStyleChanges")) rawSug["suggestedParagraphStyleChanges"] = p["suggestedParagraphStyleChanges"];
-        if (p.contains("suggestedPositionedObjectIds")) rawSug["suggestedPositionedObjectIds"] = p["suggestedPositionedObjectIds"];
+        if (p.contains("suggestedBulletChanges"))
+            rawSug["suggestedBulletChanges"] = p["suggestedBulletChanges"];
+        if (p.contains("suggestedParagraphStyleChanges"))
+            rawSug["suggestedParagraphStyleChanges"] = p["suggestedParagraphStyleChanges"];
+        if (p.contains("suggestedPositionedObjectIds"))
+            rawSug["suggestedPositionedObjectIds"] = p["suggestedPositionedObjectIds"];
         JsonObject obj;
         obj.data = std::move(rawSug);
         block.suggestionsRaw = obj;
@@ -271,19 +289,21 @@ inline ParagraphBlock paragraphParse(
     return block;
 }
 
-inline std::optional<std::vector<std::string>> suggestionIdsParse(const JsonObject& value, const char* field) {
-    if (!value.contains(field) || !value[field].is_array()) return std::nullopt;
+inline std::optional<std::vector<std::string>> suggestionIdsParse(const JsonObject &value, const char *field) {
+    if (!value.contains(field) || !value[field].is_array())
+        return std::nullopt;
     std::vector<std::string> ids;
-    for (const auto& id : value[field].get<slimr::Json::array_t>()) {
-        if (id.is_string()) ids.push_back(id.get<std::string>());
+    for (const auto &id : value[field].get<slimr::Json::array_t>()) {
+        if (id.is_string())
+            ids.push_back(id.get<std::string>());
     }
     return ids.empty() ? std::nullopt : std::make_optional(std::move(ids));
 }
 
-inline CellModel cellParse(const JsonObject& cell, KeyAllocator& keys) {
+inline CellModel cellParse(const JsonObject &cell, KeyAllocator &keys) {
     std::vector<Block> blocks;
     if (cell.contains("content") && cell["content"].holds<slimr::Json::array_t>()) {
-        for (const auto& el : cell["content"].get<slimr::Json::array_t>()) {
+        for (const auto &el : cell["content"].get<slimr::Json::array_t>()) {
             blocks.push_back(blockParse(el, keys));
         }
     }
@@ -304,10 +324,10 @@ inline CellModel cellParse(const JsonObject& cell, KeyAllocator& keys) {
     return cm;
 }
 
-inline RowModel rowParse(const JsonObject& row, KeyAllocator& keys) {
+inline RowModel rowParse(const JsonObject &row, KeyAllocator &keys) {
     std::vector<CellModel> cells;
     if (row.contains("tableCells") && row["tableCells"].holds<slimr::Json::array_t>()) {
-        for (const auto& c : row["tableCells"].get<slimr::Json::array_t>()) {
+        for (const auto &c : row["tableCells"].get<slimr::Json::array_t>()) {
             cells.push_back(cellParse(c, keys));
         }
     }
@@ -329,13 +349,12 @@ inline RowModel rowParse(const JsonObject& row, KeyAllocator& keys) {
 }
 
 inline TableBlock tableParse(
-    const JsonObject& t,
-    const Range& origin,
-    KeyAllocator& keys
-) {
+    const JsonObject &t,
+    const Range &origin,
+    KeyAllocator &keys) {
     std::vector<RowModel> rows;
     if (t.contains("tableRows") && t["tableRows"].holds<slimr::Json::array_t>()) {
-        for (const auto& r : t["tableRows"].get<slimr::Json::array_t>()) {
+        for (const auto &r : t["tableRows"].get<slimr::Json::array_t>()) {
             rows.push_back(rowParse(r, keys));
         }
     }
@@ -349,7 +368,7 @@ inline TableBlock tableParse(
     std::vector<JsonObject> colProps;
     if (t.contains("tableStyle") && t["tableStyle"].contains("tableColumnProperties") &&
         t["tableStyle"]["tableColumnProperties"].holds<slimr::Json::array_t>()) {
-        for (const auto& cp : t["tableStyle"]["tableColumnProperties"].get<slimr::Json::array_t>()) {
+        for (const auto &cp : t["tableStyle"]["tableColumnProperties"].get<slimr::Json::array_t>()) {
             colProps.push_back(cp);
         }
     }
@@ -371,33 +390,41 @@ inline TableBlock tableParse(
     tb.rows = std::move(rows);
     tb.origin = origin;
 
-    auto hasSug = [](const auto& el) {
+    auto hasSug = [](const auto &el) {
         return (el.suggestedDeletionIds && !el.suggestedDeletionIds->empty()) ||
                (el.suggestedInsertionIds && !el.suggestedInsertionIds->empty());
     };
     bool protectedFlag = hasSug(tb);
     if (!protectedFlag) {
-        for (const auto& r : tb.rows) {
-            if (hasSug(r)) { protectedFlag = true; break; }
-            for (const auto& c : r.cells) {
-                if (hasSug(c)) { protectedFlag = true; break; }
-                for (const auto& b : c.blocks) {
+        for (const auto &r : tb.rows) {
+            if (hasSug(r)) {
+                protectedFlag = true;
+                break;
+            }
+            for (const auto &c : r.cells) {
+                if (hasSug(c)) {
+                    protectedFlag = true;
+                    break;
+                }
+                for (const auto &b : c.blocks) {
                     if ((b.is_paragraph() && b.as_paragraph().is_protected) ||
                         (b.is_table() && b.as_table().is_protected)) {
                         protectedFlag = true;
                         break;
                     }
                 }
-                if (protectedFlag) break;
+                if (protectedFlag)
+                    break;
             }
-            if (protectedFlag) break;
+            if (protectedFlag)
+                break;
         }
     }
     tb.is_protected = protectedFlag;
     return tb;
 }
 
-inline TocBlock tocParse(const JsonObject& el, KeyAllocator& keys) {
+inline TocBlock tocParse(const JsonObject &el, KeyAllocator &keys) {
     Range origin = requireRange(el, "tableOfContents");
     TocBlock tb;
     tb.kind = "toc";
@@ -409,10 +436,9 @@ inline TocBlock tocParse(const JsonObject& el, KeyAllocator& keys) {
 }
 
 inline SectionBreakBlock sectionBreakParse(
-    const JsonObject& sb,
-    const Range& origin,
-    KeyAllocator& keys
-) {
+    const JsonObject &sb,
+    const Range &origin,
+    KeyAllocator &keys) {
     SectionBreakBlock sbb;
     sbb.kind = "sectionBreak";
     sbb.key = keys.next("o");
@@ -423,7 +449,7 @@ inline SectionBreakBlock sectionBreakParse(
     return sbb;
 }
 
-inline Block blockParse(const JsonObject& el, KeyAllocator& keys) {
+inline Block blockParse(const JsonObject &el, KeyAllocator &keys) {
     if (el.contains("paragraph")) {
         return Block(paragraphParse(el["paragraph"], requireRange(el, "paragraph"), keys));
     }
@@ -440,20 +466,24 @@ inline Block blockParse(const JsonObject& el, KeyAllocator& keys) {
 }
 
 inline TabModel tabParse(std::string_view tabId, std::string_view title,
-    std::optional<std::string> parentTabId, const JsonObject& dt, KeyAllocator keys);
+                         std::optional<std::string> parentTabId, const JsonObject &dt, KeyAllocator keys);
 
 namespace parse_detail {
 
-inline void segmentIndicesShift(JsonObject& value) {
+inline void segmentIndicesShift(JsonObject &value) {
     if (value.is_array()) {
-        for (auto& entry : value.get<slimr::Json::array_t>()) segmentIndicesShift(entry);
+        for (auto &entry : value.get<slimr::Json::array_t>())
+            segmentIndicesShift(entry);
     } else if (value.is_object()) {
-        if (value.contains("endIndex") && !value.contains("startIndex")) value["startIndex"] = 0;
-        for (auto& [field, entry] : value.get<slimr::Json::object_t>()) {
+        if (value.contains("endIndex") && !value.contains("startIndex"))
+            value["startIndex"] = 0;
+        for (auto &[field, entry] : value.get<slimr::Json::object_t>()) {
             if (field == "startIndex" || field == "endIndex") {
-                if (!entry.is_number()) throw ParseError("segment index is not numeric");
+                if (!entry.is_number())
+                    throw ParseError("segment index is not numeric");
                 const double number = entry.holds<int64_t>()
-                    ? static_cast<double>(entry.get<int64_t>()) : entry.get<double>();
+                                          ? static_cast<double>(entry.get<int64_t>())
+                                          : entry.get<double>();
                 if (!std::isfinite(number) || std::floor(number) != number || number < 0 ||
                     number >= std::numeric_limits<int>::max()) {
                     throw ParseError("segment index is outside the supported range");
@@ -470,67 +500,77 @@ inline void segmentIndicesShift(JsonObject& value) {
 
 inline TabModel segmentTabParse(
     std::string_view tabId, std::string_view title, std::string_view segmentId,
-    const JsonObject& content, const JsonObject& dt, KeyAllocator& keys
-) {
-    if (!content.is_array()) throw ParseError("segment content is not an array");
+    const JsonObject &content, const JsonObject &dt, KeyAllocator &keys) {
+    if (!content.is_array())
+        throw ParseError("segment content is not an array");
     auto shifted = content;
     parse_detail::segmentIndicesShift(shifted);
     slimr::Json::array_t body{
-        slimr::Json::object_t{{"startIndex", 0}, {"endIndex", 1},
-            {"sectionBreak", slimr::Json::object_t{{"sectionStyle", make_json_object()}}}}
-    };
-    for (const auto& entry : shifted.get<slimr::Json::array_t>()) body.push_back(entry);
+        slimr::Json::object_t{{"startIndex", 0}, {"endIndex", 1}, {"sectionBreak", slimr::Json::object_t{{"sectionStyle", make_json_object()}}}}};
+    for (const auto &entry : shifted.get<slimr::Json::array_t>())
+        body.push_back(entry);
     JsonObject synthetic = slimr::Json::object_t{
-        {"body", slimr::Json::object_t{{"content", std::move(body)}}}
-    };
-    for (const auto& field : {"inlineObjects", "lists", "namedStyles"}) {
-        if (dt.contains(field)) synthetic[field] = dt[field];
+        {"body", slimr::Json::object_t{{"content", std::move(body)}}}};
+    for (const auto &field : {"inlineObjects", "lists", "namedStyles"}) {
+        if (dt.contains(field))
+            synthetic[field] = dt[field];
     }
     const auto id = segmentTabId(tabId, segmentId);
     return tabParse(id, title, std::nullopt, synthetic, keys.tabScope(id));
 }
 
 inline std::vector<SegmentModel> segmentsParse(
-    std::string_view tabId, std::string_view title, const JsonObject& dt, KeyAllocator& keys
-) {
+    std::string_view tabId, std::string_view title, const JsonObject &dt, KeyAllocator &keys) {
     std::vector<SegmentModel> segments;
-    auto add = [&](const std::string& id, const std::string& kind, const std::string& type,
-                   std::optional<int> section, const JsonObject& raw) {
-        if (!raw.is_object()) throw ParseError("segment payload is not an object");
+    auto add = [&](const std::string &id, const std::string &kind, const std::string &type,
+                   std::optional<int> section, const JsonObject &raw) {
+        if (!raw.is_object())
+            throw ParseError("segment payload is not an object");
         auto content = raw.contains("content") ? raw["content"] : JsonObject(slimr::Json::array_t{});
         segments.push_back(SegmentModel{
-            .id = id, .kind = kind, .type = type, .section = section,
+            .id = id,
+            .kind = kind,
+            .type = type,
+            .section = section,
             .tab = std::make_shared<TabModel>(segmentTabParse(tabId, title, id, content, dt, keys)),
         });
     };
-    auto addStyle = [&](const JsonObject& style, std::optional<int> section) {
-        for (const auto& field : SEGMENT_STYLE_FIELDS) {
-            if (!style.contains(field)) continue;
-            if (!style[field].is_string()) throw ParseError("header/footer ID is not a string");
+    auto addStyle = [&](const JsonObject &style, std::optional<int> section) {
+        for (const auto &field : SEGMENT_STYLE_FIELDS) {
+            if (!style.contains(field))
+                continue;
+            if (!style[field].is_string())
+                throw ParseError("header/footer ID is not a string");
             const auto id = style[field].get<std::string>();
             const bool header = field.find("Header") != std::string::npos;
             const auto map = header ? "headers" : "footers";
-            if (!dt.contains(map) || !dt[map].is_object() || !dt[map].contains(id)) continue;
-            const auto type = field.starts_with("first") ? "first" : field.starts_with("even") ? "even" : "default";
+            if (!dt.contains(map) || !dt[map].is_object() || !dt[map].contains(id))
+                continue;
+            const auto type = field.starts_with("first") ? "first" : field.starts_with("even") ? "even"
+                                                                                               : "default";
             add(id, header ? "header" : "footer", type, section, dt[map][id]);
         }
     };
-    if (dt.contains("documentStyle") && dt["documentStyle"].is_object()) addStyle(dt["documentStyle"], std::nullopt);
+    if (dt.contains("documentStyle") && dt["documentStyle"].is_object())
+        addStyle(dt["documentStyle"], std::nullopt);
     if (dt.contains("body") && dt["body"].is_object() && dt["body"].contains("content") &&
         dt["body"]["content"].is_array()) {
         int section = 0;
-        for (const auto& element : dt["body"]["content"].get<slimr::Json::array_t>()) {
-            if (!element.contains("sectionBreak")) continue;
-            if (++section == 1) continue;
-            const auto& sectionBreak = element["sectionBreak"];
+        for (const auto &element : dt["body"]["content"].get<slimr::Json::array_t>()) {
+            if (!element.contains("sectionBreak"))
+                continue;
+            if (++section == 1)
+                continue;
+            const auto &sectionBreak = element["sectionBreak"];
             if (sectionBreak.contains("sectionStyle") && sectionBreak["sectionStyle"].is_object()) {
                 addStyle(sectionBreak["sectionStyle"], section);
             }
         }
     }
     if (dt.contains("footnotes")) {
-        if (!dt["footnotes"].is_object()) throw ParseError("footnotes is not an object");
-        for (const auto& [id, raw] : dt["footnotes"].get<slimr::Json::object_t>()) {
+        if (!dt["footnotes"].is_object())
+            throw ParseError("footnotes is not an object");
+        for (const auto &[id, raw] : dt["footnotes"].get<slimr::Json::object_t>()) {
             add(id, "footnote", "default", std::nullopt, raw);
         }
     }
@@ -541,19 +581,18 @@ inline TabModel tabParse(
     std::string_view tabId,
     std::string_view title,
     std::optional<std::string> parentTabId,
-    const JsonObject& dt,
-    KeyAllocator keys
-) {
+    const JsonObject &dt,
+    KeyAllocator keys) {
     std::vector<JsonObject> content;
     if (dt.contains("body") && dt["body"].contains("content") && dt["body"]["content"].holds<slimr::Json::array_t>()) {
-        for (const auto& item : dt["body"]["content"].get<slimr::Json::array_t>()) {
+        for (const auto &item : dt["body"]["content"].get<slimr::Json::array_t>()) {
             content.push_back(item);
         }
     }
     if (content.empty()) {
         throw ParseError(std::format("tab \"{}\" body does not start with a leading section break at index 0", tabId));
     }
-    const auto& first = content[0];
+    const auto &first = content[0];
     int startIdx = 0;
     if (first.contains("startIndex")) {
         startIdx = first["startIndex"].holds<int64_t>() ? static_cast<int>(first["startIndex"].get<int64_t>()) : static_cast<int>(first["startIndex"].get<double>());
@@ -573,12 +612,12 @@ inline TabModel tabParse(
 
     std::unordered_map<std::string, ListDef> lists;
     if (dt.contains("lists") && dt["lists"].holds<slimr::Json::object_t>()) {
-        for (const auto& [lid, ldef] : dt["lists"].get<slimr::Json::object_t>()) {
+        for (const auto &[lid, ldef] : dt["lists"].get<slimr::Json::object_t>()) {
             ListDef ld;
             ld.isNew = false;
             if (ldef.contains("listProperties") && ldef["listProperties"].contains("nestingLevels") &&
                 ldef["listProperties"]["nestingLevels"].holds<slimr::Json::array_t>()) {
-                for (const auto& nl : ldef["listProperties"]["nestingLevels"].get<slimr::Json::array_t>()) {
+                for (const auto &nl : ldef["listProperties"]["nestingLevels"].get<slimr::Json::array_t>()) {
                     ld.nestingLevels.push_back(nl);
                 }
             }
@@ -588,20 +627,26 @@ inline TabModel tabParse(
 
     std::vector<NamedRangeDef> namedRanges;
     if (dt.contains("namedRanges") && dt["namedRanges"].holds<slimr::Json::object_t>()) {
-        for (const auto& [_, entries] : dt["namedRanges"].get<slimr::Json::object_t>()) {
+        for (const auto &[_, entries] : dt["namedRanges"].get<slimr::Json::object_t>()) {
             if (entries.contains("namedRanges") && entries["namedRanges"].holds<slimr::Json::array_t>()) {
-                for (const auto& entry : entries["namedRanges"].get<slimr::Json::array_t>()) {
+                for (const auto &entry : entries["namedRanges"].get<slimr::Json::array_t>()) {
                     NamedRangeDef nrd;
-                    if (entry.contains("name") && entry["name"].holds<std::string>()) nrd.name = entry["name"].get<std::string>();
-                    else if (entries.contains("name") && entries["name"].holds<std::string>()) nrd.name = entries["name"].get<std::string>();
-                    if (entry.contains("namedRangeId") && entry["namedRangeId"].holds<std::string>()) nrd.namedRangeId = entry["namedRangeId"].get<std::string>();
+                    if (entry.contains("name") && entry["name"].holds<std::string>())
+                        nrd.name = entry["name"].get<std::string>();
+                    else if (entries.contains("name") && entries["name"].holds<std::string>())
+                        nrd.name = entries["name"].get<std::string>();
+                    if (entry.contains("namedRangeId") && entry["namedRangeId"].holds<std::string>())
+                        nrd.namedRangeId = entry["namedRangeId"].get<std::string>();
 
                     if (entry.contains("ranges") && entry["ranges"].holds<slimr::Json::array_t>()) {
-                        for (const auto& r : entry["ranges"].get<slimr::Json::array_t>()) {
+                        for (const auto &r : entry["ranges"].get<slimr::Json::array_t>()) {
                             NamedRangeDef::RangePart rp;
-                            if (r.contains("startIndex")) rp.start = r["startIndex"].holds<int64_t>() ? static_cast<int>(r["startIndex"].get<int64_t>()) : static_cast<int>(r["startIndex"].get<double>());
-                            if (r.contains("endIndex")) rp.end = r["endIndex"].holds<int64_t>() ? static_cast<int>(r["endIndex"].get<int64_t>()) : static_cast<int>(r["endIndex"].get<double>());
-                            if (r.contains("segmentId") && r["segmentId"].holds<std::string>()) rp.segmentId = r["segmentId"].get<std::string>();
+                            if (r.contains("startIndex"))
+                                rp.start = r["startIndex"].holds<int64_t>() ? static_cast<int>(r["startIndex"].get<int64_t>()) : static_cast<int>(r["startIndex"].get<double>());
+                            if (r.contains("endIndex"))
+                                rp.end = r["endIndex"].holds<int64_t>() ? static_cast<int>(r["endIndex"].get<int64_t>()) : static_cast<int>(r["endIndex"].get<double>());
+                            if (r.contains("segmentId") && r["segmentId"].holds<std::string>())
+                                rp.segmentId = r["segmentId"].get<std::string>();
                             nrd.ranges.push_back(std::move(rp));
                         }
                     }
@@ -621,23 +666,32 @@ inline TabModel tabParse(
     tab.lists = std::move(lists);
     tab.namedRanges = std::move(namedRanges);
 
-    if (dt.contains("documentStyle")) tab.documentStyle = styleCanonical(dt["documentStyle"]);
-    else tab.documentStyle = make_json_object();
-    if (dt.contains("namedStyles")) tab.namedStyles = styleCanonical(dt["namedStyles"]);
+    if (dt.contains("documentStyle"))
+        tab.documentStyle = styleCanonical(dt["documentStyle"]);
+    else
+        tab.documentStyle = make_json_object();
+    if (dt.contains("namedStyles"))
+        tab.namedStyles = styleCanonical(dt["namedStyles"]);
     if (dt.contains("dropdownDefinitions") && dt["dropdownDefinitions"].holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : dt["dropdownDefinitions"].get<slimr::Json::object_t>()) tab.dropdownDefinitions[k] = v;
+        for (const auto &[k, v] : dt["dropdownDefinitions"].get<slimr::Json::object_t>())
+            tab.dropdownDefinitions[k] = v;
     }
     if (dt.contains("footnotes") && dt["footnotes"].holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : dt["footnotes"].get<slimr::Json::object_t>()) tab.footnotes[k] = v;
+        for (const auto &[k, v] : dt["footnotes"].get<slimr::Json::object_t>())
+            tab.footnotes[k] = v;
     }
     if (dt.contains("inlineObjects") && dt["inlineObjects"].holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : dt["inlineObjects"].get<slimr::Json::object_t>()) tab.inlineObjects[k] = v;
+        for (const auto &[k, v] : dt["inlineObjects"].get<slimr::Json::object_t>())
+            tab.inlineObjects[k] = v;
     }
     if (dt.contains("positionedObjects") && dt["positionedObjects"].holds<slimr::Json::object_t>()) {
-        for (const auto& [k, v] : dt["positionedObjects"].get<slimr::Json::object_t>()) tab.positionedObjects[k] = v;
+        for (const auto &[k, v] : dt["positionedObjects"].get<slimr::Json::object_t>())
+            tab.positionedObjects[k] = v;
     }
-    if (dt.contains("suggestedDocumentStyleChanges")) tab.suggestedDocumentStyleChanges = dt["suggestedDocumentStyleChanges"];
-    if (dt.contains("suggestedNamedStylesChanges")) tab.suggestedNamedStylesChanges = dt["suggestedNamedStylesChanges"];
+    if (dt.contains("suggestedDocumentStyleChanges"))
+        tab.suggestedDocumentStyleChanges = dt["suggestedDocumentStyleChanges"];
+    if (dt.contains("suggestedNamedStylesChanges"))
+        tab.suggestedNamedStylesChanges = dt["suggestedNamedStylesChanges"];
     tab.headersFooters = slimr::Json::object_t{
         {"headers", dt.contains("headers") ? dt["headers"] : make_json_object()},
         {"footers", dt.contains("footers") ? dt["footers"] : make_json_object()},
@@ -647,11 +701,11 @@ inline TabModel tabParse(
     return tab;
 }
 
-inline std::vector<TabModel> tabsFlattenDfs(const JsonObject& raw, KeyAllocator& keys) {
+inline std::vector<TabModel> tabsFlattenDfs(const JsonObject &raw, KeyAllocator &keys) {
     if (!raw.contains("tabProperties") || !raw["tabProperties"].contains("tabId")) {
         throw ParseError("tab is missing tabProperties.tabId");
     }
-    const auto& props = raw["tabProperties"];
+    const auto &props = raw["tabProperties"];
     std::string tabId = props["tabId"].holds<std::string>() ? props["tabId"].get<std::string>() : "";
     std::string title = props.contains("title") && props["title"].holds<std::string>() ? props["title"].get<std::string>() : "";
     std::optional<std::string> parentTabId;
@@ -669,9 +723,10 @@ inline std::vector<TabModel> tabsFlattenDfs(const JsonObject& raw, KeyAllocator&
     out.push_back(std::move(tab));
 
     if (raw.contains("childTabs") && raw["childTabs"].holds<slimr::Json::array_t>()) {
-        for (const auto& child : raw["childTabs"].get<slimr::Json::array_t>()) {
+        for (const auto &child : raw["childTabs"].get<slimr::Json::array_t>()) {
             auto sub = tabsFlattenDfs(child, keys);
-            for (auto& st : sub) out.push_back(std::move(st));
+            for (auto &st : sub)
+                out.push_back(std::move(st));
         }
     }
     return out;
@@ -680,13 +735,14 @@ inline std::vector<TabModel> tabsFlattenDfs(const JsonObject& raw, KeyAllocator&
 /**
  * Parses a fetched document into a `DocModel`: every tab's content, styles, and lists, in depth-first order.
  */
-inline DocModel docModelParse(const JsonObject& json, DocModelParseOptions opts) {
-    const auto& raw = rawDocumentOf(json);
+inline DocModel docModelParse(const JsonObject &json, DocModelParseOptions opts) {
+    const auto &raw = rawDocumentOf(json);
     std::vector<TabModel> tabs;
     if (raw.contains("tabs") && raw["tabs"].holds<slimr::Json::array_t>() && !raw["tabs"].get<slimr::Json::array_t>().empty()) {
-        for (const auto& tabJson : raw["tabs"].get<slimr::Json::array_t>()) {
+        for (const auto &tabJson : raw["tabs"].get<slimr::Json::array_t>()) {
             auto sub = tabsFlattenDfs(tabJson, opts.keys);
-            for (auto& t : sub) tabs.push_back(std::move(t));
+            for (auto &t : sub)
+                tabs.push_back(std::move(t));
         }
     } else {
         std::string title = raw.contains("title") && raw["title"].holds<std::string>() ? raw["title"].get<std::string>() : "";

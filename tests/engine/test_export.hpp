@@ -12,8 +12,8 @@
 
 namespace gdocsmith::engine::test {
 
-inline void checkPartialExportDisclosure(const ExportWritten& written) {
-    for (const auto& warning : written.warnings) {
+inline void checkPartialExportDisclosure(const ExportWritten &written) {
+    for (const auto &warning : written.warnings) {
         CHECK(warning.find("headers, footers and footnotes are read-only") == std::string::npos);
         CHECK(warning.find("non-body sections") == std::string::npos);
     }
@@ -30,20 +30,19 @@ TEST_CASE("export - readonly rich contexts roundtrip and survive an unrelated bo
     tab.documentStyle = slimr::Json::object_t{
         {"documentFormat", slimr::Json::object_t{{"documentMode", "PAGES"}}},
         {"documentSize", slimr::Json::object_t{{"width", model::dimensionFromPt(612)}, {"height", model::dimensionFromPt(1008)}}},
-        {"marginTop", model::dimensionFromPt(36)}, {"marginHeader", model::dimensionFromPt(24)},
-        {"useEvenPageHeaderFooter", true}, {"background", slimr::Json::object_t{{"color", model::colorOptionalFromHex("#112233")}}},
+        {"marginTop", model::dimensionFromPt(36)},
+        {"marginHeader", model::dimensionFromPt(24)},
+        {"useEvenPageHeaderFooter", true},
+        {"background", slimr::Json::object_t{{"color", model::colorOptionalFromHex("#112233")}}},
         {"opaqueSetting", "retained"}};
     tab.leadingSectionStyle = slimr::Json::object_t{{"contentDirection", "RIGHT_TO_LEFT"},
-        {"columnProperties", slimr::Json::array_t{
-            slimr::Json::object_t{{"paddingEnd", model::dimensionFromPt(18)}}, slimr::Json::object_t{}}}};
+                                                    {"columnProperties", slimr::Json::array_t{
+                                                                             slimr::Json::object_t{{"paddingEnd", model::dimensionFromPt(18)}}, slimr::Json::object_t{}}}};
     tab.namedStyles = slimr::Json::object_t{{"styles", slimr::Json::array_t{slimr::Json::object_t{
-        {"namedStyleType", "TITLE"}, {"textStyle", slimr::Json::object_t{{"bold", true},
-            {"fontSize", model::dimensionFromPt(20)}, {"weightedFontFamily", slimr::Json::object_t{{"fontFamily", "Georgia"}}}}},
-        {"paragraphStyle", slimr::Json::object_t{{"alignment", "CENTER"}}}}}}};
+                                                           {"namedStyleType", "TITLE"}, {"textStyle", slimr::Json::object_t{{"bold", true}, {"fontSize", model::dimensionFromPt(20)}, {"weightedFontFamily", slimr::Json::object_t{{"fontFamily", "Georgia"}}}}}, {"paragraphStyle", slimr::Json::object_t{{"alignment", "CENTER"}}}}}}};
     model::ParagraphBlock body;
     body.key = "body";
-    body.style = slimr::Json::object_t{{"alignment", "END"}, {"keepWithNext", true},
-        {"tabStops", slimr::Json::array_t{slimr::Json::object_t{{"alignment", "CENTER"}, {"offset", model::dimensionFromPt(21)}}}}};
+    body.style = slimr::Json::object_t{{"alignment", "END"}, {"keepWithNext", true}, {"tabStops", slimr::Json::array_t{slimr::Json::object_t{{"alignment", "CENTER"}, {"offset", model::dimensionFromPt(21)}}}}};
     body.inlines.emplace_back(model::Inline::from_text("Body with footnote "));
     model::Atom reference;
     reference.key = "footnote-reference";
@@ -59,15 +58,17 @@ TEST_CASE("export - readonly rich contexts roundtrip and survive an unrelated bo
         model::RowModel row;
         row.key = "row" + std::to_string(r);
         row.style = slimr::Json::object_t{{"minRowHeight", model::dimensionFromPt(r ? 42 : 30)}};
-        if (!r) { row.style["tableHeader"] = true; row.style["preventOverflow"] = true; }
+        if (!r) {
+            row.style["tableHeader"] = true;
+            row.style["preventOverflow"] = true;
+        }
         for (int c = 0; c < 2; ++c) {
             model::CellModel cell;
             cell.key = "cell" + std::to_string(r) + std::to_string(c);
             model::ParagraphBlock paragraph;
             paragraph.key = "paragraph-" + cell.key;
             if (!r && !c) {
-                cell.style = slimr::Json::object_t{{"rowSpan", 2}, {"columnSpan", 2},
-                    {"paddingTop", model::dimensionFromPt(9)}, {"backgroundColor", model::colorOptionalFromHex("#FFFF00")}};
+                cell.style = slimr::Json::object_t{{"rowSpan", 2}, {"columnSpan", 2}, {"paddingTop", model::dimensionFromPt(9)}, {"backgroundColor", model::colorOptionalFromHex("#FFFF00")}};
                 paragraph.inlines.push_back(model::Inline::from_text("Merged anchor"));
             }
             cell.blocks.emplace_back(paragraph);
@@ -80,7 +81,7 @@ TEST_CASE("export - readonly rich contexts roundtrip and survive an unrelated bo
     tail.key = "tail";
     tail.inlines.push_back(model::Inline::from_text("Editable tail"));
     tab.blocks.emplace_back(tail);
-    for (const auto& [kind, id, type, content] : {
+    for (const auto &[kind, id, type, content] : {
              std::tuple{"header", "h.actual", "first", "Actual header"},
              std::tuple{"footer", "f.actual", "even", "Actual footer"},
              std::tuple{"footnote", "fn.actual", "default", "Actual footnote"}}) {
@@ -103,7 +104,7 @@ TEST_CASE("export - readonly rich contexts roundtrip and survive an unrelated bo
     CHECK(markdown.find("Body with footnote [^1]") != std::string::npos);
     CHECK(markdown.find("size=LEGAL") != std::string::npos);
     CHECK(markdown.find("namedStyleSet=1") != std::string::npos);
-    for (const auto* setting : {"widths=100,200", "headerRows=1", "heights=30,42", "preventOverflow=1"}) {
+    for (const auto *setting : {"widths=100,200", "headerRows=1", "heights=30,42", "preventOverflow=1"}) {
         INFO(std::string(setting));
         CHECK(markdown.find(setting) != std::string::npos);
     }
@@ -164,17 +165,16 @@ TEST_CASE("export - readonly style snapshot strips temporary image URLs without 
     tab.tabId = "t.images";
     const std::string temporary = "https://images/download?access_token=synthetic-secret";
     const auto properties = slimr::Json::object_t{{"inlineObjectProperties", slimr::Json::object_t{
-        {"embeddedObject", slimr::Json::object_t{
-            {"size", slimr::Json::object_t{{"width", model::dimensionFromPt(42)}}},
-            {"imageProperties", slimr::Json::object_t{{"contentUri", temporary}, {"sourceUri", temporary},
-                {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.125}}}}}}}}}};
+                                                                                 {"embeddedObject", slimr::Json::object_t{
+                                                                                                        {"size", slimr::Json::object_t{{"width", model::dimensionFromPt(42)}}},
+                                                                                                        {"imageProperties", slimr::Json::object_t{{"contentUri", temporary}, {"sourceUri", temporary}, {"cropProperties", slimr::Json::object_t{{"offsetLeft", 0.125}}}}}}}}}};
     tab.inlineObjects["image-id"] = properties;
     tab.positionedObjects["positioned-id"] = properties;
     model::Atom image;
     image.key = "image-key";
     image.type = "image";
     image.raw = slimr::Json::object_t{{"inlineObjectElement", slimr::Json::object_t{{"inlineObjectId", "image-id"}}},
-        {"cachedProperties", slimr::Json::object_t{{"contentUri", temporary}}}};
+                                      {"cachedProperties", slimr::Json::object_t{{"contentUri", temporary}}}};
     model::ParagraphBlock paragraph;
     paragraph.key = "image-paragraph";
     paragraph.inlines.emplace_back(image);
@@ -182,7 +182,7 @@ TEST_CASE("export - readonly style snapshot strips temporary image URLs without 
     doc.tabs.push_back(tab);
     const auto original = doc;
     const auto snapshot = exportStyleSnapshot(tab);
-    const auto& embedded = snapshot["inlineObjects"]["image-id"]["inlineObjectProperties"]["embeddedObject"];
+    const auto &embedded = snapshot["inlineObjects"]["image-id"]["inlineObjectProperties"]["embeddedObject"];
     CHECK(lens::dimensionPt(embedded["size"]["width"]) == 42);
     CHECK(embedded["imageProperties"]["cropProperties"]["offsetLeft"].as<double>() == 0.125);
     CHECK_FALSE(embedded["imageProperties"].contains("contentUri"));
@@ -219,8 +219,7 @@ TEST_CASE("export - rich file body putback is a complete model no-op") {
     paragraph.key = "paragraph-id";
     paragraph.style = slimr::Json::object_t{{"alignment", "END"}};
     paragraph.inlines.push_back(model::Inline::from_text("rich * literal | text",
-        slimr::Json::object_t{{"bold", true}, {"fontSize", model::dimensionFromPt(19)},
-            {"weightedFontFamily", slimr::Json::object_t{{"fontFamily", "Georgia"}}}}));
+                                                         slimr::Json::object_t{{"bold", true}, {"fontSize", model::dimensionFromPt(19)}, {"weightedFontFamily", slimr::Json::object_t{{"fontFamily", "Georgia"}}}}));
     tab.blocks.emplace_back(paragraph);
     doc.tabs.push_back(tab);
     FileServices services;
@@ -267,7 +266,8 @@ TEST_CASE("export - pure file projection exposes pending review context without 
     model::EditContext context;
     auto editable = doc.tabs[0];
     CHECK_FALSE(lens::markdownPut(model::EditTarget{context, editable},
-        lens::documentTabMarkdown(parsed, parsed.tabs[0], doc, doc.tabs[0].tabId)).changed);
+                                  lens::documentTabMarkdown(parsed, parsed.tabs[0], doc, doc.tabs[0].tabId))
+                    .changed);
     CHECK(editable == doc.tabs[0]);
 }
 
@@ -462,7 +462,8 @@ TEST_CASE("export - rich synthetic content does not claim editable segments are 
     model::EditContext context;
     auto editable = doc.tabs[0];
     CHECK_FALSE(lens::markdownPut(model::EditTarget{context, editable},
-        lens::documentTabMarkdown(parsed, parsed.tabs[0], doc, "t.0")).changed);
+                                  lens::documentTabMarkdown(parsed, parsed.tabs[0], doc, "t.0"))
+                    .changed);
     CHECK(editable == doc.tabs[0]);
     CHECK(!written.images.has_value());
     CHECK(!written.imagesDir.has_value());
@@ -477,13 +478,13 @@ TEST_CASE("export - multi-tab namedStyleSets deduplicates identical sets and omi
     doc.revisionId = "r1";
     doc.title = "Named Style Dedup";
 
-    auto makeTab = [](const std::string& id, const std::string& title, const std::string& font) {
+    auto makeTab = [](const std::string &id, const std::string &title, const std::string &font) {
         model::TabModel tab;
         tab.tabId = id;
         tab.title = title;
         tab.namedStyles = slimr::Json::object_t{{"styles", slimr::Json::array_t{slimr::Json::object_t{
-            {"namedStyleType", "TITLE"},
-            {"textStyle", slimr::Json::object_t{{"weightedFontFamily", slimr::Json::object_t{{"fontFamily", font}}}}}}}}};
+                                                               {"namedStyleType", "TITLE"},
+                                                               {"textStyle", slimr::Json::object_t{{"weightedFontFamily", slimr::Json::object_t{{"fontFamily", font}}}}}}}}};
         model::ParagraphBlock p;
         p.key = id + "_p0";
         p.inlines.push_back(model::Inline::from_text("Body\n"));
@@ -524,21 +525,18 @@ TEST_CASE("export - image downloads select IDs and propagate failures") {
     image.type = "image";
     paragraph.inlines.push_back(model::Inline::from_atom(std::move(image)));
     tab.blocks.emplace_back(std::move(paragraph));
-    for (const auto& id : {"image_synthetic", "image_second"}) {
+    for (const auto &id : {"image_synthetic", "image_second"}) {
         tab.inlineObjects[id] = slimr::Json::object_t{
             {"inlineObjectProperties", slimr::Json::object_t{
-                {"embeddedObject", slimr::Json::object_t{
-                    {"imageProperties", slimr::Json::object_t{{"contentUri", std::string("https://images/") + id}}}
-                }}
-            }}
-        };
+                                           {"embeddedObject", slimr::Json::object_t{
+                                                                  {"imageProperties", slimr::Json::object_t{{"contentUri", std::string("https://images/") + id}}}}}}}};
     }
     doc.tabs.push_back(std::move(tab));
     FileServices services;
     services.root = tmpDir.string();
 
     std::vector<std::string> downloads;
-    services.imageDownload = [&](const std::string& uri) {
+    services.imageDownload = [&](const std::string &uri) {
         downloads.push_back(uri);
         return DownloadedImage{.bytes = std::string("image\0bytes", 11), .extension = "png"};
     };
@@ -546,14 +544,15 @@ TEST_CASE("export - image downloads select IDs and propagate failures") {
         downloads.clear();
         ExportOptions options;
         options.imagesDownload = true;
-        if (selectIds) options.imageIds = std::vector<std::string>{"image_synthetic"};
+        if (selectIds)
+            options.imageIds = std::vector<std::string>{"image_synthetic"};
         auto written = exportModel(doc, {}, services, options);
         checkPartialExportDisclosure(written);
         REQUIRE(written.images.has_value());
         REQUIRE(written.imagesDir.has_value());
         CHECK(downloads.size() == (selectIds ? 1u : 2u));
         CHECK(written.images->size() == downloads.size());
-        for (const auto& [id, path] : *written.images) {
+        for (const auto &[id, path] : *written.images) {
             CHECK(detail::file_text_read(path) == std::optional<std::string>(std::string("image\0bytes", 11)));
             struct stat st{};
             REQUIRE(stat(path.c_str(), &st) == 0);
@@ -576,7 +575,7 @@ TEST_CASE("export - image downloads select IDs and propagate failures") {
     CHECK(!empty.imagesDir.has_value());
     CHECK(downloads.empty());
     options.imageIds = std::vector<std::string>{"image_synthetic"};
-    services.imageDownload = [](const std::string&) -> DownloadedImage {
+    services.imageDownload = [](const std::string &) -> DownloadedImage {
         throw model::CoreError("operationFailed", "synthetic download failure");
     };
     CHECK_THROWS_AS(exportModel(doc, {}, services, options), model::CoreError);
@@ -587,7 +586,7 @@ TEST_CASE("export - image downloads select IDs and propagate failures") {
     std::filesystem::create_directory(symlinkTarget);
     std::filesystem::create_directory_symlink(symlinkTarget, imageDirectory);
     downloads.clear();
-    services.imageDownload = [&](const std::string& uri) {
+    services.imageDownload = [&](const std::string &uri) {
         downloads.push_back(uri);
         return DownloadedImage{.bytes = "image", .extension = "png"};
     };

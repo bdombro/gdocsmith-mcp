@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lens/sections.hpp"
 #include "lens/json_helper.hpp"
+#include "lens/sections.hpp"
 #include "test.hpp"
 
 #include <array>
@@ -144,8 +144,7 @@ TEST_CASE("sectionSettingsOf leaves margins unset when no side is present") {
 TEST_CASE("sectionSettingsParse reads directive values and flags") {
     auto s = sectionSettingsParse(
         {"columnSeparator", "landscape"},
-        {{"columns", "2"}, {"columnGap", "40"}, {"margins", "72,54,72,54"}, {"pageNumberStart", "3"}}
-    );
+        {{"columns", "2"}, {"columnGap", "40"}, {"margins", "72,54,72,54"}, {"pageNumberStart", "3"}});
     CHECK(s.columns == std::optional<int>(2));
     CHECK(s.columnGap == std::optional<double>(40.0));
     REQUIRE(s.margins.has_value());
@@ -161,13 +160,13 @@ TEST_CASE("sectionSettingsParse reads directive values and flags") {
 }
 
 TEST_CASE("sectionSettingsParse rejects invalid directive values") {
-    auto throws_with = [](const std::vector<std::string>& flags,
-                          const std::vector<std::pair<std::string, std::string>>& values,
+    auto throws_with = [](const std::vector<std::string> &flags,
+                          const std::vector<std::pair<std::string, std::string>> &values,
                           std::string_view needle) {
         bool threw = false;
         try {
             sectionSettingsParse(flags, values);
-        } catch (const CoreError& err) {
+        } catch (const CoreError &err) {
             threw = true;
             CHECK(err.code == std::string("unsupportedSyntax"));
             CHECK(std::string(err.what()).find(needle) != std::string::npos);

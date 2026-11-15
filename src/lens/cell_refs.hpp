@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <string_view>
+#include <cctype>
 #include <optional>
 #include <sstream>
-#include <cctype>
+#include <string>
+#include <string_view>
 
 namespace gdocsmith::lens {
 
@@ -33,7 +33,8 @@ inline std::optional<std::pair<int, int>> fromA1(std::string_view a1) {
         col = col * 26 + (std::toupper(static_cast<unsigned char>(a1[i])) - 'A' + 1);
         i++;
     }
-    if (i == 0 || i == a1.size()) return std::nullopt;
+    if (i == 0 || i == a1.size())
+        return std::nullopt;
     col -= 1; // 0-based
 
     int row = 0;
@@ -41,7 +42,8 @@ inline std::optional<std::pair<int, int>> fromA1(std::string_view a1) {
         row = row * 10 + (a1[i] - '0');
         i++;
     }
-    if (i != a1.size() || row <= 0) return std::nullopt;
+    if (i != a1.size() || row <= 0)
+        return std::nullopt;
     return std::make_pair(row - 1, col);
 }
 

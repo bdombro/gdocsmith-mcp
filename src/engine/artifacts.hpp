@@ -2,22 +2,22 @@
 
 #include "model/errors.hpp"
 
+#include <fcntl.h>
 #include <openssl/evp.h>
 #include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <fcntl.h>
 
-#include <chrono>
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
-#include <mutex>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <regex>
 #include <sstream>
@@ -34,7 +34,7 @@ struct DeletedTab {
     std::string id;
     std::string title;
 
-    bool operator==(const DeletedTab&) const = default;
+    bool operator==(const DeletedTab &) const = default;
 };
 
 struct ResultError {
@@ -46,7 +46,7 @@ struct ResultError {
     std::optional<std::string> phase;
     std::optional<std::string> tab;
 
-    bool operator==(const ResultError&) const = default;
+    bool operator==(const ResultError &) const = default;
 };
 
 struct FileWriteResult {
@@ -62,7 +62,7 @@ struct FileWriteResult {
     std::vector<std::string> warnings;
     std::string writeState = "none"; // "none" | "complete" | "partial" | "unknown" | "reverted"
 
-    bool operator==(const FileWriteResult&) const = default;
+    bool operator==(const FileWriteResult &) const = default;
 };
 
 struct FileInputSnapshot {
@@ -72,7 +72,7 @@ struct FileInputSnapshot {
     std::string path;
     std::string text;
 
-    bool operator==(const FileInputSnapshot&) const = default;
+    bool operator==(const FileInputSnapshot &) const = default;
 };
 
 struct WriteAttempt {
@@ -84,14 +84,14 @@ struct WriteAttempt {
     std::optional<std::string> revision;
     std::optional<slimr::Json> receipt;
 
-    bool operator==(const WriteAttempt&) const = default;
+    bool operator==(const WriteAttempt &) const = default;
 };
 
 struct ExportFolder {
     std::string exportFilePath;
     std::vector<std::string> warnings;
 
-    bool operator==(const ExportFolder&) const = default;
+    bool operator==(const ExportFolder &) const = default;
 };
 
 namespace detail {
@@ -102,8 +102,7 @@ inline std::optional<std::string> g_workspace_root;
 inline std::string sha256_hex(std::string_view data) {
     unsigned char hash[EVP_MAX_MD_SIZE]{};
     unsigned int length = 0;
-    if (EVP_Digest(data.data(), data.size(), hash, &length, EVP_sha256(), nullptr) != 1
-        || length != 32) {
+    if (EVP_Digest(data.data(), data.size(), hash, &length, EVP_sha256(), nullptr) != 1 || length != 32) {
         throw std::runtime_error("Failed to compute SHA-256");
     }
     constexpr char digits[] = "0123456789abcdef";
@@ -126,18 +125,21 @@ inline std::string unique_tmp_suffix() {
 }
 
 inline std::string get_homedir() {
-    const char* h = getenv("HOME");
-    if (h && *h) return std::string(h);
-    struct passwd* pw = getpwuid(getuid());
-    if (pw && pw->pw_dir) return std::string(pw->pw_dir);
+    const char *h = getenv("HOME");
+    if (h && *h)
+        return std::string(h);
+    struct passwd *pw = getpwuid(getuid());
+    if (pw && pw->pw_dir)
+        return std::string(pw->pw_dir);
     return "";
 }
 
 inline std::string get_tmpdir() {
-    const char* t = getenv("TMPDIR");
+    const char *t = getenv("TMPDIR");
     if (t && *t) {
         std::string s(t);
-        while (s.size() > 1 && s.back() == '/') s.pop_back();
+        while (s.size() > 1 && s.back() == '/')
+            s.pop_back();
         return s;
     }
     return "/tmp";
@@ -146,7 +148,7 @@ inline std::string get_tmpdir() {
 inline std::string temporary_root() {
     uid_t uid = getuid();
     std::string username = std::to_string(uid);
-    struct passwd* pw = getpwuid(uid);
+    struct passwd *pw = getpwuid(uid);
     if (pw && pw->pw_name) {
         username = pw->pw_name;
     }
@@ -160,7 +162,7 @@ inline std::string temporary_root() {
     return root;
 }
 
-inline void atomic_write(const std::string& path, std::string_view value, mode_t mode = 0600) {
+inline void atomic_write(const std::string &path, std::string_view value, mode_t mode = 0600) {
     std::string temporary = path + "." + unique_tmp_suffix() + ".tmp";
     int fd = open(temporary.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, mode);
     if (fd < 0) {
@@ -170,7 +172,8 @@ inline void atomic_write(const std::string& path, std::string_view value, mode_t
     while (total < value.size()) {
         ssize_t n = write(fd, value.data() + total, value.size() - total);
         if (n < 0) {
-            if (errno == EINTR) continue;
+            if (errno == EINTR)
+                continue;
             int err = errno;
             close(fd);
             unlink(temporary.c_str());
@@ -187,9 +190,10 @@ inline void atomic_write(const std::string& path, std::string_view value, mode_t
     }
 }
 
-inline std::optional<std::string> file_text_read(const std::string& path) {
+inline std::optional<std::string> file_text_read(const std::string &path) {
     std::ifstream f(path, std::ios::binary);
-    if (!f.is_open()) return std::nullopt;
+    if (!f.is_open())
+        return std::nullopt;
     std::ostringstream ss;
     ss << f.rdbuf();
     return ss.str();
@@ -213,7 +217,7 @@ inline mode_t current_umask() {
 
 } // namespace detail
 
-inline void artifactWorkspaceSet(const std::optional<std::string>& root) {
+inline void artifactWorkspaceSet(const std::optional<std::string> &root) {
     std::lock_guard<std::mutex> lock(detail::g_artifact_mutex);
     if (root.has_value() && !root->empty()) {
         std::error_code ec;
@@ -226,7 +230,7 @@ inline void artifactWorkspaceSet(const std::optional<std::string>& root) {
 
 inline std::string artifactRoot() {
     std::lock_guard<std::mutex> lock(detail::g_artifact_mutex);
-    const char* env = getenv("GDOCSMITH_WORK_DIR");
+    const char *env = getenv("GDOCSMITH_WORK_DIR");
     if (env && *env) {
         std::error_code ec;
         auto canonical = std::filesystem::weakly_canonical(env, ec);
@@ -270,7 +274,7 @@ inline std::string artifactRoot() {
     return rootPath.string();
 }
 
-inline FileInputSnapshot inputFileRead(const std::string& path) {
+inline FileInputSnapshot inputFileRead(const std::string &path) {
     std::filesystem::path p(path);
     if (!p.is_absolute()) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "import path must be absolute");
@@ -278,9 +282,12 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
 
     struct InputFd {
         int value = -1;
-        ~InputFd() { if (value >= 0) close(value); }
-        InputFd(const InputFd&) = delete;
-        InputFd& operator=(const InputFd&) = delete;
+        ~InputFd() {
+            if (value >= 0)
+                close(value);
+        }
+        InputFd(const InputFd &) = delete;
+        InputFd &operator=(const InputFd &) = delete;
         explicit InputFd(int descriptor) : value(descriptor) {}
     } descriptor(open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC));
     const int fd = descriptor.value;
@@ -299,10 +306,12 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
     while (total < bytes.size()) {
         ssize_t n = read(fd, bytes.data() + total, bytes.size() - total);
         if (n < 0) {
-            if (errno == EINTR) continue;
+            if (errno == EINTR)
+                continue;
             throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "failed reading import file");
         }
-        if (n == 0) break;
+        if (n == 0)
+            break;
         total += static_cast<size_t>(n);
     }
 
@@ -327,11 +336,10 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
 }
 
 inline ExportFolder exportFolderWrite(
-    const std::string& root,
-    const std::string& docId,
-    const std::optional<std::string>& revisionId,
-    const std::string& markdown
-) {
+    const std::string &root,
+    const std::string &docId,
+    const std::optional<std::string> &revisionId,
+    const std::string &markdown) {
     static const std::regex idRegex("^[A-Za-z0-9_-]+$");
     if (!std::regex_match(docId, idRegex)) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "invalid document ID");
@@ -372,7 +380,7 @@ inline ExportFolder exportFolderWrite(
     };
 }
 
-inline std::string fileReplace(const std::string& path, const std::string& markdown) {
+inline std::string fileReplace(const std::string &path, const std::string &markdown) {
     std::filesystem::path p(path);
     if (!p.is_absolute()) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "export path must be absolute");
@@ -392,7 +400,7 @@ inline std::string fileReplace(const std::string& path, const std::string& markd
     return path;
 }
 
-inline bool inputFileChanged(const FileInputSnapshot& input) {
+inline bool inputFileChanged(const FileInputSnapshot &input) {
     struct stat current{};
     if (lstat(input.path.c_str(), &current) != 0) {
         return true;
@@ -403,29 +411,32 @@ inline bool inputFileChanged(const FileInputSnapshot& input) {
         return true;
     }
     auto content = detail::file_text_read(input.path);
-    if (!content.has_value()) return true;
+    if (!content.has_value())
+        return true;
     return detail::sha256_hex(*content) != input.hash;
 }
 
 class WriteTracker {
-public:
+  public:
     std::optional<std::string> failureCode;
     std::map<std::string, std::string> revisions;
     std::map<std::string, slimr::Json> documents;
     std::vector<WriteAttempt> writes;
 
     [[nodiscard]] std::string writeState(bool complete) const {
-        for (const auto& w : writes) {
-            if (w.outcome == "unknown" || w.outcome == "pending") return "unknown";
+        for (const auto &w : writes) {
+            if (w.outcome == "unknown" || w.outcome == "pending")
+                return "unknown";
         }
         bool hasConfirmed = false;
-        for (const auto& w : writes) {
+        for (const auto &w : writes) {
             if (w.outcome == "confirmed") {
                 hasConfirmed = true;
                 break;
             }
         }
-        if (!hasConfirmed) return "none";
+        if (!hasConfirmed)
+            return "none";
         return complete ? "complete" : "partial";
     }
 };

@@ -8,10 +8,11 @@
 
 namespace gdocsmith::lens {
 
-inline DirectiveAttrs textStyleExport(const model::JsonObject& style) {
+inline DirectiveAttrs textStyleExport(const model::JsonObject &style) {
     DirectiveAttrs attrs;
-    if (!style.is_object()) return attrs;
-    for (const auto& name : {"foregroundColor", "backgroundColor"}) {
+    if (!style.is_object())
+        return attrs;
+    for (const auto &name : {"foregroundColor", "backgroundColor"}) {
         if (style.contains(name)) {
             if (auto color = model::colorHexFromOptional(style[name])) {
                 attrs.values.emplace_back(name, *color);
@@ -25,7 +26,7 @@ inline DirectiveAttrs textStyleExport(const model::JsonObject& style) {
         attrs.values.emplace_back("baselineOffset", style["baselineOffset"].get<std::string>());
     }
     if (style.contains("weightedFontFamily")) {
-        const auto& font = style["weightedFontFamily"];
+        const auto &font = style["weightedFontFamily"];
         if (font.contains("fontFamily") && font["fontFamily"].is_string()) {
             attrs.values.emplace_back("fontFamily", font["fontFamily"].get<std::string>());
         }
@@ -36,18 +37,20 @@ inline DirectiveAttrs textStyleExport(const model::JsonObject& style) {
     return attrs;
 }
 
-inline void textStyleApply(model::JsonObject& style, const DirectiveAttrs& attrs) {
-    for (const auto& [name, value] : attrs.values) {
+inline void textStyleApply(model::JsonObject &style, const DirectiveAttrs &attrs) {
+    for (const auto &[name, value] : attrs.values) {
         if (value == "null") {
             if (name == "fontFamily" || name == "fontWeight") {
                 if (style.contains("weightedFontFamily") && style["weightedFontFamily"].is_object()) {
                     style["weightedFontFamily"].get<slimr::Json::object_t>().erase(
                         name == "fontFamily" ? "fontFamily" : "weight");
                 }
-            } else style.get<slimr::Json::object_t>().erase(name);
+            } else
+                style.get<slimr::Json::object_t>().erase(name);
         } else if (name == "bold" || name == "italic" || name == "smallCaps" ||
                    name == "strikethrough" || name == "underline") {
-            if (value != "true" && value != "false") throw model::CoreError("unsupportedSyntax", "Invalid text flag.");
+            if (value != "true" && value != "false")
+                throw model::CoreError("unsupportedSyntax", "Invalid text flag.");
             style[name] = value == "true";
         } else if (name == "foregroundColor" || name == "backgroundColor") {
             if (value.size() != 7 || value[0] != '#' ||
@@ -65,16 +68,19 @@ inline void textStyleApply(model::JsonObject& style, const DirectiveAttrs& attrs
         } else if (name == "fontSize" || name == "fontWeight") {
             size_t end = 0;
             double number = 0;
-            try { number = std::stod(value, &end); }
-            catch (const std::exception&) {
+            try {
+                number = std::stod(value, &end);
+            } catch (const std::exception &) {
                 throw model::CoreError("unsupportedSyntax", "Invalid text style number.");
             }
             if (end != value.size() || !std::isfinite(number) ||
                 (name == "fontSize" ? number <= 0 : number < 1 || number > 1000)) {
                 throw model::CoreError("unsupportedSyntax", "Invalid text style number.");
             }
-            if (name == "fontSize") style[name] = model::dimensionFromPt(number);
-            else style["weightedFontFamily"]["weight"] = number;
+            if (name == "fontSize")
+                style[name] = model::dimensionFromPt(number);
+            else
+                style["weightedFontFamily"]["weight"] = number;
         } else {
             throw model::CoreError("unsupportedSyntax", "Unsupported text style attribute: " + name);
         }

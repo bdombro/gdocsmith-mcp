@@ -86,10 +86,9 @@ TEST_CASE("source document links resolve native IDs new heading keys tabs and fo
     first.blocks.emplace_back(newHeading);
     model::ParagraphBlock links;
     links.key = "links";
-    for (const auto* href : {"#goals", "#new-heading", "#other__", "#other__remote", "gdoc:foreign#remote"}) {
+    for (const auto *href : {"#goals", "#new-heading", "#other__", "#other__remote", "gdoc:foreign#remote"}) {
         links.inlines.push_back(model::Inline::from_text("x", slimr::Json::object_t{
-            {"link", documentLinkStyle(href, first.tabId)}
-        }));
+                                                                  {"link", documentLinkStyle(href, first.tabId)}}));
     }
     first.blocks.emplace_back(links);
     model::TabModel other;
@@ -104,7 +103,7 @@ TEST_CASE("source document links resolve native IDs new heading keys tabs and fo
     foreign.docId = "foreign";
     foreign.tabs = {other};
     documentLinksResolve(doc, {foreign});
-    const auto& resolved = doc.tabs[0].blocks.back().as_paragraph().inlines;
+    const auto &resolved = doc.tabs[0].blocks.back().as_paragraph().inlines;
     CHECK(resolved[0].style["link"]["heading"]["id"] == slimr::Json("provider-heading"));
     CHECK(resolved[1].style["link"]["heading"]["key"] == slimr::Json("new"));
     CHECK(resolved[2].style["link"]["tabId"] == slimr::Json("tab-other"));
@@ -132,11 +131,15 @@ TEST_CASE("source document links reject missing ambiguous invalid and new slug U
     link.inlines = {model::Inline::from_text("link")};
     tab.blocks.emplace_back(link);
     doc.tabs = {tab};
-    auto check = [&](const std::string& href, const std::string& code) {
+    auto check = [&](const std::string &href, const std::string &code) {
         auto candidate = doc;
         candidate.tabs[0].blocks.back().as_paragraph().inlines[0].style["link"] = documentLinkStyle(href, "main");
-        try { documentLinksResolve(candidate); FAIL("expected refusal"); }
-        catch (const model::CoreError& error) { CHECK(error.code == code); }
+        try {
+            documentLinksResolve(candidate);
+            FAIL("expected refusal");
+        } catch (const model::CoreError &error) {
+            CHECK(error.code == code);
+        }
     };
     check("#absent", "linkTargetNotFound");
     check("#bad%ZZ", "unsupportedSyntax");
@@ -159,8 +162,7 @@ TEST_CASE("source document links match encoded Unicode normalized fragments") {
     tab.blocks.emplace_back(heading);
     model::ParagraphBlock link;
     link.inlines = {model::Inline::from_text("link", slimr::Json::object_t{
-        {"link", documentLinkStyle("#CAFE%CC%81", "main")}
-    })};
+                                                         {"link", documentLinkStyle("#CAFE%CC%81", "main")}})};
     tab.blocks.emplace_back(link);
     doc.tabs = {tab};
     documentLinksResolve(doc);

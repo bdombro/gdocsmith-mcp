@@ -1,17 +1,18 @@
 #pragma once
 
+#include "directives.hpp"
+#include "json.hpp"
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <optional>
-#include "json.hpp"
-#include "directives.hpp"
 
 namespace gdocsmith::lens {
 
 inline std::string suggestionSnippetTrim(std::string text) {
     const auto first = text.find_first_not_of("\r\n");
-    if (first == std::string::npos) return {};
+    if (first == std::string::npos)
+        return {};
     const auto last = text.find_last_not_of("\r\n");
     return text.substr(first, last - first + 1);
 }
@@ -27,16 +28,19 @@ struct SuggestionBlock {
     bool isReject{false};
     int line{1};
 
-    bool operator==(const SuggestionBlock& other) const = default;
+    bool operator==(const SuggestionBlock &other) const = default;
 };
 
-inline std::string suggestionBlockRender(const SuggestionBlock& block, bool legacy = true,
-                                         const std::string& tab = {}, std::optional<int> exportLine = {},
-                                         const std::optional<std::string>& exportLines = {}) {
+inline std::string suggestionBlockRender(const SuggestionBlock &block, bool legacy = true,
+                                         const std::string &tab = {}, std::optional<int> exportLine = {},
+                                         const std::optional<std::string> &exportLines = {}) {
     std::string out = (legacy ? ":::suggestion{id=" : "::suggestion{id=") + directiveValueRender(block.id) + " kind=" + block.kind;
-    if (!legacy && !tab.empty()) out += " tab=" + directiveValueRender(tab);
-    if (!legacy && exportLines) out += " exportLines=" + *exportLines;
-    else if (!legacy && exportLine) out += " exportLine=" + std::to_string(*exportLine);
+    if (!legacy && !tab.empty())
+        out += " tab=" + directiveValueRender(tab);
+    if (!legacy && exportLines)
+        out += " exportLines=" + *exportLines;
+    else if (!legacy && exportLine)
+        out += " exportLine=" + std::to_string(*exportLine);
     if (block.segment) {
         out += " segment=" + directiveValueRender(*block.segment);
     }
@@ -49,14 +53,17 @@ inline std::string suggestionBlockRender(const SuggestionBlock& block, bool lega
     } else {
         if (block.before) {
             out += "::before\n" + *block.before;
-            if (!block.before->ends_with('\n')) out += "\n";
+            if (!block.before->ends_with('\n'))
+                out += "\n";
         }
         if (block.after) {
             out += "::after\n" + *block.after;
-            if (!block.after->ends_with('\n')) out += "\n";
+            if (!block.after->ends_with('\n'))
+                out += "\n";
         }
     }
-    if (legacy) out += ":::\n";
+    if (legacy)
+        out += ":::\n";
     return out;
 }
 

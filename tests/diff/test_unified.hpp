@@ -28,24 +28,27 @@ TEST_CASE("unifiedDiffFormat - distant changes make separate hunks; near ones me
     using namespace gdocsmith::diff;
     UnifiedDiffOptions paths{.newPath = "b/doc", .oldPath = "a/doc", .context = 3};
     std::vector<std::string> old_lines;
-    for (int i = 0; i < 20; ++i) old_lines.push_back("l" + std::to_string(i));
+    for (int i = 0; i < 20; ++i)
+        old_lines.push_back("l" + std::to_string(i));
 
-    auto join = [](const std::vector<std::string>& lines) {
+    auto join = [](const std::vector<std::string> &lines) {
         std::string s;
         for (size_t i = 0; i < lines.size(); ++i) {
-            if (i > 0) s += "\n";
+            if (i > 0)
+                s += "\n";
             s += lines[i];
         }
         return s;
     };
 
-    auto countHunkHeaders = [](const std::string& diff) {
+    auto countHunkHeaders = [](const std::string &diff) {
         int count = 0;
         size_t pos = 0;
         while ((pos = diff.find("@@", pos)) != std::string::npos) {
             count++;
             pos = diff.find('\n', pos);
-            if (pos == std::string::npos) break;
+            if (pos == std::string::npos)
+                break;
         }
         return count;
     };

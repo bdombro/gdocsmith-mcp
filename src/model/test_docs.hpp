@@ -128,8 +128,7 @@ inline JsonObject atomJsonBuild(std::string_view type) {
         {"image", "inlineObjectElement"},
         {"pageBreak", "pageBreak"},
         {"person", "person"},
-        {"richLink", "richLink"}
-    };
+        {"richLink", "richLink"}};
     auto it = VARIANTS.find(type);
     std::string_view k = (it != VARIANTS.end()) ? it->second : "inlineObjectElement";
     slimr::Json::object_t obj;
@@ -144,41 +143,42 @@ struct BuiltBlock {
     int end = 0;
 };
 
-BuiltBlock blockJsonBuild(const BlockSpec& block, int start);
+BuiltBlock blockJsonBuild(const BlockSpec &block, int start);
 
-inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
+inline BuiltBlock paragraphJsonBuild(const ParagraphSpec &spec, int start) {
     slimr::Json::array_t elements;
     int index = start;
-    for (const auto& item : spec.content) {
+    for (const auto &item : spec.content) {
         if (std::holds_alternative<std::string>(item)) {
-            const auto& str = std::get<std::string>(item);
-            if (str.empty()) continue;
+            const auto &str = std::get<std::string>(item);
+            if (str.empty())
+                continue;
             int end = index + utf16CodeUnitLength(str);
             elements.push_back(slimr::Json::object_t{
                 {"startIndex", static_cast<int64_t>(index)},
                 {"endIndex", static_cast<int64_t>(end)},
                 {"textRun", slimr::Json::object_t{
-                    {"content", str},
-                    {"textStyle", slimr::Json::object_t{}}
-                }}
-            });
+                                {"content", str},
+                                {"textStyle", slimr::Json::object_t{}}}}});
             index = end;
         } else if (std::holds_alternative<ParagraphTextSpec>(item)) {
-            const auto& t = std::get<ParagraphTextSpec>(item);
-            if (t.text.empty()) continue;
+            const auto &t = std::get<ParagraphTextSpec>(item);
+            if (t.text.empty())
+                continue;
             int end = index + utf16CodeUnitLength(t.text);
             slimr::Json::object_t tr{
                 {"content", t.text},
-                {"textStyle", t.style.value_or(make_json_object())}
-            };
+                {"textStyle", t.style.value_or(make_json_object())}};
             if (t.sugDel.has_value()) {
                 slimr::Json::array_t arr;
-                for (const auto& id : *t.sugDel) arr.push_back(id);
+                for (const auto &id : *t.sugDel)
+                    arr.push_back(id);
                 tr["suggestedDeletionIds"] = arr;
             }
             if (t.sugIns.has_value()) {
                 slimr::Json::array_t arr;
-                for (const auto& id : *t.sugIns) arr.push_back(id);
+                for (const auto &id : *t.sugIns)
+                    arr.push_back(id);
                 tr["suggestedInsertionIds"] = arr;
             }
             if (t.sugStyle.has_value()) {
@@ -187,11 +187,10 @@ inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
             elements.push_back(slimr::Json::object_t{
                 {"startIndex", static_cast<int64_t>(index)},
                 {"endIndex", static_cast<int64_t>(end)},
-                {"textRun", std::move(tr)}
-            });
+                {"textRun", std::move(tr)}});
             index = end;
         } else {
-            const auto& a = std::get<ParagraphAtomSpec>(item);
+            const auto &a = std::get<ParagraphAtomSpec>(item);
             int len = a.atomLen.value_or(a.type == "equation" ? 3 : 1);
             auto atomObj = atomJsonBuild(a.type);
             atomObj["startIndex"] = static_cast<int64_t>(index);
@@ -203,18 +202,17 @@ inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
 
     slimr::Json::object_t nlTr{
         {"content", "\n"},
-        {"textStyle", slimr::Json::object_t{}}
-    };
+        {"textStyle", slimr::Json::object_t{}}};
     if (spec.newlineSugIns.has_value()) {
         slimr::Json::array_t arr;
-        for (const auto& id : *spec.newlineSugIns) arr.push_back(id);
+        for (const auto &id : *spec.newlineSugIns)
+            arr.push_back(id);
         nlTr["suggestedInsertionIds"] = arr;
     }
     elements.push_back(slimr::Json::object_t{
         {"startIndex", static_cast<int64_t>(index)},
         {"endIndex", static_cast<int64_t>(index + 1)},
-        {"textRun", std::move(nlTr)}
-    });
+        {"textRun", std::move(nlTr)}});
     index += 1;
 
     JsonObject pStyle = spec.style.value_or(make_json_object());
@@ -224,37 +222,33 @@ inline BuiltBlock paragraphJsonBuild(const ParagraphSpec& spec, int start) {
 
     slimr::Json::object_t pObj{
         {"elements", std::move(elements)},
-        {"paragraphStyle", pStyle}
-    };
+        {"paragraphStyle", pStyle}};
     if (spec.bullet.has_value()) {
         pObj["bullet"] = slimr::Json::object_t{
             {"listId", spec.bullet->listId},
-            {"nestingLevel", static_cast<int64_t>(spec.bullet->nestingLevel)}
-        };
+            {"nestingLevel", static_cast<int64_t>(spec.bullet->nestingLevel)}};
     }
 
     return BuiltBlock{
         .element = slimr::Json::object_t{
             {"startIndex", static_cast<int64_t>(start)},
             {"endIndex", static_cast<int64_t>(index)},
-            {"paragraph", std::move(pObj)}
-        },
-        .end = index
-    };
+            {"paragraph", std::move(pObj)}},
+        .end = index};
 }
 
-inline BuiltBlock tableJsonBuild(const TableBlockSpec& spec, int start) {
+inline BuiltBlock tableJsonBuild(const TableBlockSpec &spec, int start) {
     int index = start + 1;
     slimr::Json::array_t tableRows;
-    for (const auto& row : spec.cells) {
+    for (const auto &row : spec.cells) {
         int rowStart = index;
         index += 1;
         slimr::Json::array_t tableCells;
-        for (const auto& cellBlocks : row) {
+        for (const auto &cellBlocks : row) {
             int cellStart = index;
             index += 1;
             slimr::Json::array_t content;
-            for (const auto& b : cellBlocks) {
+            for (const auto &b : cellBlocks) {
                 auto built = blockJsonBuild(b, index);
                 content.push_back(built.element);
                 index = built.end;
@@ -263,15 +257,13 @@ inline BuiltBlock tableJsonBuild(const TableBlockSpec& spec, int start) {
                 {"startIndex", static_cast<int64_t>(cellStart)},
                 {"endIndex", static_cast<int64_t>(index)},
                 {"tableCellStyle", slimr::Json::object_t{}},
-                {"content", std::move(content)}
-            });
+                {"content", std::move(content)}});
         }
         tableRows.push_back(slimr::Json::object_t{
             {"startIndex", static_cast<int64_t>(rowStart)},
             {"endIndex", static_cast<int64_t>(index)},
             {"tableRowStyle", slimr::Json::object_t{}},
-            {"tableCells", std::move(tableCells)}
-        });
+            {"tableCells", std::move(tableCells)}});
     }
     index += 1; // table end marker
     int cols = spec.cells.empty() ? 0 : static_cast<int>(spec.cells[0].size());
@@ -281,52 +273,44 @@ inline BuiltBlock tableJsonBuild(const TableBlockSpec& spec, int start) {
             {"startIndex", static_cast<int64_t>(start)},
             {"endIndex", static_cast<int64_t>(index)},
             {"table", slimr::Json::object_t{
-                {"columns", static_cast<int64_t>(cols)},
-                {"rows", static_cast<int64_t>(rows)},
-                {"tableStyle", slimr::Json::object_t{}},
-                {"tableRows", std::move(tableRows)}
-            }}
-        },
-        .end = index
-    };
+                          {"columns", static_cast<int64_t>(cols)},
+                          {"rows", static_cast<int64_t>(rows)},
+                          {"tableStyle", slimr::Json::object_t{}},
+                          {"tableRows", std::move(tableRows)}}}},
+        .end = index};
 }
 
-inline BuiltBlock blockJsonBuild(const BlockSpec& block, int start) {
-    if (block.kind == "paragraph") return paragraphJsonBuild(block.paragraph, start);
+inline BuiltBlock blockJsonBuild(const BlockSpec &block, int start) {
+    if (block.kind == "paragraph")
+        return paragraphJsonBuild(block.paragraph, start);
     if (block.kind == "sectionBreak") {
         return BuiltBlock{
             .element = slimr::Json::object_t{
                 {"startIndex", static_cast<int64_t>(start)},
                 {"endIndex", static_cast<int64_t>(start + 1)},
                 {"sectionBreak", slimr::Json::object_t{
-                    {"sectionStyle", block.sectionBreak.sectionStyle.value_or(make_json_object())}
-                }}
-            },
-            .end = start + 1
-        };
+                                     {"sectionStyle", block.sectionBreak.sectionStyle.value_or(make_json_object())}}}},
+            .end = start + 1};
     }
     if (block.kind == "toc") {
         return BuiltBlock{
             .element = slimr::Json::object_t{
                 {"startIndex", static_cast<int64_t>(start)},
                 {"endIndex", static_cast<int64_t>(start + block.toc.length)},
-                {"tableOfContents", slimr::Json::object_t{{"content", slimr::Json::array_t{}}}}
-            },
-            .end = start + block.toc.length
-        };
+                {"tableOfContents", slimr::Json::object_t{{"content", slimr::Json::array_t{}}}}},
+            .end = start + block.toc.length};
     }
     return tableJsonBuild(block.table, start);
 }
 
-inline JsonObject tabJsonBuild(const TabSpec& spec, std::string_view tabId) {
+inline JsonObject tabJsonBuild(const TabSpec &spec, std::string_view tabId) {
     slimr::Json::array_t content;
     content.push_back(slimr::Json::object_t{
         {"startIndex", static_cast<int64_t>(0)},
         {"endIndex", static_cast<int64_t>(1)},
-        {"sectionBreak", slimr::Json::object_t{{"sectionStyle", slimr::Json::object_t{}}}}
-    });
+        {"sectionBreak", slimr::Json::object_t{{"sectionStyle", slimr::Json::object_t{}}}}});
     int index = 1;
-    for (const auto& b : spec.blocks) {
+    for (const auto &b : spec.blocks) {
         auto built = blockJsonBuild(b, index);
         content.push_back(built.element);
         index = built.end;
@@ -335,27 +319,24 @@ inline JsonObject tabJsonBuild(const TabSpec& spec, std::string_view tabId) {
     slimr::Json::object_t docTab{
         {"body", slimr::Json::object_t{{"content", std::move(content)}}},
         {"lists", spec.lists.value_or(make_json_object())},
-        {"namedStyles", slimr::Json::object_t{{"styles", slimr::Json::array_t{}}}}
-    };
+        {"namedStyles", slimr::Json::object_t{{"styles", slimr::Json::array_t{}}}}};
     if (spec.documentStyle.has_value()) {
         docTab["documentStyle"] = *spec.documentStyle;
     }
 
     slimr::Json::object_t tabProps{
         {"tabId", std::string(tabId)},
-        {"title", spec.title}
-    };
+        {"title", spec.title}};
     if (spec.parentTabId.has_value()) {
         tabProps["parentTabId"] = *spec.parentTabId;
     }
 
     return slimr::Json::object_t{
         {"documentTab", std::move(docTab)},
-        {"tabProperties", std::move(tabProps)}
-    };
+        {"tabProperties", std::move(tabProps)}};
 }
 
-inline JsonObject docJsonBuild(const DocSpec& spec) {
+inline JsonObject docJsonBuild(const DocSpec &spec) {
     slimr::Json::array_t tabs;
     for (size_t i = 0; i < spec.tabs.size(); ++i) {
         std::string tabId = spec.tabs[i].tabId.empty() ? std::format("t.{}", i) : spec.tabs[i].tabId;
@@ -365,17 +346,14 @@ inline JsonObject docJsonBuild(const DocSpec& spec) {
         {"documentId", spec.documentId},
         {"revisionId", spec.revisionId},
         {"title", spec.title},
-        {"tabs", std::move(tabs)}
-    };
+        {"tabs", std::move(tabs)}};
 }
 
-inline std::vector<ParagraphContentSpec> randomParagraphContentSpecs(auto& rng) {
+inline std::vector<ParagraphContentSpec> randomParagraphContentSpecs(auto &rng) {
     static const std::vector<std::string> RANDOM_WORDS = {
-        "alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel"
-    };
+        "alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel"};
     static const std::vector<AtomType> RANDOM_ATOM_TYPES = {
-        "person", "richLink", "image", "footnoteRef", "horizontalRule", "pageBreak", "equation"
-    };
+        "person", "richLink", "image", "footnoteRef", "horizontalRule", "pageBreak", "equation"};
     int n = 1 + static_cast<int>(rng() * 3);
     std::vector<ParagraphContentSpec> content;
     for (int i = 0; i < n; ++i) {
@@ -388,7 +366,7 @@ inline std::vector<ParagraphContentSpec> randomParagraphContentSpecs(auto& rng) 
     return content;
 }
 
-inline std::vector<BlockSpec> randomBlockSpecs(auto& rng, int count) {
+inline std::vector<BlockSpec> randomBlockSpecs(auto &rng, int count) {
     std::vector<BlockSpec> blocks;
     for (int i = 0; i < count; ++i) {
         double roll = rng();

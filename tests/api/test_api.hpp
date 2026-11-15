@@ -5,31 +5,33 @@
 #include "model/test_docs.hpp"
 #include "test.hpp"
 
-#include <vector>
-#include <string>
-#include <map>
-#include <memory>
-#include <chrono>
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 TEST_CASE("auth cache source contract coalesces concurrent refreshes and preserves pinned private state") {
     using namespace gdocsmith;
     struct Fixture {
-        std::filesystem::path root = std::filesystem::current_path() / "build" / "auth-cache-tests"
-            / engine::detail::unique_tmp_suffix();
+        std::filesystem::path root = std::filesystem::current_path() / "build" / "auth-cache-tests" / engine::detail::unique_tmp_suffix();
         std::optional<std::string> previous;
         Fixture() {
-            if (const char* value = getenv("GDOCSMITH_CONFIG_DIR")) previous = value;
+            if (const char *value = getenv("GDOCSMITH_CONFIG_DIR"))
+                previous = value;
             std::filesystem::create_directories(root);
             setenv("GDOCSMITH_CONFIG_DIR", root.c_str(), 1);
             token_cache_reset();
         }
         ~Fixture() {
             token_cache_reset();
-            if (previous) setenv("GDOCSMITH_CONFIG_DIR", previous->c_str(), 1);
-            else unsetenv("GDOCSMITH_CONFIG_DIR");
+            if (previous)
+                setenv("GDOCSMITH_CONFIG_DIR", previous->c_str(), 1);
+            else
+                unsetenv("GDOCSMITH_CONFIG_DIR");
             std::error_code error;
             std::filesystem::remove_all(root, error);
         }
@@ -47,28 +49,30 @@ TEST_CASE("auth cache source contract coalesces concurrent refreshes and preserv
     std::atomic<int> exports{0};
     bool denyExport = false;
     std::vector<std::string> exportedArgs;
-    GwsRunner runner = [&](const std::vector<std::string>& args) {
+    GwsRunner runner = [&](const std::vector<std::string> &args) {
         ++exports;
         exportedArgs = args;
-        if (denyExport) throw std::runtime_error("synthetic credential export unavailable");
+        if (denyExport)
+            throw std::runtime_error("synthetic credential export unavailable");
         return R"({"client_id":"synthetic","client_secret":"synthetic","refresh_token":"synthetic"})";
     };
-    HttpTransport transport = [&](const HttpCall&) -> HttpCallResponse {
+    HttpTransport transport = [&](const HttpCall &) -> HttpCallResponse {
         const auto attempt = ++attempts;
         std::unique_lock lock(gate);
         changed.notify_all();
         changed.wait(lock, [&] { return released; });
-        if (failing) throw std::runtime_error("ENOTFOUND");
+        if (failing)
+            throw std::runtime_error("ENOTFOUND");
         return {.body = attempt == 1
-            ? R"({"access_token":"synthetic-initial","expires_in":3600})"
-            : R"({"access_token":"synthetic-later","expires_in":3600})"};
+                            ? R"({"access_token":"synthetic-initial","expires_in":3600})"
+                            : R"({"access_token":"synthetic-later","expires_in":3600})"};
     };
     std::array<std::string, 2> values;
     std::array<std::string, 2> failures;
     auto call = [&](size_t index) {
         try {
             values[index] = valid_access_token_get(false, transport, runner);
-        } catch (const std::exception& error) {
+        } catch (const std::exception &error) {
             failures[index] = error.what();
         }
     };
@@ -87,7 +91,8 @@ TEST_CASE("auth cache source contract coalesces concurrent refreshes and preserv
             // Global, leader and waiter ownership proves enrollment before releasing transport.
             joined = detail::g_pending_refresh && detail::g_pending_refresh.use_count() >= 3;
         }
-        if (joined || attempts.load() > 1) break;
+        if (joined || attempts.load() > 1)
+            break;
         std::this_thread::yield();
     }
     {
@@ -130,15 +135,17 @@ TEST_CASE("auth refresh source contract adds context to an offline transport fai
     using namespace gdocsmith;
     token_cache_reset();
     const GwsCredentials credentials{
-        .clientId = "synthetic", .clientSecret = "synthetic", .refreshToken = "synthetic",
+        .clientId = "synthetic",
+        .clientSecret = "synthetic",
+        .refreshToken = "synthetic",
     };
     int calls = 0;
-    HttpTransport offline = [&](const HttpCall&) -> HttpCallResponse {
+    HttpTransport offline = [&](const HttpCall &) -> HttpCallResponse {
         ++calls;
         throw std::runtime_error("ENOTFOUND");
     };
     CHECK_THROWS_WITH(access_token_refresh(credentials, offline),
-        "Google OAuth token refresh failed: ENOTFOUND");
+                      "Google OAuth token refresh failed: ENOTFOUND");
     CHECK(calls == 1);
     CHECK(!detail::g_cached_token);
     token_cache_reset();
@@ -147,18 +154,20 @@ TEST_CASE("auth refresh source contract adds context to an offline transport fai
 TEST_CASE("public import defaults to injected Docs and Drive through revision-locked transaction") {
     using namespace gdocsmith;
     struct Fixture {
-        std::filesystem::path root = std::filesystem::current_path() / "build" / "import-public-tests"
-            / engine::detail::unique_tmp_suffix();
+        std::filesystem::path root = std::filesystem::current_path() / "build" / "import-public-tests" / engine::detail::unique_tmp_suffix();
         std::optional<std::string> previous;
         Fixture() {
-            if (const char* value = getenv("GDOCSMITH_WORK_DIR")) previous = value;
+            if (const char *value = getenv("GDOCSMITH_WORK_DIR"))
+                previous = value;
             std::filesystem::create_directories(root);
             setenv("GDOCSMITH_WORK_DIR", root.c_str(), 1);
             token_cache_reset();
         }
         ~Fixture() {
-            if (previous) setenv("GDOCSMITH_WORK_DIR", previous->c_str(), 1);
-            else unsetenv("GDOCSMITH_WORK_DIR");
+            if (previous)
+                setenv("GDOCSMITH_WORK_DIR", previous->c_str(), 1);
+            else
+                unsetenv("GDOCSMITH_WORK_DIR");
             token_cache_reset();
             std::error_code ec;
             std::filesystem::remove_all(root, ec);
@@ -167,7 +176,7 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
     emulator::FakeGoogle backend;
     backend.seed_document("public_doc", emulator::blank_doc_template("Synthetic", "public_doc"), 1);
     auto initialModel = model::docModelParse(backend.get_doc("public_doc").json,
-                                     model::DocModelParseOptions{.docId = "public_doc"});
+                                             model::DocModelParseOptions{.docId = "public_doc"});
     initialModel.revisionId = "rev-1";
     auto file = lens::documentFileParse(lens::documentFileExport(engine::exportDocumentFile(initialModel)));
     int writes = 0;
@@ -191,7 +200,10 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
     int commentWrites = 0;
     std::string activeId = "public_doc";
     slimr::Json::array_t publicComments;
-    SUBCASE("edit") { file.tabs[0].markdown = "Synthetic public edit\n"; editing = true; }
+    SUBCASE("edit") {
+        file.tabs[0].markdown = "Synthetic public edit\n";
+        editing = true;
+    }
     SUBCASE("noop") {}
     SUBCASE("readonly settings styles and nonbody contexts allow unrelated body edit") {
         readonlyRich = true;
@@ -205,16 +217,18 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
              {model::BlockSpec::make_paragraph(model::ParagraphSpec{})}},
         };
         auto json = model::docJsonBuild(model::DocSpec{
-            .documentId = "public_doc", .title = "Synthetic",
+            .documentId = "public_doc",
+            .title = "Synthetic",
             .tabs = {model::TabSpec{.tabId = "t.0", .title = "Tab 1", .blocks = {
-                model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {
-                    "Styled paragraph", model::ParagraphAtomSpec{.type = "footnoteRef"},
-                }}),
-                model::BlockSpec::make_table(std::move(table)),
-                model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {"Editable tail"}}),
-            }}},
+                                                                          model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {
+                                                                                                                                    "Styled paragraph",
+                                                                                                                                    model::ParagraphAtomSpec{.type = "footnoteRef"},
+                                                                                                                                }}),
+                                                                          model::BlockSpec::make_table(std::move(table)),
+                                                                          model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {"Editable tail"}}),
+                                                                      }}},
         });
-        auto& dt = json["tabs"][0]["documentTab"];
+        auto &dt = json["tabs"][0]["documentTab"];
         dt["documentStyle"] = baseline["tabs"][0]["documentTab"]["documentStyle"];
         dt["namedStyles"] = baseline["tabs"][0]["documentTab"]["namedStyles"];
         dt["documentStyle"]["marginHeader"] = model::dimensionFromPt(24);
@@ -225,8 +239,8 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         dt["body"]["content"][1]["paragraph"]["paragraphStyle"]["keepWithNext"] = true;
         dt["body"]["content"][1]["paragraph"]["elements"][1]["footnoteReference"]["footnoteId"] = "synthetic_footnote";
         dt["body"]["content"][1]["paragraph"]["elements"][1]["footnoteReference"]["textStyle"] = slimr::Json::object_t{};
-        auto& tableJson = dt["body"]["content"][2]["table"];
-        auto& cellStyle = tableJson["tableRows"][0]["tableCells"][0]["tableCellStyle"];
+        auto &tableJson = dt["body"]["content"][2]["table"];
+        auto &cellStyle = tableJson["tableRows"][0]["tableCells"][0]["tableCellStyle"];
         cellStyle["rowSpan"] = 2;
         cellStyle["columnSpan"] = 2;
         cellStyle["paddingTop"] = model::dimensionFromPt(9);
@@ -256,13 +270,12 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
     SUBCASE("pending review no-op") {
         const auto baseline = backend.get_doc("public_doc").json;
         auto json = model::docJsonBuild(model::DocSpec{
-            .documentId = "public_doc", .title = "Synthetic",
-            .tabs = {model::TabSpec{.tabId = "t.0", .title = "Tab 1", .blocks = {
-                model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {
-                    std::string("Synthetic "),
-                    model::ParagraphTextSpec{.text = "pending insertion", .sugIns = std::vector<std::string>{"synthetic_suggestion"}},
-                }})
-            }}},
+            .documentId = "public_doc",
+            .title = "Synthetic",
+            .tabs = {model::TabSpec{.tabId = "t.0", .title = "Tab 1", .blocks = {model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {
+                                                                                                                                           std::string("Synthetic "),
+                                                                                                                                           model::ParagraphTextSpec{.text = "pending insertion", .sugIns = std::vector<std::string>{"synthetic_suggestion"}},
+                                                                                                                                       }})}}},
         });
         json["tabs"][0]["documentTab"]["documentStyle"] = baseline["tabs"][0]["documentTab"]["documentStyle"];
         json["tabs"][0]["documentTab"]["namedStyles"] = baseline["tabs"][0]["documentTab"]["namedStyles"];
@@ -270,7 +283,7 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         auto pending = model::docModelParse(json, model::DocModelParseOptions{.docId = "public_doc"});
         file = engine::exportDocumentFile(pending);
         REQUIRE(!file.suggestions.empty());
-        CHECK(std::any_of(file.suggestions.begin(), file.suggestions.end(), [](const auto& suggestion) {
+        CHECK(std::any_of(file.suggestions.begin(), file.suggestions.end(), [](const auto &suggestion) {
             return suggestion.before.has_value() || suggestion.after.has_value();
         }));
         CHECK(file.tabs[0].markdown.find("synthetic_suggestion") != std::string::npos);
@@ -280,17 +293,18 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         hiddenReviewEdit = true;
         const auto baseline = backend.get_doc("public_doc").json;
         auto json = model::docJsonBuild(model::DocSpec{
-            .documentId = "public_doc", .title = "Synthetic",
+            .documentId = "public_doc",
+            .title = "Synthetic",
             .tabs = {model::TabSpec{.tabId = "t.0", .title = "Tab 1", .blocks = {
-                model::BlockSpec::make_paragraph(model::ParagraphSpec{
-                    .content = {model::ParagraphTextSpec{
-                        .text = "Synthetic hidden insertion",
-                        .sugIns = std::vector<std::string>{"synthetic_hidden_review"},
-                    }},
-                    .newlineSugIns = std::vector<std::string>{"synthetic_hidden_review"},
-                }),
-                model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {"Editable tail"}}),
-            }}},
+                                                                          model::BlockSpec::make_paragraph(model::ParagraphSpec{
+                                                                              .content = {model::ParagraphTextSpec{
+                                                                                  .text = "Synthetic hidden insertion",
+                                                                                  .sugIns = std::vector<std::string>{"synthetic_hidden_review"},
+                                                                              }},
+                                                                              .newlineSugIns = std::vector<std::string>{"synthetic_hidden_review"},
+                                                                          }),
+                                                                          model::BlockSpec::make_paragraph(model::ParagraphSpec{.content = {"Editable tail"}}),
+                                                                      }}},
         });
         json["tabs"][0]["documentTab"]["documentStyle"] = baseline["tabs"][0]["documentTab"]["documentStyle"];
         json["tabs"][0]["documentTab"]["namedStyles"] = baseline["tabs"][0]["documentTab"]["namedStyles"];
@@ -303,7 +317,11 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         REQUIRE(offset != std::string::npos);
         file.tabs[0].markdown.replace(offset, std::string("Editable tail").size(), "Changed tail");
     }
-    SUBCASE("unknown write") { file.tabs[0].markdown = "Synthetic public edit\n"; unknown = true; editing = true; }
+    SUBCASE("unknown write") {
+        file.tabs[0].markdown = "Synthetic public edit\n";
+        unknown = true;
+        editing = true;
+    }
     SUBCASE("concurrent revision rejection") {
         file.tabs[0].markdown = "Synthetic public edit\n";
         editing = true;
@@ -323,28 +341,49 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         file.tabs.push_back(lens::DocumentFileTab{.id = "", .title = "Tab 1", .markdown = "Synthetic public creation\n"});
     }
     SUBCASE("comment refusal") { comment = true; }
-    SUBCASE("approved comment") { comment = true; approved = true; }
-    SUBCASE("approved reply") { replyWanted = true; approved = true; }
+    SUBCASE("approved comment") {
+        comment = true;
+        approved = true;
+    }
+    SUBCASE("approved reply") {
+        replyWanted = true;
+        approved = true;
+    }
     SUBCASE("comment create missing ID with unchanged readback") {
-        comment = true; approved = true; unconfirmedComment = true;
+        comment = true;
+        approved = true;
+        unconfirmedComment = true;
     }
     SUBCASE("comment reply missing ID with unchanged readback") {
-        replyWanted = true; approved = true; unconfirmedComment = true;
+        replyWanted = true;
+        approved = true;
+        unconfirmedComment = true;
     }
     SUBCASE("valid comment create receipt with unchanged readback") {
-        comment = true; approved = true; unchangedComment = true;
+        comment = true;
+        approved = true;
+        unchangedComment = true;
     }
     SUBCASE("valid comment reply receipt with unchanged readback") {
-        replyWanted = true; approved = true; unchangedComment = true;
+        replyWanted = true;
+        approved = true;
+        unchangedComment = true;
     }
     SUBCASE("confirmed comment disappears before final readback") {
-        comment = true; approved = true; lateCommentLoss = true;
+        comment = true;
+        approved = true;
+        lateCommentLoss = true;
     }
     SUBCASE("confirmed reply disappears before final readback") {
-        replyWanted = true; approved = true; lateCommentLoss = true;
+        replyWanted = true;
+        approved = true;
+        lateCommentLoss = true;
     }
     SUBCASE("comment creation timeout after landing") {
-        comment = true; approved = true; unconfirmedComment = true; createTimeout = true;
+        comment = true;
+        approved = true;
+        unconfirmedComment = true;
+        createTimeout = true;
     }
     if (replyWanted) {
         engine::DriveComment existing;
@@ -356,7 +395,8 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         reply.text = "Synthetic public reply";
         file.comments[0].replies.push_back(reply);
         publicComments.push_back(slimr::Json::object_t{
-            {"id", "existing_comment"}, {"content", "Synthetic existing comment"},
+            {"id", "existing_comment"},
+            {"content", "Synthetic existing comment"},
             {"author", slimr::Json::object_t{{"me", true}}},
         });
     }
@@ -368,7 +408,7 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
     const auto path = fixture.root / "input.md";
     engine::detail::atomic_write(path.string(), lens::documentFileExport(file));
     const auto original = engine::inputFileRead(path.string()).text;
-    HttpTransport transport = [&](const HttpCall& request) -> HttpCallResponse {
+    HttpTransport transport = [&](const HttpCall &request) -> HttpCallResponse {
         if (request.url == "https://oauth2.googleapis.com/token") {
             return {.body = R"({"access_token":"synthetic","expires_in":3600})"};
         }
@@ -378,18 +418,24 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
                 ++commentWrites;
                 if ((!unconfirmedComment && !unchangedComment) || createTimeout) {
                     publicComments.push_back(slimr::Json::object_t{
-                        {"id", "synthetic_comment"}, {"content", "Synthetic public comment"},
+                        {"id", "synthetic_comment"},
+                        {"content", "Synthetic public comment"},
                         {"author", slimr::Json::object_t{{"me", true}}},
                     });
                 }
-                if (createTimeout) throw std::runtime_error("Synthetic response loss after comment creation");
-                if (unconfirmedComment) return {.body = R"({"content":"Synthetic public comment"})"};
+                if (createTimeout)
+                    throw std::runtime_error("Synthetic response loss after comment creation");
+                if (unconfirmedComment)
+                    return {.body = R"({"content":"Synthetic public comment"})"};
                 return {.body = R"({"id":"synthetic_comment","content":"Synthetic public comment"})"};
             }
-            if (commentWrites > 0) ++postWriteCommentReads;
+            if (commentWrites > 0)
+                ++postWriteCommentReads;
             if (lateCommentLoss && postWriteCommentReads >= 2) {
-                if (replyWanted) publicComments[0]["replies"] = slimr::Json::array_t{};
-                else publicComments.clear();
+                if (replyWanted)
+                    publicComments[0]["replies"] = slimr::Json::array_t{};
+                else
+                    publicComments.clear();
             }
             return {.body = slimr::write_json(slimr::Json::object_t{{"comments", publicComments}})};
         }
@@ -399,12 +445,14 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
             ++commentWrites;
             if (!unconfirmedComment && !unchangedComment) {
                 publicComments[0]["replies"] = slimr::Json::array_t{slimr::Json::object_t{
-                    {"id", "synthetic_reply"}, {"content", "Synthetic public reply"},
+                    {"id", "synthetic_reply"},
+                    {"content", "Synthetic public reply"},
                     {"author", slimr::Json::object_t{{"me", true}}},
                 }};
                 return {.body = R"({"id":"synthetic_reply","content":"Synthetic public reply"})"};
             }
-            if (unchangedComment) return {.body = R"({"id":"synthetic_reply","content":"Synthetic public reply"})"};
+            if (unchangedComment)
+                return {.body = R"({"id":"synthetic_reply","content":"Synthetic public reply"})"};
             return {.body = R"({"content":"Synthetic public reply"})"};
         }
         if (request.method == "POST" && request.url == "https://docs.googleapis.com/v1/documents") {
@@ -416,7 +464,8 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
             ++writes;
             auto body = *slimr::parse_json<slimr::Json>(request.body);
             CHECK(body["writeControl"]["requiredRevisionId"].get<std::string>() == "rev-1");
-            if (unknown) throw std::runtime_error("Synthetic transport loss");
+            if (unknown)
+                throw std::runtime_error("Synthetic transport loss");
             if (revisionRejected) {
                 return {.status = 400, .body = R"({"error":{"code":400,"message":"The required revision does not match"}})"};
             }
@@ -434,7 +483,7 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         }
         if (request.method == "GET" && request.url.find("/drive/v3/files/" + activeId + "?") != std::string::npos) {
             return {.body = slimr::write_json(slimr::Json::object_t{
-                {"id", activeId}, {"name", backend.get_doc(activeId).json["title"]}})};
+                        {"id", activeId}, {"name", backend.get_doc(activeId).json["title"]}})};
         }
         if (request.method == "GET" && request.url.find("/drive/v3/about?fields=user") != std::string::npos) {
             return {.body = R"({"user":{"emailAddress":""}})"};
@@ -442,19 +491,21 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         FAIL("Unexpected public import HTTP request");
         return {.status = 500};
     };
-    auto app = make_gdocsmith_app(transport, [](const std::vector<std::string>&) {
+    auto app = make_gdocsmith_app(transport, [](const std::vector<std::string> &) {
         return R"({"client_id":"synthetic","client_secret":"synthetic","refresh_token":"synthetic"})";
     });
-    const auto* tool = app.findTool("import");
+    const auto *tool = app.findTool("import");
     REQUIRE(tool);
     slimr::Json arguments = slimr::Json::object_t{{"path", path.string()}};
-    if (creating) arguments["newDocStyleBaseline"] = "account";
-    if (approved) arguments["allow"] = slimr::Json::array_t{"commentChanges"};
+    if (creating)
+        arguments["newDocStyleBaseline"] = "account";
+    if (approved)
+        arguments["allow"] = slimr::Json::array_t{"commentChanges"};
     auto result = tool->handler(arguments, slimr::RequestContext{});
     REQUIRE(!result.content.empty());
     const auto parsed = slimr::parse_json<slimr::Json>(result.content.front().text);
     REQUIRE(parsed);
-    const auto& output = *parsed;
+    const auto &output = *parsed;
     INFO(slimr::write_json(output));
     if (unconfirmedComment || unchangedComment || lateCommentLoss) {
         CHECK(result.isError);
@@ -472,7 +523,8 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         } else if (createTimeout) {
             REQUIRE(current.comments.size() == 1);
             CHECK(current.comments[0].id == "synthetic_comment");
-        } else CHECK(current.comments.empty());
+        } else
+            CHECK(current.comments.empty());
     } else if (unknown) {
         CHECK(result.isError);
         CHECK(output["writeState"].get<std::string>() == "unknown");
@@ -487,8 +539,10 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         CHECK(output.contains("exportPath"));
         REQUIRE(output["errors"].is_array());
         const auto code = output["errors"][0]["code"].get<std::string>();
-        if (revisionRejected) CHECK((code == "staleBase" || code == "concurrentEdits"));
-        else CHECK(code == "remoteRejected");
+        if (revisionRejected)
+            CHECK((code == "staleBase" || code == "concurrentEdits"));
+        else
+            CHECK(code == "remoteRejected");
         CHECK(engine::inputFileRead(path.string()).text == original);
     } else if (comment && !approved) {
         CHECK(result.isError);
@@ -505,14 +559,14 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         CHECK(commentWrites == (approved ? 1 : 0));
         if (hiddenReviewEdit) {
             const auto actual = model::docModelParse(backend.get_doc(activeId).json,
-                model::DocModelParseOptions{.docId = activeId});
+                                                     model::DocModelParseOptions{.docId = activeId});
             REQUIRE(actual.tabs[0].blocks.size() == 2);
             CHECK(actual.tabs[0].blocks[0] == initialModel.tabs[0].blocks[0]);
             CHECK(!lens::documentFileParse(engine::inputFileRead(path.string()).text).suggestions.empty());
         }
         if (readonlyRich) {
             const auto actual = model::docModelParse(backend.get_doc(activeId).json,
-                model::DocModelParseOptions{.docId = activeId});
+                                                     model::DocModelParseOptions{.docId = activeId});
             CHECK(actual.tabs[0].documentStyle == initialModel.tabs[0].documentStyle);
             CHECK(actual.tabs[0].namedStyles == initialModel.tabs[0].namedStyles);
             CHECK(actual.tabs[0].blocks[0] == initialModel.tabs[0].blocks[0]);
@@ -543,25 +597,22 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
 TEST_CASE("image downloads use bearer URLs without forwarding Google credentials") {
     using namespace gdocsmith;
     int calls = 0;
-    DocsClient client([&](const HttpCall& call) {
+    DocsClient client([&](const HttpCall &call) {
         ++calls;
         CHECK(call.headers.empty());
         CHECK(call.method == "GET");
-        return HttpCallResponse{.body = "synthetic image"};
-    }, [](const std::vector<std::string>&) -> std::string {
-        throw std::runtime_error("image downloads must not request OAuth credentials");
-    });
+        return HttpCallResponse{.body = "synthetic image"}; }, [](const std::vector<std::string> &) -> std::string { throw std::runtime_error("image downloads must not request OAuth credentials"); });
     CHECK(client.imageDownload("https://lh3.googleusercontent.com/image") == "synthetic image");
     CHECK(calls == 1);
-    for (const auto& uri : {"http://lh3.googleusercontent.com/image",
+    for (const auto &uri : {"http://lh3.googleusercontent.com/image",
                             "https://googleusercontent.com.evil.example/image",
                             "https://localhost/image"}) {
         CHECK_THROWS_AS(client.imageDownload(uri), model::CoreError);
     }
     CHECK(calls == 1);
-    client.transport = [](const HttpCall&) { return HttpCallResponse{.status = 403}; };
+    client.transport = [](const HttpCall &) { return HttpCallResponse{.status = 403}; };
     CHECK_THROWS_AS(client.imageDownload("https://lh3.googleusercontent.com/image"), model::CoreError);
-    client.transport = [](const HttpCall&) -> HttpCallResponse {
+    client.transport = [](const HttpCall &) -> HttpCallResponse {
         throw std::runtime_error("transport failed for https://lh3.googleusercontent.com/private-bearer");
     };
     CHECK_THROWS_WITH_AS(client.imageDownload("https://lh3.googleusercontent.com/private-bearer"),
@@ -632,8 +683,7 @@ TEST_SUITE("api::zip_and_docx") {
 
         std::vector<std::pair<std::string, std::string>> files = {
             {"hello.txt", "Hello World!\n"},
-            {"dir/sub.txt", "Sub content\n"}
-        };
+            {"dir/sub.txt", "Sub content\n"}};
 
         std::string zip = zip_store(files);
         CHECK(zip.size() > 72);
@@ -707,14 +757,12 @@ TEST_SUITE("api::zip_and_docx") {
             .bytes = "fake_png_data",
             .widthPx = 100,
             .heightPx = 100,
-            .type = "png"
-        };
+            .type = "png"};
         DocxImage img2{
             .bytes = "fake_jpeg_data",
             .widthPx = 200,
             .heightPx = 150,
-            .type = "jpeg"
-        };
+            .type = "jpeg"};
 
         std::string docx = docx_build("<w:p><w:r><w:t>Hello Docx</w:t></w:r></w:p>", {img1, img2});
         CHECK(docx.size() > 500);
@@ -733,7 +781,7 @@ TEST_SUITE("api::docs_client") {
         using namespace gdocsmith;
 
         std::vector<HttpCall> calls;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             calls.push_back(req);
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -741,19 +789,17 @@ TEST_SUITE("api::docs_client") {
             if (req.url == "https://docs.googleapis.com/v1/documents" && req.method == "POST") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"documentId":"doc_new_123","title":"Test Doc"})"
-                };
+                    .body = R"({"documentId":"doc_new_123","title":"Test Doc"})"};
             }
             if (req.url.find("drive/v3/files/doc_new_123") != std::string::npos && req.method == "PATCH") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"doc_new_123","name":"Test Doc"})"
-                };
+                    .body = R"({"id":"doc_new_123","name":"Test Doc"})"};
             }
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -767,7 +813,7 @@ TEST_SUITE("api::docs_client") {
 
         bool foundDocsCreate = false;
         bool foundDriveMove = false;
-        for (const auto& c : calls) {
+        for (const auto &c : calls) {
             if (c.url == "https://docs.googleapis.com/v1/documents" && c.method == "POST") {
                 foundDocsCreate = true;
                 CHECK(c.body.find("\"title\":\"Test Doc\"") != std::string::npos);
@@ -786,7 +832,7 @@ TEST_SUITE("api::docs_client") {
 
         foundDocsCreate = false;
         foundDriveMove = false;
-        for (const auto& c : calls) {
+        for (const auto &c : calls) {
             if (c.url == "https://docs.googleapis.com/v1/documents" && c.method == "POST") {
                 foundDocsCreate = true;
             }
@@ -803,7 +849,7 @@ TEST_SUITE("api::docs_client") {
         using namespace gdocsmith;
 
         std::vector<HttpCall> calls;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             calls.push_back(req);
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -811,13 +857,12 @@ TEST_SUITE("api::docs_client") {
             if (req.url.find(":batchUpdate") != std::string::npos) {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"documentId":"doc-123","replies":[]})"
-                };
+                    .body = R"({"documentId":"doc-123","replies":[]})"};
             }
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -825,14 +870,13 @@ TEST_SUITE("api::docs_client") {
         DocsClient client(mockTransport, mockRunner);
 
         slimr::Json::array_t reqs = {
-            slimr::Json::object_t{{"insertText", slimr::Json::object_t{{"text", "hello"}}}}
-        };
+            slimr::Json::object_t{{"insertText", slimr::Json::object_t{{"text", "hello"}}}}};
 
         auto res = client.batchUpdate("doc-123", reqs, "rev-456");
         CHECK(res["documentId"].get<std::string>() == "doc-123");
 
         bool foundBatch = false;
-        for (const auto& c : calls) {
+        for (const auto &c : calls) {
             if (c.url.find("documents/doc-123:batchUpdate") != std::string::npos) {
                 foundBatch = true;
                 CHECK(c.body.find("\"requiredRevisionId\":\"rev-456\"") != std::string::npos);
@@ -846,7 +890,7 @@ TEST_SUITE("api::docs_client") {
         using namespace gdocsmith;
 
         std::vector<std::string> capturedArgs;
-        GwsRunner mockRunner = [&](const std::vector<std::string>& args) {
+        GwsRunner mockRunner = [&](const std::vector<std::string> &args) {
             capturedArgs = args;
             return "gws_out";
         };
@@ -863,7 +907,7 @@ TEST_SUITE("api::drive_client") {
         using namespace gdocsmith;
 
         std::vector<HttpCall> calls;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             calls.push_back(req);
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -871,20 +915,17 @@ TEST_SUITE("api::drive_client") {
             if (req.url.find("drive/v3/files/file-123") != std::string::npos && req.method == "GET") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"file-123","name":"Report.docx","mimeType":"application/vnd.google-apps.document","trashed":false,"parents":["folder-1"],"webViewLink":"https://drive.google.com/view","version":"10"})"
-                };
+                    .body = R"({"id":"file-123","name":"Report.docx","mimeType":"application/vnd.google-apps.document","trashed":false,"parents":["folder-1"],"webViewLink":"https://drive.google.com/view","version":"10"})"};
             }
             if (req.url.find("drive/v3/files/file-123/copy") != std::string::npos) {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"file-123-copy","name":"Report Copy.docx"})"
-                };
+                    .body = R"({"id":"file-123-copy","name":"Report Copy.docx"})"};
             }
             if (req.url.find("drive/v3/files/file-123") != std::string::npos && req.method == "PATCH") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"file-123","name":"Report Renamed.docx","trashed":true})"
-                };
+                    .body = R"({"id":"file-123","name":"Report Renamed.docx","trashed":true})"};
             }
             if (req.url.find("drive/v3/files/file-123") != std::string::npos && req.method == "DELETE") {
                 return HttpCallResponse{.status = 204, .body = ""};
@@ -892,19 +933,17 @@ TEST_SUITE("api::drive_client") {
             if (req.url.find("drive/v3/files?") != std::string::npos && req.method == "GET") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"files":[{"id":"f1","name":"Doc 1","mimeType":"text/plain"},{"id":"f2","name":"Doc 2","mimeType":"text/plain"}]})"
-                };
+                    .body = R"({"files":[{"id":"f1","name":"Doc 1","mimeType":"text/plain"},{"id":"f2","name":"Doc 2","mimeType":"text/plain"}]})"};
             }
             if (req.url.find("drive/v3/about") != std::string::npos) {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"user":{"emailAddress":"user@example.com"}})"
-                };
+                    .body = R"({"user":{"emailAddress":"user@example.com"}})"};
             }
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -950,7 +989,7 @@ TEST_SUITE("api::drive_client") {
         using namespace gdocsmith;
 
         std::vector<HttpCall> calls;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             calls.push_back(req);
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -958,32 +997,27 @@ TEST_SUITE("api::drive_client") {
             if (req.url.find("/comments?") != std::string::npos && req.method == "GET") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"comments":[{"id":"c1","content":"Great point","author":{"displayName":"Alice","emailAddress":"alice@example.com"},"quotedFileContent":{"value":"&quot;quote &amp; text&quot;"},"resolved":false,"replies":[{"id":"r1","content":"Thanks!","author":{"displayName":"Bob"}}]}]})"
-                };
+                    .body = R"({"comments":[{"id":"c1","content":"Great point","author":{"displayName":"Alice","emailAddress":"alice@example.com"},"quotedFileContent":{"value":"&quot;quote &amp; text&quot;"},"resolved":false,"replies":[{"id":"r1","content":"Thanks!","author":{"displayName":"Bob"}}]}]})"};
             }
             if (req.url.find("/comments/c1?") != std::string::npos && req.method == "GET") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"c1","content":"Great point"})"
-                };
+                    .body = R"({"id":"c1","content":"Great point"})"};
             }
             if (req.url.find("/comments?") != std::string::npos && req.method == "POST") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"c_new","content":"New comment"})"
-                };
+                    .body = R"({"id":"c_new","content":"New comment"})"};
             }
             if (req.url.find("/comments/c1/replies") != std::string::npos && req.method == "POST") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"r_new","content":"Reply content","action":"resolve"})"
-                };
+                    .body = R"({"id":"r_new","content":"Reply content","action":"resolve"})"};
             }
             if (req.url.find("/comments/c1/replies/r1") != std::string::npos && req.method == "PATCH") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"r1","content":"Updated reply content"})"
-                };
+                    .body = R"({"id":"r1","content":"Updated reply content"})"};
             }
             if (req.url.find("/comments/c1/replies/r1") != std::string::npos && req.method == "DELETE") {
                 return HttpCallResponse{.status = 204, .body = ""};
@@ -991,8 +1025,7 @@ TEST_SUITE("api::drive_client") {
             if (req.url.find("/comments/c1") != std::string::npos && req.method == "PATCH") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"c1","content":"Edited comment"})"
-                };
+                    .body = R"({"id":"c1","content":"Edited comment"})"};
             }
             if (req.url.find("/comments/c1") != std::string::npos && req.method == "DELETE") {
                 return HttpCallResponse{.status = 204, .body = ""};
@@ -1000,7 +1033,7 @@ TEST_SUITE("api::drive_client") {
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -1050,7 +1083,7 @@ TEST_SUITE("api::drive_client") {
         using namespace gdocsmith;
 
         std::vector<HttpCall> calls;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             calls.push_back(req);
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -1058,8 +1091,7 @@ TEST_SUITE("api::drive_client") {
             if (req.url.find("upload/drive/v3/files") != std::string::npos && req.method == "POST") {
                 return HttpCallResponse{
                     .status = 200,
-                    .body = R"({"id":"upload_doc_777"})"
-                };
+                    .body = R"({"id":"upload_doc_777"})"};
             }
             if (req.url.find("documents/upload_doc_777") != std::string::npos && req.method == "GET") {
                 // Return document with inlineObjects matching images
@@ -1108,13 +1140,12 @@ TEST_SUITE("api::drive_client") {
                                 }
                             }
                         }]
-                    })"
-                };
+                    })"};
             }
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -1123,8 +1154,7 @@ TEST_SUITE("api::drive_client") {
 
         std::vector<DocxImage> images = {
             DocxImage{.bytes = "img1_bytes", .widthPx = 100, .heightPx = 100, .type = "png"},
-            DocxImage{.bytes = "img2_bytes", .widthPx = 200, .heightPx = 150, .type = "jpeg"}
-        };
+            DocxImage{.bytes = "img2_bytes", .widthPx = 200, .heightPx = 150, .type = "jpeg"}};
 
         auto res = drive.imagesUpload("Image Upload Batch", images);
         CHECK(res.documentId == "upload_doc_777");
@@ -1134,7 +1164,7 @@ TEST_SUITE("api::drive_client") {
 
         // Verify upload call used multipart/related and included boundary
         bool foundMultipart = false;
-        for (const auto& c : calls) {
+        for (const auto &c : calls) {
             if (c.url.find("upload/drive/v3/files") != std::string::npos) {
                 foundMultipart = true;
                 auto it = c.headers.find("Content-Type");
@@ -1149,7 +1179,7 @@ TEST_SUITE("api::drive_client") {
     TEST_CASE("textExport strips UTF-8 BOM and normalizes CRLF") {
         using namespace gdocsmith;
 
-        HttpTransport mockTransport = [](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [](const HttpCall &req) -> HttpCallResponse {
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
             }
@@ -1161,7 +1191,7 @@ TEST_SUITE("api::drive_client") {
             return HttpCallResponse{.status = 404, .body = "not found"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -1178,7 +1208,7 @@ TEST_SUITE("api::fetch_with_retry") {
         using namespace gdocsmith;
 
         int attempts = 0;
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
             }
@@ -1192,7 +1222,7 @@ TEST_SUITE("api::fetch_with_retry") {
             return HttpCallResponse{.status = 200, .body = "Success!"};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -1208,7 +1238,7 @@ TEST_SUITE("api::fetch_with_retry") {
 
         int attempts = 0;
         const std::string body = R"({"error":{"code":400,"message":"Bad request"}})";
-        HttpTransport mockTransport = [&](const HttpCall& req) -> HttpCallResponse {
+        HttpTransport mockTransport = [&](const HttpCall &req) -> HttpCallResponse {
             if (req.url == "https://oauth2.googleapis.com/token") {
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
             }
@@ -1216,7 +1246,7 @@ TEST_SUITE("api::fetch_with_retry") {
             return HttpCallResponse{.status = 400, .body = body};
         };
 
-        GwsRunner mockRunner = [](const std::vector<std::string>&) {
+        GwsRunner mockRunner = [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
 
@@ -1234,9 +1264,9 @@ namespace gdocsmith::api_boundary_test {
 struct ApiMock {
     int calls = 0;
     int tokenCalls = 0;
-    std::function<HttpCallResponse(const HttpCall&)> respond;
+    std::function<HttpCallResponse(const HttpCall &)> respond;
     HttpTransport transport() {
-        return [this](const HttpCall& req) -> HttpCallResponse {
+        return [this](const HttpCall &req) -> HttpCallResponse {
             if (req.url == "https://oauth2.googleapis.com/token") {
                 tokenCalls++;
                 return HttpCallResponse{.status = 200, .body = R"({"access_token":"fake_token","expires_in":3600})"};
@@ -1246,7 +1276,7 @@ struct ApiMock {
         };
     }
     static GwsRunner runner() {
-        return [](const std::vector<std::string>&) {
+        return [](const std::vector<std::string> &) {
             return R"({"client_id":"id","client_secret":"sec","refresh_token":"tok"})";
         };
     }
@@ -1261,7 +1291,7 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":404,"message":"Requested entity was not found."}})";
-        mock.respond = [&](const HttpCall&) {
+        mock.respond = [&](const HttpCall &) {
             return HttpCallResponse{.status = 404, .headers = {{"x-synthetic", "kept"}}, .body = body};
         };
         token_cache_reset();
@@ -1277,15 +1307,15 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}})";
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 404, .body = body}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 404, .body = body}; };
         token_cache_reset();
         DocsClient docs(mock.transport(), mock.runner());
         bool threw = false;
         try {
             (void)docs.getDocument("doc-404");
-        } catch (const GoogleApiError&) {
+        } catch (const GoogleApiError &) {
             FAIL("getDocument must keep a plain runtime_error");
-        } catch (const std::runtime_error& error) {
+        } catch (const std::runtime_error &error) {
             threw = true;
             CHECK(std::string(error.what()) == gws_error_format(body, "doc-404"));
         }
@@ -1298,12 +1328,12 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":400,"message":"Bad request"}})";
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 400, .body = body}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 400, .body = body}; };
         token_cache_reset();
         try {
             (void)google_api_fetch_checked(mock.transport(), mock.runner(), "https://example.com/api", "GET", "", {}, "target-1");
             FAIL("Expected GoogleApiError");
-        } catch (const GoogleApiError& error) {
+        } catch (const GoogleApiError &error) {
             CHECK(error.status == 400);
             CHECK(std::string(error.what()) == gws_error_format(body, "target-1"));
         }
@@ -1314,8 +1344,9 @@ TEST_SUITE("api::raw_checked_boundary") {
     TEST_CASE("raw fetch_with_retry returns exhausted 503 after 3 calls") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
-        mock.respond = [&](const HttpCall&) {
-            if (mock.calls == 1) return HttpCallResponse{.status = 429, .body = "rate"};
+        mock.respond = [&](const HttpCall &) {
+            if (mock.calls == 1)
+                return HttpCallResponse{.status = 429, .body = "rate"};
             return HttpCallResponse{.status = 503, .body = "unavailable"};
         };
         token_cache_reset();
@@ -1329,7 +1360,7 @@ TEST_SUITE("api::raw_checked_boundary") {
     TEST_CASE("raw fetch_with_retry returns 501 after 1 call") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 501, .body = "not implemented"}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 501, .body = "not implemented"}; };
         token_cache_reset();
         auto res = fetch_with_retry(mock.transport(), mock.runner(), "https://example.com/api", "GET", "", {}, "", api_boundary_test::fastRetry());
         CHECK(res.status == 501);
@@ -1341,7 +1372,7 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":403,"message":"Quota timeout window exceeded"}})";
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 403, .body = body}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 403, .body = body}; };
 
         token_cache_reset();
         auto res = fetch_with_retry(mock.transport(), mock.runner(), "https://example.com/api", "GET", "", {}, "", api_boundary_test::fastRetry());
@@ -1358,7 +1389,7 @@ TEST_SUITE("api::raw_checked_boundary") {
     TEST_CASE("raw fetch returns persistent 401 after one forced refresh") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 401, .body = "unauthorized"}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 401, .body = "unauthorized"}; };
         token_cache_reset();
         auto res = google_api_fetch(mock.transport(), mock.runner(), "https://example.com/api");
         CHECK(res.status == 401);
@@ -1372,13 +1403,13 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":400,"message":"Invalid requests[0]"}})";
-        mock.respond = [&](const HttpCall&) { return HttpCallResponse{.status = 400, .body = body}; };
+        mock.respond = [&](const HttpCall &) { return HttpCallResponse{.status = 400, .body = body}; };
         token_cache_reset();
         DocsClient docs(mock.transport(), mock.runner());
         try {
             (void)docs.batchUpdate("doc-batch", slimr::Json::array_t{});
             FAIL("Expected GoogleApiError");
-        } catch (const GoogleApiError& error) {
+        } catch (const GoogleApiError &error) {
             CHECK(error.status == 400);
             CHECK(std::string(error.what()) == gws_error_format(body, "doc-batch"));
         }
@@ -1389,7 +1420,7 @@ TEST_SUITE("api::raw_checked_boundary") {
     TEST_CASE("discarded deleteFile 404 throws GoogleApiError after 1 call") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
-        mock.respond = [&](const HttpCall&) {
+        mock.respond = [&](const HttpCall &) {
             return HttpCallResponse{.status = 404, .body = R"({"error":{"code":404,"message":"File not found"}})"};
         };
         token_cache_reset();
@@ -1397,7 +1428,7 @@ TEST_SUITE("api::raw_checked_boundary") {
         try {
             drive.deleteFile("file-404");
             FAIL("Expected GoogleApiError");
-        } catch (const GoogleApiError& error) {
+        } catch (const GoogleApiError &error) {
             CHECK(error.status == 404);
         }
         CHECK(mock.calls == 1);
@@ -1408,7 +1439,7 @@ TEST_SUITE("api::raw_checked_boundary") {
         using namespace gdocsmith;
         api_boundary_test::ApiMock mock;
         const std::string body = R"({"error":{"code":404,"message":"Requested entity was not found."}})";
-        mock.respond = [&](const HttpCall& req) {
+        mock.respond = [&](const HttpCall &req) {
             if (req.url.find("upload/drive/v3/files") != std::string::npos) {
                 return HttpCallResponse{.status = 200, .body = R"({"id":"upload_doc_404"})"};
             }
@@ -1419,7 +1450,7 @@ TEST_SUITE("api::raw_checked_boundary") {
         try {
             (void)drive.imagesUpload("Synthetic", {DocxImage{.bytes = "img", .widthPx = 1, .heightPx = 1, .type = "png"}});
             FAIL("Expected ImagesUploadError");
-        } catch (const ImagesUploadError& error) {
+        } catch (const ImagesUploadError &error) {
             CHECK(error.documentId == "upload_doc_404");
             CHECK(std::string(error.what()) == gws_error_format(body, "upload_doc_404"));
         }

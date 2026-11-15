@@ -65,13 +65,11 @@ TEST_CASE("styleValues - styleFieldsChanged reports added, removed, and changed 
     using namespace gdocsmith::model;
     JsonObject a = slimr::Json::object_t{
         {"bold", true},
-        {"foregroundColor", slimr::Json::object_t{{"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"red", 1.0}}}}}}}
-    };
+        {"foregroundColor", slimr::Json::object_t{{"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"red", 1.0}}}}}}}};
     JsonObject b = slimr::Json::object_t{
         {"bold", true},
         {"italic", true},
-        {"foregroundColor", slimr::Json::object_t{{"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"red", 0.5}}}}}}}
-    };
+        {"foregroundColor", slimr::Json::object_t{{"color", slimr::Json::object_t{{"rgbColor", slimr::Json::object_t{{"red", 0.5}}}}}}}};
     std::vector<std::string> fields = {"bold", "italic", "foregroundColor"};
     auto changed = styleFieldsChanged(a, b, fields);
     std::sort(changed.begin(), changed.end());

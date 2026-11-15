@@ -36,8 +36,7 @@ inline ParagraphBlock makeParagraph(
     std::vector<Inline> inlines = {},
     JsonObject style = make_json_object(),
     std::optional<BulletRef> bullet = std::nullopt,
-    std::optional<std::string> headingId = std::nullopt
-) {
+    std::optional<std::string> headingId = std::nullopt) {
     ParagraphBlock p;
     p.key = std::move(key);
     p.inlines = std::move(inlines);
@@ -126,11 +125,8 @@ TEST_CASE("docModelsCompare - a new image atom compares by its create fields onl
     Atom actAtom = expAtom;
     actAtom.style = slimr::Json::object_t{
         {"backgroundColor", slimr::Json::object_t{
-            {"color", slimr::Json::object_t{
-                {"rgbColor", slimr::Json::object_t{}}
-            }}
-        }}
-    };
+                                {"color", slimr::Json::object_t{
+                                              {"rgbColor", slimr::Json::object_t{}}}}}}};
 
     auto expected = makeDoc({makeTab({makeParagraph("n1", {Inline::from_atom(expAtom)})})});
     auto actual = makeDoc({makeTab({makeParagraph("n1", {Inline::from_atom(actAtom)})})});
@@ -141,22 +137,16 @@ TEST_CASE("docModelsCompare - a new image atom compares by its create fields onl
 TEST_CASE("docModelsCompare - a paragraph-style value Google omits matches only when the named style has it") {
     JsonObject namedStyles = slimr::Json::object_t{
         {"styles", slimr::Json::array_t{
-            slimr::Json::object_t{
-                {"namedStyleType", "NORMAL_TEXT"},
-                {"paragraphStyle", slimr::Json::object_t{
-                    {"indentStart", slimr::Json::object_t{{"unit", "PT"}}}
-                }}
-            }
-        }}
-    };
+                       slimr::Json::object_t{
+                           {"namedStyleType", "NORMAL_TEXT"},
+                           {"paragraphStyle", slimr::Json::object_t{
+                                                  {"indentStart", slimr::Json::object_t{{"unit", "PT"}}}}}}}}};
 
     auto unbulleted = [&](double magnitude) {
         JsonObject style = slimr::Json::object_t{
             {"indentStart", slimr::Json::object_t{
-                {"magnitude", magnitude},
-                {"unit", "PT"}
-            }}
-        };
+                                {"magnitude", magnitude},
+                                {"unit", "PT"}}}};
         return makeDoc({makeTab({makeParagraph("o1", {}, style)}, namedStyles)});
     };
 

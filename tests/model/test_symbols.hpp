@@ -21,7 +21,8 @@ TEST_CASE("symbols - emoji stays one symbol and keeps its UTF-16 length") {
     auto p = makeTestParagraph({Inline::from_text("a😀b")});
     auto syms = paragraphSymbols(p);
     std::vector<std::string> ids;
-    for (const auto& s : syms) ids.push_back(symbolId(s));
+    for (const auto &s : syms)
+        ids.push_back(symbolId(s));
     std::vector<std::string> expected = {"a", "😀", "b"};
     CHECK(ids == expected);
     CHECK(symbolsUtf16Length(syms) == 4);
@@ -38,7 +39,8 @@ TEST_CASE("symbols - atoms are one symbol keyed by their key; lengths come from 
     auto p = makeTestParagraph({Inline::from_text("x"), Inline(eq)});
     auto syms = paragraphSymbols(p);
     std::vector<std::string> ids;
-    for (const auto& s : syms) ids.push_back(symbolId(s));
+    for (const auto &s : syms)
+        ids.push_back(symbolId(s));
     std::vector<std::string> expected = {"x", std::string(1, '\0') + "o9"};
     CHECK(ids == expected);
     CHECK(symbolsUtf16Length(syms) == 4);
@@ -47,11 +49,9 @@ TEST_CASE("symbols - atoms are one symbol keyed by their key; lengths come from 
 TEST_CASE("symbols - set merges equal-style characters into canonical runs") {
     using namespace gdocsmith::model;
     JsonObject boldStyle = slimr::Json::object_t{{"bold", true}};
-    auto p = makeTestParagraph({
-        Inline::from_text("a", boldStyle),
-        Inline::from_text("b", boldStyle),
-        Inline::from_text("c", make_json_object())
-    });
+    auto p = makeTestParagraph({Inline::from_text("a", boldStyle),
+                                Inline::from_text("b", boldStyle),
+                                Inline::from_text("c", make_json_object())});
     paragraphSymbolsSet(p, paragraphSymbols(p));
     REQUIRE(p.inlines.size() == 2);
     CHECK(p.inlines[0].text == "ab");

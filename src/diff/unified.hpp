@@ -21,11 +21,11 @@ inline std::string rangeLabel(int start, int count) {
 }
 
 /** Groups hunks whose context windows would touch (fewer than 2 * context unchanged lines apart). */
-inline std::vector<std::vector<Hunk>> hunksGroup(const std::vector<Hunk>& hunks, int context) {
+inline std::vector<std::vector<Hunk>> hunksGroup(const std::vector<Hunk> &hunks, int context) {
     std::vector<std::vector<Hunk>> groups;
-    for (const auto& hunk : hunks) {
+    for (const auto &hunk : hunks) {
         if (!groups.empty() && !groups.back().empty()) {
-            const auto& last = groups.back().back();
+            const auto &last = groups.back().back();
             if (hunk.aStart - last.aEnd <= 2 * context) {
                 groups.back().push_back(hunk);
                 continue;
@@ -40,13 +40,14 @@ inline std::vector<std::vector<Hunk>> hunksGroup(const std::vector<Hunk>& hunks,
 inline std::string unifiedDiffFormat(
     std::string_view oldText,
     std::string_view newText,
-    const UnifiedDiffOptions& opts
-) {
-    if (oldText == newText) return "";
+    const UnifiedDiffOptions &opts) {
+    if (oldText == newText)
+        return "";
 
     auto splitLines = [](std::string_view s) {
         std::vector<std::string> lines;
-        if (s.empty()) return lines;
+        if (s.empty())
+            return lines;
         size_t start = 0;
         while (start <= s.size()) {
             size_t pos = s.find('\n', start);
@@ -69,17 +70,17 @@ inline std::string unifiedDiffFormat(
     out.push_back(std::format("--- {}", opts.oldPath));
     out.push_back(std::format("+++ {}", opts.newPath));
 
-    for (const auto& group : groups) {
+    for (const auto &group : groups) {
         int aStart = std::max(0, group.front().aStart - context);
         int bStart = std::max(0, group.front().bStart - context);
-        const auto& last = group.back();
+        const auto &last = group.back();
         int aEnd = std::min(static_cast<int>(a.size()), last.aEnd + context);
         int bEnd = std::min(static_cast<int>(b.size()), last.bEnd + context);
 
         out.push_back(std::format("@@ -{} +{} @@", rangeLabel(aStart, aEnd - aStart), rangeLabel(bStart, bEnd - bStart)));
 
         int ai = aStart;
-        for (const auto& hunk : group) {
+        for (const auto &hunk : group) {
             while (ai < hunk.aStart) {
                 out.push_back(std::format(" {}", a[ai++]));
             }
@@ -98,7 +99,8 @@ inline std::string unifiedDiffFormat(
 
     std::string res;
     for (size_t i = 0; i < out.size(); ++i) {
-        if (i > 0) res += "\n";
+        if (i > 0)
+            res += "\n";
         res += out[i];
     }
     return res;

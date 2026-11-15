@@ -5,10 +5,10 @@
 
 namespace glz {
 template <num_mode Mode, template <class> class MapType>
-inline bool operator==(const generic_json<Mode, MapType>& a, const generic_json<Mode, MapType>& b) {
+inline bool operator==(const generic_json<Mode, MapType> &a, const generic_json<Mode, MapType> &b) {
     return a.data == b.data;
 }
-}
+} // namespace glz
 
 #include <optional>
 #include <stdexcept>
@@ -265,7 +265,7 @@ struct RawDocument {
 /**
  * Validates a fetched Google Doc JSON has `tabs` or legacy `body`.
  */
-inline const slimr::Json& rawDocumentOf(const slimr::Json& json) {
+inline const slimr::Json &rawDocumentOf(const slimr::Json &json) {
     if (!json.contains("tabs") && !json.contains("body")) {
         throw std::runtime_error("rawDocumentOf: expected a document with `tabs` or a legacy `body`, got neither");
     }

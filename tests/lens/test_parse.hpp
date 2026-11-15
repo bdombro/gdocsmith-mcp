@@ -9,10 +9,10 @@ TEST_CASE("Node parse282 directional merge chains move the sole content to the r
     const auto parsed = markdownParse(
         "| A | :merge{left} | C |\n| --- | --- | --- |\n"
         "| :merge{down} | :merge{left} | x |\n| B | :merge{up} | y |");
-    const auto& table = *parsed.blocks[0].table;
+    const auto &table = *parsed.blocks[0].table;
     CHECK(table.merges == std::vector<TableMerge>{
-        {.column=0,.columnSpan=2,.row=0,.rowSpan=1},
-        {.column=0,.columnSpan=2,.row=1,.rowSpan=2}});
+                              {.column = 0, .columnSpan = 2, .row = 0, .rowSpan = 1},
+                              {.column = 0, .columnSpan = 2, .row = 1, .rowSpan = 2}});
     CHECK(table.rows[1][0][0].text == "B");
     CHECK(table.rows[2][0].empty());
     const auto chain = markdownParse("| :merge{down} |\n| --- |\n| :merge{down} |\n| content |");
@@ -21,17 +21,17 @@ TEST_CASE("Node parse282 directional merge chains move the sole content to the r
     const auto escaped = markdownParse("| \\:merge{up} | b |\n| --- | --- |");
     CHECK(escaped.blocks[0].table->merges.empty());
     CHECK(escaped.blocks[0].table->rows[0][0][0].text == ":merge{up}");
-    for (const auto* bad : {
-        "| :merge{up} | b |\n| --- | --- |",
-        "| :merge{down} |\n| --- |\n| :merge{up} |",
-        "| a | :merge{left} |\n| --- | --- |\n| :merge{up} | b |",
-        "| mixed :merge{down} |\n| --- |\n| content |",
-        "| content |\n| --- |\n| :merge{down} |"})
+    for (const auto *bad : {
+             "| :merge{up} | b |\n| --- | --- |",
+             "| :merge{down} |\n| --- |\n| :merge{up} |",
+             "| a | :merge{left} |\n| --- | --- |\n| :merge{up} | b |",
+             "| mixed :merge{down} |\n| --- |\n| content |",
+             "| content |\n| --- |\n| :merge{down} |"})
         CHECK_THROWS_AS(markdownParse(bad), model::CoreError);
 }
 
 TEST_CASE("parseInlines extracts image URLs without consuming trailing Markdown") {
-    for (const auto& text : {"![alt](https://example.com/image.png)",
+    for (const auto &text : {"![alt](https://example.com/image.png)",
                              "![alt](https://example.com/image.png) tail",
                              "![alt](https://example.com/image.png){width=20} tail"}) {
         const auto spans = parseInlines(text);
@@ -48,7 +48,7 @@ TEST_CASE("parseInlines extracts image URLs without consuming trailing Markdown"
 }
 
 TEST_CASE("parseInlines keeps malformed images as text") {
-    for (const auto& text : {"![alt](missing tail", "![alt] tail"}) {
+    for (const auto &text : {"![alt](missing tail", "![alt] tail"}) {
         const auto spans = parseInlines(text);
         REQUIRE(spans.size() == 1u);
         CHECK(spans[0].kind == "text");
@@ -78,11 +78,15 @@ TEST_CASE("markdownParse parses headings, lists, and formatted inlines") {
     bool has_italic = false;
     bool has_code = false;
     bool has_link = false;
-    for (const auto& span : proj.blocks[1].spans) {
-        if (span.marks.bold && span.text == "bold") has_bold = true;
-        if (span.marks.italic && span.text == "italic") has_italic = true;
-        if (span.marks.code && span.text == "code") has_code = true;
-        if (span.marks.link == std::optional<std::string>("https://google.com")) has_link = true;
+    for (const auto &span : proj.blocks[1].spans) {
+        if (span.marks.bold && span.text == "bold")
+            has_bold = true;
+        if (span.marks.italic && span.text == "italic")
+            has_italic = true;
+        if (span.marks.code && span.text == "code")
+            has_code = true;
+        if (span.marks.link == std::optional<std::string>("https://google.com"))
+            has_link = true;
     }
     CHECK(has_bold);
     CHECK(has_italic);
@@ -92,7 +96,7 @@ TEST_CASE("markdownParse parses headings, lists, and formatted inlines") {
     // Styled text directive
     CHECK(proj.blocks[2].kind == "paragraph");
     bool has_directive = false;
-    for (const auto& span : proj.blocks[2].spans) {
+    for (const auto &span : proj.blocks[2].spans) {
         if (span.directive == std::optional<std::string>("accent") && span.text == "Accent") {
             has_directive = true;
         }
@@ -119,7 +123,7 @@ TEST_CASE("markdownParse parses tables, merges, and referenced cells") {
     auto proj = markdownParse(md);
     CHECK(proj.blocks.size() == 1u);
     CHECK(proj.blocks[0].kind == "table");
-    const auto& t = *proj.blocks[0].table;
+    const auto &t = *proj.blocks[0].table;
     CHECK(t.rows.size() == 3u);
     CHECK(t.merges.size() == 1u);
     CHECK(t.merges[0].row == 1);

@@ -25,38 +25,26 @@ inline Block foundation_table(std::string key) {
 TEST_CASE("foundation effective style uses normal then heading then explicit run overrides") {
     TabModel tab;
     tab.namedStyles = slimr::Json::object_t{{"styles", slimr::Json::array_t{
-        slimr::Json::object_t{
-            {"namedStyleType", "NORMAL_TEXT"},
-            {"paragraphStyle", slimr::Json::object_t{{"alignment", "START"}}},
-            {"textStyle", slimr::Json::object_t{
-                {"fontSize", slimr::Json::object_t{{"magnitude", 11}, {"unit", "PT"}}}
-            }}
-        },
-        slimr::Json::object_t{
-            {"namedStyleType", "HEADING_1"},
-            {"paragraphStyle", slimr::Json::object_t{
-                {"spaceAbove", slimr::Json::object_t{{"magnitude", 20}, {"unit", "PT"}}}
-            }},
-            {"textStyle", slimr::Json::object_t{
-                {"bold", true}, {"fontSize", slimr::Json::object_t{{"magnitude", 20}, {"unit", "PT"}}}
-            }}
-        }
-    }}};
+                                                           slimr::Json::object_t{
+                                                               {"namedStyleType", "NORMAL_TEXT"},
+                                                               {"paragraphStyle", slimr::Json::object_t{{"alignment", "START"}}},
+                                                               {"textStyle", slimr::Json::object_t{
+                                                                                 {"fontSize", slimr::Json::object_t{{"magnitude", 11}, {"unit", "PT"}}}}}},
+                                                           slimr::Json::object_t{{"namedStyleType", "HEADING_1"}, {"paragraphStyle", slimr::Json::object_t{{"spaceAbove", slimr::Json::object_t{{"magnitude", 20}, {"unit", "PT"}}}}}, {"textStyle", slimr::Json::object_t{{"bold", true}, {"fontSize", slimr::Json::object_t{{"magnitude", 20}, {"unit", "PT"}}}}}}}}};
     auto paragraph = foundation_paragraph("o1").as_paragraph();
     paragraph.headingId = "h1";
     paragraph.style = slimr::Json::object_t{{"namedStyleType", "HEADING_1"}};
     const JsonObject heading = slimr::Json::object_t{
         // Native style canonicalization represents dimensions as doubles (JS has one number type).
-        {"bold", true}, {"fontSize", slimr::Json::object_t{{"magnitude", 20.0}, {"unit", "PT"}}}
-    };
+        {"bold", true},
+        {"fontSize", slimr::Json::object_t{{"magnitude", 20.0}, {"unit", "PT"}}}};
     CHECK(textStyleEffective(tab, paragraph, make_json_object()) == heading);
     auto explicit_false = heading;
     explicit_false["bold"] = false;
     CHECK(textStyleEffective(tab, paragraph, slimr::Json::object_t{{"bold", false}}) == explicit_false);
     paragraph.style = make_json_object();
     const JsonObject normal = slimr::Json::object_t{
-        {"fontSize", slimr::Json::object_t{{"magnitude", 11.0}, {"unit", "PT"}}}
-    };
+        {"fontSize", slimr::Json::object_t{{"magnitude", 11.0}, {"unit", "PT"}}}};
     CHECK(textStyleEffective(tab, paragraph, make_json_object()) == normal);
 }
 
@@ -73,22 +61,19 @@ TEST_CASE("foundation heading classification retains title subtitle and absent d
 
 TEST_CASE("foundation container diagnostics distinguish terminal and adjacent tables") {
     const auto terminal = containerValidate({foundation_paragraph("o1"), foundation_table("o2")});
-    CHECK(std::any_of(terminal.begin(), terminal.end(), [](const auto& problem) {
+    CHECK(std::any_of(terminal.begin(), terminal.end(), [](const auto &problem) {
         return problem.find("V1") != std::string::npos;
     }));
-    const auto adjacent = containerValidate({
-        foundation_paragraph("o1"), foundation_table("o2"), foundation_table("o3"), foundation_paragraph("o4")
-    });
-    CHECK(std::any_of(adjacent.begin(), adjacent.end(), [](const auto& problem) {
+    const auto adjacent = containerValidate({foundation_paragraph("o1"), foundation_table("o2"), foundation_table("o3"), foundation_paragraph("o4")});
+    CHECK(std::any_of(adjacent.begin(), adjacent.end(), [](const auto &problem) {
         return problem.find("block 2 (table)") != std::string::npos;
     }));
     SectionBreakBlock section;
     section.key = "o4";
     section.sectionStyle = make_json_object();
-    CHECK(containerValidate({
-        foundation_paragraph("o1"), foundation_table("o2"), foundation_paragraph("o3"),
-        Block(section), foundation_paragraph("o5")
-    }).empty());
+    CHECK(containerValidate({foundation_paragraph("o1"), foundation_table("o2"), foundation_paragraph("o3"),
+                             Block(section), foundation_paragraph("o5")})
+              .empty());
 }
 
 TEST_CASE("foundation normalization repairs exact gaps and preserves stable keys of valid blocks") {
@@ -97,7 +82,8 @@ TEST_CASE("foundation normalization repairs exact gaps and preserves stable keys
     const std::vector<Block> invalid{foundation_table("o1"), foundation_table("o2")};
     const auto normalized = containerNormalize(invalid, keys, stamp);
     std::vector<std::string> kinds;
-    for (const auto& block : normalized) kinds.push_back(block.kind);
+    for (const auto &block : normalized)
+        kinds.push_back(block.kind);
     CHECK(kinds == std::vector<std::string>{"paragraph", "table", "paragraph", "table", "paragraph"});
     CHECK(containerValidate(normalized).empty());
     REQUIRE(normalized.size() == 5);
@@ -111,8 +97,7 @@ TEST_CASE("foundation normalization repairs exact gaps and preserves stable keys
     CHECK(normalized[0].key != normalized[2].key);
     CHECK(normalized[2].key != normalized[4].key);
     const std::vector<Block> valid{
-        foundation_paragraph("o1"), foundation_table("o2"), foundation_paragraph("o3")
-    };
+        foundation_paragraph("o1"), foundation_table("o2"), foundation_paragraph("o3")};
     // Native value semantics deep-copy blocks; identity is the unchanged stable key plus full value.
     CHECK(containerNormalize(valid, keys, stamp) == valid);
 }

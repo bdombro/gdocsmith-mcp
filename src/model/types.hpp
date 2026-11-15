@@ -16,14 +16,14 @@ struct Range {
     int end = 0;
     int start = 0;
 
-    bool operator==(const Range&) const = default;
+    bool operator==(const Range &) const = default;
 };
 
 struct EditStamp {
     bool force = false;
     int tabIndex = 0;
 
-    bool operator==(const EditStamp&) const = default;
+    bool operator==(const EditStamp &) const = default;
 };
 
 struct Tombstone {
@@ -32,7 +32,7 @@ struct Tombstone {
     EditStamp stamp;
     std::string tabId;
 
-    bool operator==(const Tombstone&) const = default;
+    bool operator==(const Tombstone &) const = default;
 };
 
 struct BulletRef {
@@ -40,7 +40,7 @@ struct BulletRef {
     int nestingLevel = 0;
     std::optional<JsonObject> textStyle;
 
-    bool operator==(const BulletRef&) const = default;
+    bool operator==(const BulletRef &) const = default;
 };
 
 struct TextRun {
@@ -51,7 +51,7 @@ struct TextRun {
     std::optional<std::vector<std::string>> suggestedInsertionIds;
     std::optional<JsonObject> suggestedTextStyleChanges;
 
-    bool operator==(const TextRun&) const = default;
+    bool operator==(const TextRun &) const = default;
 };
 
 using AtomType = std::string;
@@ -86,7 +86,7 @@ struct AtomCreate {
     std::optional<double> widthPt;
     std::optional<std::string> email;
 
-    bool operator==(const AtomCreate&) const = default;
+    bool operator==(const AtomCreate &) const = default;
 };
 
 struct Atom {
@@ -99,7 +99,7 @@ struct Atom {
     std::optional<std::string> replaceUri;
     std::optional<JsonObject> style;
 
-    bool operator==(const Atom&) const = default;
+    bool operator==(const Atom &) const = default;
 };
 
 struct Inline {
@@ -179,7 +179,7 @@ struct Inline {
         };
     }
 
-    bool operator==(const Inline&) const = default;
+    bool operator==(const Inline &) const = default;
 };
 
 struct NewlineMark {
@@ -188,7 +188,7 @@ struct NewlineMark {
     std::optional<std::vector<std::string>> suggestedInsertionIds;
     std::optional<JsonObject> suggestedTextStyleChanges;
 
-    bool operator==(const NewlineMark&) const = default;
+    bool operator==(const NewlineMark &) const = default;
 };
 
 struct ParagraphBlock {
@@ -205,14 +205,14 @@ struct ParagraphBlock {
     std::optional<EditStamp> stamp;
     std::optional<JsonObject> suggestionsRaw;
 
-    bool operator==(const ParagraphBlock&) const = default;
+    bool operator==(const ParagraphBlock &) const = default;
 };
 
 struct ColumnModel {
     std::string key;
     JsonObject props;
 
-    bool operator==(const ColumnModel&) const = default;
+    bool operator==(const ColumnModel &) const = default;
 };
 
 struct Block;
@@ -226,7 +226,7 @@ struct CellModel {
     std::optional<std::vector<std::string>> suggestedInsertionIds;
     std::optional<JsonObject> suggestedStyleChanges;
 
-    bool operator==(const CellModel& o) const;
+    bool operator==(const CellModel &o) const;
 };
 
 struct RowModel {
@@ -238,7 +238,7 @@ struct RowModel {
     std::optional<std::vector<std::string>> suggestedInsertionIds;
     std::optional<JsonObject> suggestedStyleChanges;
 
-    bool operator==(const RowModel& o) const;
+    bool operator==(const RowModel &o) const;
 };
 
 struct TableBlock {
@@ -252,7 +252,7 @@ struct TableBlock {
     std::optional<std::vector<std::string>> suggestedDeletionIds;
     std::optional<std::vector<std::string>> suggestedInsertionIds;
 
-    bool operator==(const TableBlock& o) const;
+    bool operator==(const TableBlock &o) const;
 };
 
 struct TocBlock {
@@ -262,13 +262,13 @@ struct TocBlock {
     Range origin;
     JsonObject raw;
 
-    bool operator==(const TocBlock&) const = default;
+    bool operator==(const TocBlock &) const = default;
 };
 
 struct SectionBreakBlock {
     struct Create {
         std::string sectionType = "CONTINUOUS"; // "CONTINUOUS" | "NEXT_PAGE"
-        bool operator==(const Create&) const = default;
+        bool operator==(const Create &) const = default;
     };
     std::string kind = "sectionBreak";
     std::string key;
@@ -276,7 +276,7 @@ struct SectionBreakBlock {
     std::optional<Create> create;
     std::optional<Range> origin;
 
-    bool operator==(const SectionBreakBlock&) const = default;
+    bool operator==(const SectionBreakBlock &) const = default;
 };
 
 struct Block {
@@ -318,7 +318,7 @@ struct Block {
           origin(tc.origin),
           toc(std::make_shared<TocBlock>(std::move(tc))) {}
 
-    Block(const Block& other)
+    Block(const Block &other)
         : kind(other.kind),
           key(other.key),
           origin(other.origin),
@@ -328,10 +328,11 @@ struct Block {
           sectionBreak(other.sectionBreak ? std::make_shared<SectionBreakBlock>(*other.sectionBreak) : nullptr),
           toc(other.toc ? std::make_shared<TocBlock>(*other.toc) : nullptr) {}
 
-    Block(Block&& other) noexcept = default;
+    Block(Block &&other) noexcept = default;
 
-    Block& operator=(const Block& other) {
-        if (this == &other) return *this;
+    Block &operator=(const Block &other) {
+        if (this == &other)
+            return *this;
         kind = other.kind;
         key = other.key;
         origin = other.origin;
@@ -343,36 +344,41 @@ struct Block {
         return *this;
     }
 
-    Block& operator=(Block&& other) noexcept = default;
+    Block &operator=(Block &&other) noexcept = default;
 
     bool is_paragraph() const { return kind == "paragraph" && paragraph != nullptr; }
     bool is_table() const { return kind == "table" && table != nullptr; }
     bool is_section_break() const { return kind == "sectionBreak" && sectionBreak != nullptr; }
     bool is_toc() const { return kind == "toc" && toc != nullptr; }
 
-    ParagraphBlock& as_paragraph() { return *paragraph; }
-    const ParagraphBlock& as_paragraph() const { return *paragraph; }
+    ParagraphBlock &as_paragraph() { return *paragraph; }
+    const ParagraphBlock &as_paragraph() const { return *paragraph; }
 
-    TableBlock& as_table() { return *table; }
-    const TableBlock& as_table() const { return *table; }
+    TableBlock &as_table() { return *table; }
+    const TableBlock &as_table() const { return *table; }
 
-    SectionBreakBlock& as_section_break() { return *sectionBreak; }
-    const SectionBreakBlock& as_section_break() const { return *sectionBreak; }
+    SectionBreakBlock &as_section_break() { return *sectionBreak; }
+    const SectionBreakBlock &as_section_break() const { return *sectionBreak; }
 
-    TocBlock& as_toc() { return *toc; }
-    const TocBlock& as_toc() const { return *toc; }
+    TocBlock &as_toc() { return *toc; }
+    const TocBlock &as_toc() const { return *toc; }
 
-    bool operator==(const Block& o) const {
-        if (kind != o.kind || key != o.key || origin != o.origin || stamp != o.stamp) return false;
-        if (is_paragraph()) return o.is_paragraph() && *paragraph == *o.paragraph;
-        if (is_table()) return o.is_table() && *table == *o.table;
-        if (is_section_break()) return o.is_section_break() && *sectionBreak == *o.sectionBreak;
-        if (is_toc()) return o.is_toc() && *toc == *o.toc;
+    bool operator==(const Block &o) const {
+        if (kind != o.kind || key != o.key || origin != o.origin || stamp != o.stamp)
+            return false;
+        if (is_paragraph())
+            return o.is_paragraph() && *paragraph == *o.paragraph;
+        if (is_table())
+            return o.is_table() && *table == *o.table;
+        if (is_section_break())
+            return o.is_section_break() && *sectionBreak == *o.sectionBreak;
+        if (is_toc())
+            return o.is_toc() && *toc == *o.toc;
         return true;
     }
 };
 
-inline bool CellModel::operator==(const CellModel& o) const {
+inline bool CellModel::operator==(const CellModel &o) const {
     return key == o.key && style == o.style && origin == o.origin &&
            suggestedDeletionIds == o.suggestedDeletionIds &&
            suggestedInsertionIds == o.suggestedInsertionIds &&
@@ -380,7 +386,7 @@ inline bool CellModel::operator==(const CellModel& o) const {
            blocks == o.blocks;
 }
 
-inline bool RowModel::operator==(const RowModel& o) const {
+inline bool RowModel::operator==(const RowModel &o) const {
     return key == o.key && style == o.style && origin == o.origin &&
            suggestedDeletionIds == o.suggestedDeletionIds &&
            suggestedInsertionIds == o.suggestedInsertionIds &&
@@ -388,7 +394,7 @@ inline bool RowModel::operator==(const RowModel& o) const {
            cells == o.cells;
 }
 
-inline bool TableBlock::operator==(const TableBlock& o) const {
+inline bool TableBlock::operator==(const TableBlock &o) const {
     return kind == o.kind && key == o.key && origin == o.origin &&
            is_protected == o.is_protected && stamp == o.stamp &&
            suggestedDeletionIds == o.suggestedDeletionIds &&
@@ -401,7 +407,7 @@ struct ListDef {
     std::vector<JsonObject> nestingLevels;
     std::optional<BulletPreset> preset;
 
-    bool operator==(const ListDef&) const = default;
+    bool operator==(const ListDef &) const = default;
 };
 
 using SegmentKind = std::string;
@@ -411,29 +417,29 @@ struct TabModel;
 
 struct SegmentModel {
     std::string id;
-    SegmentKind kind; // "footer" | "footnote" | "header"
+    SegmentKind kind;             // "footer" | "footnote" | "header"
     SegmentType type = "default"; // "default" | "even" | "first"
     std::optional<int> section;
     std::shared_ptr<TabModel> original;
     std::shared_ptr<TabModel> tab;
 
-    bool operator==(const SegmentModel& o) const;
+    bool operator==(const SegmentModel &o) const;
 };
 
 struct NamedRangeDef {
     struct Edge {
         std::string key;
         int offset = 0;
-        bool operator==(const Edge&) const = default;
+        bool operator==(const Edge &) const = default;
     };
     struct EdgePair {
         Edge end;
         Edge start;
-        bool operator==(const EdgePair&) const = default;
+        bool operator==(const EdgePair &) const = default;
     };
     struct RangePart : Range {
         std::optional<std::string> segmentId;
-        bool operator==(const RangePart&) const = default;
+        bool operator==(const RangePart &) const = default;
     };
 
     std::string name;
@@ -442,7 +448,7 @@ struct NamedRangeDef {
     std::optional<EdgePair> create;
     std::optional<EdgePair> expect;
 
-    bool operator==(const NamedRangeDef&) const = default;
+    bool operator==(const NamedRangeDef &) const = default;
 };
 
 struct TabModel {
@@ -471,16 +477,18 @@ struct TabModel {
     std::optional<JsonObject> suggestedDocumentStyleChanges;
     std::optional<JsonObject> suggestedNamedStylesChanges;
 
-    bool operator==(const TabModel& o) const;
+    bool operator==(const TabModel &o) const;
 };
 
-inline bool SegmentModel::operator==(const SegmentModel& o) const {
-    if (id != o.id || kind != o.kind || type != o.type || section != o.section) return false;
-    if (tab && o.tab) return *tab == *o.tab;
+inline bool SegmentModel::operator==(const SegmentModel &o) const {
+    if (id != o.id || kind != o.kind || type != o.type || section != o.section)
+        return false;
+    if (tab && o.tab)
+        return *tab == *o.tab;
     return tab == o.tab;
 }
 
-inline bool TabModel::operator==(const TabModel& o) const {
+inline bool TabModel::operator==(const TabModel &o) const {
     return tabId == o.tabId && title == o.title && isNew == o.isNew &&
            parentTabId == o.parentTabId && iconEmoji == o.iconEmoji &&
            blocks == o.blocks && segments == o.segments &&
@@ -499,7 +507,7 @@ struct DocModel {
     std::optional<std::string> suggestionsViewMode;
     std::vector<TabModel> tabs;
 
-    bool operator==(const DocModel&) const = default;
+    bool operator==(const DocModel &) const = default;
 };
 
 struct IdentityTransfer {
@@ -508,7 +516,7 @@ struct IdentityTransfer {
     std::string tabId;
     std::optional<std::string> toKey;
 
-    bool operator==(const IdentityTransfer&) const = default;
+    bool operator==(const IdentityTransfer &) const = default;
 };
 
 } // namespace gdocsmith::model

@@ -12,22 +12,18 @@ TEST_SUITE("emulator::emulate_structure") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertPageBreak", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}}
-                }}
-            }
-        };
+                                        {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}}}}}};
         auto res = requests_emulate(doc, reqs);
-        auto content = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
-                           .get<slimr::Json::array_t>();
+        auto content = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
         // Section break + 2 paragraphs
         CHECK(content.size() == 3);
-        const auto& p1_elems = content[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
+        const auto &p1_elems = content[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
         CHECK(p1_elems.size() == 3);
         CHECK(p1_elems[0]["textRun"]["content"].get<std::string>() == "abc");
         CHECK(p1_elems[1].contains("pageBreak"));
         CHECK(p1_elems[2]["textRun"]["content"].get<std::string>() == "\n");
 
-        const auto& p2_elems = content[2]["paragraph"]["elements"].get<slimr::Json::array_t>();
+        const auto &p2_elems = content[2]["paragraph"]["elements"].get<slimr::Json::array_t>();
         CHECK(p2_elems[0]["textRun"]["content"].get<std::string>() == "def\n");
     }
 
@@ -36,14 +32,10 @@ TEST_SUITE("emulator::emulate_structure") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertSectionBreak", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}},
-                    {"sectionType", "NEXT_PAGE"}
-                }}
-            }
-        };
+                                           {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}},
+                                           {"sectionType", "NEXT_PAGE"}}}}};
         auto res = requests_emulate(doc, reqs);
-        auto content = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
-                           .get<slimr::Json::array_t>();
+        auto content = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
         // Leading sectionBreak, p1, sectionBreak, p2
         CHECK(content.size() == 4);
         CHECK(content[0].contains("sectionBreak"));
@@ -58,26 +50,11 @@ TEST_SUITE("emulator::emulate_structure") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"insertPerson", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(2)}}},
-                    {"personProperties", slimr::Json::object_t{{"email", "a@example.com"}}}
-                }}
-            },
-            slimr::Json::object_t{
-                {"insertDate", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(3)}}},
-                    {"dateElementProperties", slimr::Json::object_t{{"timestamp", "2026-01-15T00:00:00Z"}}}
-                }}
-            },
-            slimr::Json::object_t{
-                {"insertRichLink", slimr::Json::object_t{
-                    {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}},
-                    {"richLinkProperties", slimr::Json::object_t{{"uri", "https://example.com"}}}
-                }}
-            }
-        };
+                                     {"location", slimr::Json::object_t{{"index", static_cast<int64_t>(2)}}},
+                                     {"personProperties", slimr::Json::object_t{{"email", "a@example.com"}}}}}},
+            slimr::Json::object_t{{"insertDate", slimr::Json::object_t{{"location", slimr::Json::object_t{{"index", static_cast<int64_t>(3)}}}, {"dateElementProperties", slimr::Json::object_t{{"timestamp", "2026-01-15T00:00:00Z"}}}}}}, slimr::Json::object_t{{"insertRichLink", slimr::Json::object_t{{"location", slimr::Json::object_t{{"index", static_cast<int64_t>(4)}}}, {"richLinkProperties", slimr::Json::object_t{{"uri", "https://example.com"}}}}}}};
         auto res = requests_emulate(doc, reqs);
-        auto p_elems = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
-                           .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
+        auto p_elems = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"].get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
         CHECK(p_elems.size() == 5); // "a", person, date, richLink, "\n"
         CHECK(p_elems[1].contains("person"));
         CHECK(p_elems[2].contains("dateElement"));
@@ -89,53 +66,39 @@ TEST_SUITE("emulator::emulate_structure") {
         std::vector<slimr::Json> add_reqs = {
             slimr::Json::object_t{
                 {"addDocumentTab", slimr::Json::object_t{
-                    {"tabProperties", slimr::Json::object_t{
-                        {"parentTabId", "t.0"},
-                        {"title", "New Tab"}
-                    }}
-                }}
-            }
-        };
+                                       {"tabProperties", slimr::Json::object_t{
+                                                             {"parentTabId", "t.0"},
+                                                             {"title", "New Tab"}}}}}}};
         auto res = requests_emulate(doc, add_reqs);
-        const auto& roots = res.json["tabs"].get<slimr::Json::array_t>();
+        const auto &roots = res.json["tabs"].get<slimr::Json::array_t>();
         CHECK(roots.size() == 1);
         CHECK(roots[0].contains("childTabs"));
-        const auto& children = roots[0]["childTabs"].get<slimr::Json::array_t>();
+        const auto &children = roots[0]["childTabs"].get<slimr::Json::array_t>();
         CHECK(children.size() == 1);
         CHECK(children[0]["tabProperties"]["title"].get<std::string>() == "New Tab");
         std::string new_tab_id = children[0]["tabProperties"]["tabId"].get<std::string>();
 
         std::vector<slimr::Json> del_reqs = {
             slimr::Json::object_t{
-                {"deleteTab", slimr::Json::object_t{{"tabId", new_tab_id}}}
-            }
-        };
+                {"deleteTab", slimr::Json::object_t{{"tabId", new_tab_id}}}}};
         auto res_del = requests_emulate(res.json, del_reqs);
         CHECK(res_del.json["tabs"].get<slimr::Json::array_t>().size() == 1);
     }
 
     TEST_CASE("indexed parent and child tab insertion preserves tab identity and order") {
-        auto parent = requests_emulate(make_simple_doc({"original"}), {
-            slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
-                {"tabProperties", slimr::Json::object_t{
-                    {"title", "Parent"}, {"index", int64_t{0}}
-                }}
-            }}}
-        });
+        auto parent = requests_emulate(make_simple_doc({"original"}), {slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
+                                                                                                                    {"tabProperties", slimr::Json::object_t{
+                                                                                                                                          {"title", "Parent"}, {"index", int64_t{0}}}}}}}});
         auto parent_id = parent.replies[0]["addDocumentTab"]["tabProperties"]["tabId"].get<std::string>();
-        auto child = requests_emulate(parent.json, {
-            slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
-                {"tabProperties", slimr::Json::object_t{
-                    {"title", "Child"}, {"parentTabId", parent_id}, {"index", int64_t{0}}
-                }}
-            }}}
-        });
-        const auto& roots = child.json["tabs"].get<slimr::Json::array_t>();
+        auto child = requests_emulate(parent.json, {slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
+                                                                                                 {"tabProperties", slimr::Json::object_t{
+                                                                                                                       {"title", "Child"}, {"parentTabId", parent_id}, {"index", int64_t{0}}}}}}}});
+        const auto &roots = child.json["tabs"].get<slimr::Json::array_t>();
         REQUIRE(roots.size() == 2);
         CHECK(roots[0]["tabProperties"]["tabId"].get<std::string>() == parent_id);
         CHECK(roots[1]["tabProperties"]["tabId"].get<std::string>() == "t.0");
         CHECK(doc_plain_text(child.json, 1) == "original\n");
-        const auto& children = roots[0]["childTabs"].get<slimr::Json::array_t>();
+        const auto &children = roots[0]["childTabs"].get<slimr::Json::array_t>();
         REQUIRE(children.size() == 1);
         CHECK(children[0]["tabProperties"]["parentTabId"].get<std::string>() == parent_id);
         CHECK(children[0]["tabProperties"]["tabId"] ==
@@ -147,17 +110,12 @@ TEST_SUITE("emulator::emulate_structure") {
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"updateDocumentStyle", slimr::Json::object_t{
-                    {"documentStyle", slimr::Json::object_t{
-                        {"pageSize", slimr::Json::object_t{
-                            {"width", slimr::Json::object_t{{"magnitude", 612.0}, {"unit", "PT"}}}
-                        }}
-                    }},
-                    {"fields", "pageSize.width"}
-                }}
-            }
-        };
+                                            {"documentStyle", slimr::Json::object_t{
+                                                                  {"pageSize", slimr::Json::object_t{
+                                                                                   {"width", slimr::Json::object_t{{"magnitude", 612.0}, {"unit", "PT"}}}}}}},
+                                            {"fields", "pageSize.width"}}}}};
         auto res = requests_emulate(doc, reqs);
-        const auto& ds = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["documentStyle"];
+        const auto &ds = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["documentStyle"];
         CHECK(ds["pageSize"]["width"]["magnitude"].as<double>() == 612.0);
     }
 }
