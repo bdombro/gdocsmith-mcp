@@ -5,10 +5,13 @@
 #include <fcntl.h>
 #include <openssl/evp.h>
 #include <pwd.h>
+#include <spawn.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <atomic>
+#include <cerrno>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -25,6 +28,8 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+extern char **environ;
 
 namespace gdocsmith::engine {
 
@@ -134,32 +139,166 @@ inline std::string get_homedir() {
     return "";
 }
 
-inline std::string get_tmpdir() {
-    const char *t = getenv("TMPDIR");
-    if (t && *t) {
-        std::string s(t);
-        while (s.size() > 1 && s.back() == '/')
-            s.pop_back();
-        return s;
+struct BrewFd {
+    int fd = -1;
+    BrewFd() = default;
+    explicit BrewFd(int f) noexcept : fd(f) {}
+    ~BrewFd() { reset(); }
+    BrewFd(const BrewFd &) = delete;
+    BrewFd &operator=(const BrewFd &) = delete;
+    void reset(int next = -1) noexcept {
+        if (fd >= 0) {
+            ::close(fd);
+        }
+        fd = next;
     }
-    return "/tmp";
+    [[nodiscard]] int get() const noexcept { return fd; }
+};
+
+struct BrewSpawnActions {
+    posix_spawn_file_actions_t actions{};
+    bool active = false;
+    BrewSpawnActions() {
+        if (posix_spawn_file_actions_init(&actions) == 0) {
+            active = true;
+        }
+    }
+    ~BrewSpawnActions() {
+        if (active) {
+            posix_spawn_file_actions_destroy(&actions);
+        }
+    }
+    BrewSpawnActions(const BrewSpawnActions &) = delete;
+    BrewSpawnActions &operator=(const BrewSpawnActions &) = delete;
+};
+
+struct BrewChildPid {
+    pid_t pid = -1;
+    bool reaped = false;
+    BrewChildPid() = default;
+    ~BrewChildPid() {
+        if (pid > 0 && !reaped) {
+            int status = 0;
+            while (waitpid(pid, &status, 0) < 0 && errno == EINTR) {
+            }
+        }
+    }
+    BrewChildPid(const BrewChildPid &) = delete;
+    BrewChildPid &operator=(const BrewChildPid &) = delete;
+    bool waitSuccess() {
+        if (pid <= 0) {
+            return false;
+        }
+        int status = 0;
+        pid_t w = -1;
+        while ((w = waitpid(pid, &status, 0)) < 0 && errno == EINTR) {
+        }
+        reaped = true;
+        return w == pid && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    }
+};
+
+inline std::string exec_brew_prefix() {
+    int pipeRaw[2]{-1, -1};
+    if (pipe(pipeRaw) != 0) {
+        return "";
+    }
+    BrewFd readFd(pipeRaw[0]);
+    BrewFd writeFd(pipeRaw[1]);
+    if (fcntl(readFd.get(), F_SETFD, FD_CLOEXEC) != 0 ||
+        fcntl(writeFd.get(), F_SETFD, FD_CLOEXEC) != 0) {
+        return "";
+    }
+
+    BrewSpawnActions actions;
+    if (!actions.active) {
+        return "";
+    }
+    posix_spawn_file_actions_addopen(&actions.actions, STDIN_FILENO, "/dev/null", O_RDONLY, 0);
+    posix_spawn_file_actions_addclose(&actions.actions, readFd.get());
+    posix_spawn_file_actions_adddup2(&actions.actions, writeFd.get(), STDOUT_FILENO);
+    posix_spawn_file_actions_addclose(&actions.actions, writeFd.get());
+
+    char prog[] = "brew";
+    char arg1[] = "--prefix";
+    char *argv[] = {prog, arg1, nullptr};
+    BrewChildPid child;
+    const int rc = posix_spawnp(&child.pid, "brew", &actions.actions, nullptr, argv, environ);
+    writeFd.reset();
+    if (rc != 0 || child.pid <= 0) {
+        child.pid = -1;
+        return "";
+    }
+
+    std::string out;
+    char buf[512];
+    while (out.size() < 4096) {
+        const ssize_t n = read(readFd.get(), buf, sizeof(buf));
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            break;
+        }
+        if (n == 0)
+            break;
+        out.append(buf, static_cast<size_t>(n));
+    }
+
+    if (!child.waitSuccess()) {
+        return "";
+    }
+    while (!out.empty() && (out.back() == '\n' || out.back() == '\r' || out.back() == '/')) {
+        out.pop_back();
+    }
+    return out;
 }
 
-inline std::string temporary_root() {
-    uid_t uid = getuid();
-    std::string username = std::to_string(uid);
-    struct passwd *pw = getpwuid(uid);
-    if (pw && pw->pw_name) {
-        username = pw->pw_name;
+inline std::string brew_prefix() {
+    const char *env = getenv("HOMEBREW_PREFIX");
+    if (env && *env) {
+        std::string s(env);
+        while (s.size() > 1 && s.back() == '/') {
+            s.pop_back();
+        }
+        return s;
     }
-    std::string root = get_tmpdir() + "/gdocsmith-" + username;
-    mkdir(root.c_str(), 0700);
+
+    static std::once_flag once;
+    static std::string cached;
+    std::call_once(once, [] {
+        cached = exec_brew_prefix();
+        if (cached.empty()) {
+#if defined(__APPLE__) && defined(__aarch64__)
+            cached = "/opt/homebrew";
+#elif defined(__APPLE__)
+            cached = "/usr/local";
+#else
+            cached = "/home/linuxbrew/.linuxbrew";
+#endif
+        }
+    });
+    return cached;
+}
+
+inline std::string brew_var_root() {
+    const uid_t uid = getuid();
+    const std::string root = brew_prefix() + "/var/gdocsmith-mcp";
+
+    std::error_code ec;
+    std::filesystem::create_directories(root, ec);
+    if (ec) {
+        throw std::runtime_error("Cannot create " + root + ": " + ec.message() + "; set GDOCSMITH_WORK_DIR");
+    }
 
     struct stat st{};
-    if (lstat(root.c_str(), &st) != 0 || !S_ISDIR(st.st_mode) || st.st_uid != uid || (st.st_mode & 0077) != 0) {
-        throw std::runtime_error(root + " is not a private directory owned by this user; remove it or set GDOCSMITH_WORK_DIR");
+    if (lstat(root.c_str(), &st) != 0 || !S_ISDIR(st.st_mode) || st.st_uid != uid) {
+        throw std::runtime_error(root + " is not a private directory owned by this user; set GDOCSMITH_WORK_DIR");
     }
-    return root;
+    if (chmod(root.c_str(), 0700) != 0 || lstat(root.c_str(), &st) != 0 || (st.st_mode & 0077) != 0) {
+        throw std::runtime_error(root + " could not be restricted to mode 0700; set GDOCSMITH_WORK_DIR");
+    }
+    const std::filesystem::path canonical = std::filesystem::weakly_canonical(root, ec);
+    return ec ? root : canonical.string();
 }
 
 inline void atomic_write(const std::string &path, std::string_view value, mode_t mode = 0600) {
@@ -238,7 +377,7 @@ inline std::string artifactRoot() {
     }
 
     if (!detail::g_workspace_root.has_value() || detail::g_workspace_root->empty()) {
-        return detail::temporary_root();
+        return detail::brew_var_root();
     }
 
     std::filesystem::path ws(*detail::g_workspace_root);
@@ -251,12 +390,12 @@ inline std::string artifactRoot() {
         std::error_code homeEc;
         auto normHome = std::filesystem::weakly_canonical(home, homeEc);
         if (!homeEc && wsStr == normHome.string()) {
-            return detail::temporary_root();
+            return detail::brew_var_root();
         }
     }
 
     if (wsStr == "/" || ws.root_path() == ws) {
-        return detail::temporary_root();
+        return detail::brew_var_root();
     }
 
     std::filesystem::path rootPath = ws / ".gdocsmith";

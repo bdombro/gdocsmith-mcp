@@ -30,11 +30,19 @@ TEST_CASE("artifacts - artifactRoot precedence") {
     TempDir tmp;
     const char *prevEnv = getenv("GDOCSMITH_WORK_DIR");
     std::string prevEnvStr = prevEnv ? prevEnv : "";
+    const char *prevBrew = getenv("HOMEBREW_PREFIX");
+    std::string prevBrewStr = prevBrew ? prevBrew : "";
     unsetenv("GDOCSMITH_WORK_DIR");
+    setenv("HOMEBREW_PREFIX", tmp.path.c_str(), 1);
 
     artifactWorkspaceSet(std::nullopt);
-    std::string tempRoot = artifactRoot();
-    CHECK(tempRoot.find("gdocsmith-") != std::string::npos);
+    const std::string expectedBrewRoot = std::filesystem::weakly_canonical(tmp.path / "var" / "gdocsmith-mcp").string();
+    std::string brewRoot = artifactRoot();
+    CHECK_EQ(brewRoot, expectedBrewRoot);
+
+    struct stat st{};
+    CHECK_EQ(stat(brewRoot.c_str(), &st), 0);
+    CHECK_EQ(st.st_mode & 0777, 0700);
 
     // Workspace set
     artifactWorkspaceSet(tmp.path.string());
@@ -52,19 +60,81 @@ TEST_CASE("artifacts - artifactRoot precedence") {
     } else {
         unsetenv("GDOCSMITH_WORK_DIR");
     }
+    if (!prevBrewStr.empty()) {
+        setenv("HOMEBREW_PREFIX", prevBrewStr.c_str(), 1);
+    } else {
+        unsetenv("HOMEBREW_PREFIX");
+    }
     artifactWorkspaceSet(std::nullopt);
 }
 
 TEST_CASE("artifacts - workspace is home or root") {
     using namespace gdocsmith::engine;
+    TempDir tmp;
+    const char *prevEnv = getenv("GDOCSMITH_WORK_DIR");
+    std::string prevEnvStr = prevEnv ? prevEnv : "";
+    const char *prevBrew = getenv("HOMEBREW_PREFIX");
+    std::string prevBrewStr = prevBrew ? prevBrew : "";
     unsetenv("GDOCSMITH_WORK_DIR");
+    setenv("HOMEBREW_PREFIX", tmp.path.c_str(), 1);
+
+    const std::string expectedBrewRoot = std::filesystem::weakly_canonical(tmp.path / "var" / "gdocsmith-mcp").string();
     artifactWorkspaceSet("/");
-    CHECK(artifactRoot().find("gdocsmith-") != std::string::npos);
+    CHECK_EQ(artifactRoot(), expectedBrewRoot);
 
     std::string home = detail::get_homedir();
     if (!home.empty()) {
         artifactWorkspaceSet(home);
-        CHECK(artifactRoot().find("gdocsmith-") != std::string::npos);
+        CHECK_EQ(artifactRoot(), expectedBrewRoot);
+    }
+    if (!prevEnvStr.empty()) {
+        setenv("GDOCSMITH_WORK_DIR", prevEnvStr.c_str(), 1);
+    } else {
+        unsetenv("GDOCSMITH_WORK_DIR");
+    }
+    if (!prevBrewStr.empty()) {
+        setenv("HOMEBREW_PREFIX", prevBrewStr.c_str(), 1);
+    } else {
+        unsetenv("HOMEBREW_PREFIX");
+    }
+    artifactWorkspaceSet(std::nullopt);
+}
+
+TEST_CASE("artifacts - tightens pre-existing brew var directory permissions to 0700") {
+    using namespace gdocsmith::engine;
+    TempDir tmp;
+    const char *prevEnv = getenv("GDOCSMITH_WORK_DIR");
+    std::string prevEnvStr = prevEnv ? prevEnv : "";
+    const char *prevBrew = getenv("HOMEBREW_PREFIX");
+    std::string prevBrewStr = prevBrew ? prevBrew : "";
+    unsetenv("GDOCSMITH_WORK_DIR");
+    setenv("HOMEBREW_PREFIX", tmp.path.c_str(), 1);
+
+    const auto varDir = tmp.path / "var" / "gdocsmith-mcp";
+    std::filesystem::create_directories(varDir);
+    chmod(varDir.c_str(), 0755);
+
+    struct stat before{};
+    REQUIRE_EQ(stat(varDir.c_str(), &before), 0);
+    REQUIRE_EQ(before.st_mode & 0777, 0755);
+
+    artifactWorkspaceSet(std::nullopt);
+    const std::string root = artifactRoot();
+    CHECK_EQ(root, std::filesystem::weakly_canonical(varDir).string());
+
+    struct stat after{};
+    REQUIRE_EQ(stat(root.c_str(), &after), 0);
+    CHECK_EQ(after.st_mode & 0777, 0700);
+
+    if (!prevEnvStr.empty()) {
+        setenv("GDOCSMITH_WORK_DIR", prevEnvStr.c_str(), 1);
+    } else {
+        unsetenv("GDOCSMITH_WORK_DIR");
+    }
+    if (!prevBrewStr.empty()) {
+        setenv("HOMEBREW_PREFIX", prevBrewStr.c_str(), 1);
+    } else {
+        unsetenv("HOMEBREW_PREFIX");
     }
     artifactWorkspaceSet(std::nullopt);
 }

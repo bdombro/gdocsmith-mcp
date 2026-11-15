@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Over stdio the server runs in the agent's workspace, so working copies go under <cwd>/.gdocsmith;
-    // otherwise (HTTP service, CLI) they live in the private per-user temp root.
+    // otherwise (HTTP service, CLI) they live in $(brew --prefix)/var/gdocsmith-mcp.
     if (isMcpMode) {
         std::error_code ec;
         auto cwd = std::filesystem::current_path(ec);
