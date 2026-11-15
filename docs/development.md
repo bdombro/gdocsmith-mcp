@@ -5,69 +5,50 @@ User installation, configuration and compatibility status are in the
 alternative transport schemas and validation commands. A client configuration
 example is not a claim of verified July/OAuth interoperability.
 
-Current HTTP source builds use local slimr and libhv overlays. The pinned
-published registry baseline predates these HTTP changes; do not claim that
-baseline builds the current HTTP app without overrides. CI configuration is
-not evidence that a runner/platform/client has passed.
+Dependencies resolve directly from the pinned `bdombro/slimr-*` vcpkg git
+registries in `vcpkg-configuration.json` (no local overlays). CI configuration
+is not evidence that a runner/platform/client has passed.
 
 ## App Architecture
 
-The standalone MCP server (stdio + Streamable HTTP) and JSON CLI are implemented in native C++26 on `slimr-cpp`; Google API access uses `libcurl`.
+The standalone MCP server (stdio + Streamable HTTP) and JSON CLI are implemented in native C++26 on the `slimr-*` libraries; Google API access uses `libcurl`.
 
 ```text
 plugins/gdocsmith-mcp/
+├── VERSION                         # Compiled into binary via CMakeLists.txt
+├── CHANGELOG.md                    # Release notes (## Unreleased)
 ├── vcpkg.json                      # Independently resolved dependencies (slimr-mcp[http])
+├── vcpkg-configuration.json        # Pinned vcpkg builtin and slimr-* git registries
 ├── CMakeLists.txt                  # App/test targets and transitive dependency linking (slimr::mcp_http)
-├── justfile                        # CMake/Ninja, lint, test-mcp, and Homebrew service lifecycle
-├── Formula/gdocsmith-mcp.rb        # Homebrew formula + launchd service definition (127.0.0.1:10007)
+├── justfile                        # CMake/Ninja, doctor, fmt, lint, test-mcp, release, and brew service lifecycle
+├── Formula/gdocsmith-mcp.rb        # Homebrew formula (macOS/Linux) + service definition + env file loader
+├── .github/
+│   ├── actions/setup/action.yml    # Toolchain & vcpkg bootstrap + binary cache
+│   └── workflows/{test,release}.yml # PR/manual test workflow and tag/formula release workflow
 ├── scripts/
-│   ├── dev-formula.mjs             # Local tarball formula staging helper (binary + docs)
-│   └── test-mcp.mjs                # Stdio + ephemeral HTTP MCP 2026-07-28 conformance check
+│   ├── doctor.sh                   # Tooling, C++26, LLVM_BIN, VCPKG_ROOT, and Linux linger checks
+│   ├── test-mcp.ts                 # Bun stdio + ephemeral HTTP MCP 2026-07-28 conformance check
+│   ├── release.ts                  # Release version bump, changelog promotion, commit/tag/gh-release
+│   └── formula-shared.ts           # Formula/changelog parsing and SHA-256 helpers
+├── .clang-format / .clang-tidy     # Formatting and static-analysis config (llvm@23)
+├── .clangd / .vscode/settings.json # Editor compilation database (build/cmake/Debug)
 ├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:10007/mcp)
 ├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:10007/mcp)
 ├── src/
-│   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), and Streamable HTTP (`http`) entrypoint
+│   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), Streamable HTTP (`http`), and `--log-file`
+│   ├── log_file.hpp                # Stdout/stderr redirect and 10 MiB rotation (`<path>` -> `<path>.1`)
 │   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
 │   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `curl.hpp`, in-memory OAuth token manager
 │   ├── model/                      # Google Docs JSON <-> DocModel AST
-│   │   ├── from_json.hpp           # Docs JSON -> `DocModel` (`docModelParse`)
-│   │   ├── to_json.hpp             # `RequestBuilder` batchUpdate object builders
-│   │   ├── document.hpp            # Top-level model re-exports
-│   │   └── …                       # element, tab, table, paragraph, style, lists, comments, suggestions,
-│   │                               # equivalence, invariants, layout, object IDs, keys, walk, errors
 │   ├── diff/                       # Myers diff and unified output
-│   │   ├── myers.hpp               # O(ND) shortest edit script (`Hunk`)
-│   │   ├── patch.hpp               # Applies hunks to reproduce the target sequence
-│   │   ├── tree_diff.hpp           # Structural / tree-sequence diffing
-│   │   ├── unified.hpp             # Unified-diff formatting
-│   │   └── match.hpp, slice.hpp, types.hpp
 │   ├── lens/                       # Extended Markdown envelope
-│   │   ├── parse.hpp / render.hpp  # Inline parser and renderer
-│   │   ├── markdown.hpp            # Parse + render umbrella
-│   │   ├── document.hpp            # `DocumentFile` tab projection (`documentFileExport`)
-│   │   ├── project.hpp / put.hpp   # Projection into and out of the model
-│   │   └── …                       # frontmatter, directives, tables, cell refs/styles, images, links,
-│   │                               # named ranges/styles, comments & suggestions serializers, tokens
 │   ├── reconcile/                  # Model/lens intent -> back-to-front batchUpdate requests
-│   │   ├── reconcile.hpp           # Plan structures, segment/footnote request handling, self-check
-│   │   ├── requests.hpp            # Request-object helpers
-│   │   └── container.hpp, context.hpp, lists.hpp, paragraph.hpp, tables.hpp
 │   ├── emulator/                   # In-memory batchUpdate simulator and conformance runner
-│   │   ├── document_state.hpp / document_mutator.hpp / document_emulator.hpp
-│   │   ├── google_docs_emulator.hpp / fake_google.hpp
-│   │   ├── field_mask.hpp / emulate.hpp / emulate_tables.hpp / types.hpp
-│   │   └── conformance.hpp         # Fixture-driven conformance checks
-│   └── engine/                     # Orchestration (no direct network I/O)
-│       ├── artifacts.hpp           # Work-root resolution, atomic writes, SHA-256 snapshots, `WriteTracker`
-│       ├── load.hpp, guard.hpp, plan.hpp
-│       ├── session.hpp, transaction.hpp, flush.hpp
-│       └── export.hpp, import.hpp
+│   └── engine/                     # Orchestration, `$(brew --prefix)/var/gdocsmith-mcp` fallback, SHA-256 snapshots
 ├── tests/
 │   ├── test_main.cpp               # Combined doctest runner (the CMake test target)
+│   ├── test_log_file.hpp           # Log rotation tests (tiny threshold)
 │   ├── model/, diff/, lens/, reconcile/, emulator/, engine/, api/
-│   │                               # Header-only suites, one directory per `src/` module
-│   ├── emulator/test_emulator_main.cpp   # Focused emulator-only runner
-│   ├── reconcile/test_reconcile_main.cpp # Focused reconciler-only runner
 │   └── fixtures/conformance/       # JSON conformance fixtures (C01a … M8, N1 … X7)
 └── build/bin/
     └── gdocsmith-mcp               # Standalone release binary
@@ -75,12 +56,12 @@ plugins/gdocsmith-mcp/
 
 ### Libraries Used
 
-- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>`:** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (`127.0.0.1:10007`), `gdocsmith://guide` resource registration, and narrow JSON CLI.
-- **`<yaml.hpp>` (`rapidyaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
-- **`<curl.hpp>` (`-lcurl`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
-- **`<json.hpp>` (`glaze`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
-- **`<bugsink.hpp>` (`-lcurl`):** Optional error reporting configured with `BUGSINK_DSN`.
-- **`<test.hpp>` (`doctest`):** Unit, CLI, and `McpHttpServer` test suite compiled with `-fsanitize=address,undefined`.
+- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `0.0.0.0:10007`), `gdocsmith://guide` resource registration, `--version`, `--skip-checks`, and narrow JSON CLI.
+- **`<yaml.hpp>` (`slimr-yaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
+- **`<curl.hpp>` (`slimr-curl`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
+- **`<json.hpp>` (`slimr-json`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
+- **`<bugsink.hpp>` (`slimr-bugsink`):** Optional error reporting configured with `BUGSINK_DSN` and `release` (`gdocsmith-mcp@<VERSION>`).
+- **`<test.hpp>` (`slimr-test`):** Unit, CLI, and `McpHttpServer` test suite compiled with `-fsanitize=address,undefined`.
 - **OpenSSL / C++26 Standard Library:** Portable SHA-256 file integrity checks (`<openssl/evp.h>`), `<filesystem>`, `<mutex>`.
 
 ## Transports & MCP `2026-07-28`
@@ -88,10 +69,10 @@ plugins/gdocsmith-mcp/
 `gdocsmith-mcp` implements the MCP **`2026-07-28`** specification over both stdio and Streamable HTTP:
 
 - **Breaking change (`2026-07-28`):** Session initialization (`initialize`), `notifications/initialized`, `MCP-Session-Id` headers, and SSE `GET`/`DELETE` streams are removed. Clients discover capabilities via `server/discover`, list tools via `tools/list`, read `gdocsmith://guide` via `resources/read` (or the fallback `mcp_resource_read` tool), and invoke tools via `tools/call`. On HTTP `POST /mcp`, callers must send `MCP-Protocol-Version: 2026-07-28` (and `Accept: application/json`), plus `Mcp-Method` (and `Mcp-Name` on `tools/call`). Calling `initialize` returns `-32601 Method not found`.
-- **Streamable HTTP (default port `10007`):**
+- **Streamable HTTP (default `0.0.0.0:10007`):**
   ```bash
-  ./build/bin/gdocsmith-mcp http --host 127.0.0.1 --port 10007
-  # Endpoint: http://127.0.0.1:10007/mcp
+  ./build/bin/gdocsmith-mcp http --port 20007
+  # Dev endpoint: http://127.0.0.1:20007/mcp
   ```
 - **Stdio MCP (`mcp`):**
   ```json
@@ -118,23 +99,34 @@ plugins/gdocsmith-mcp/
     }
   }
   ```
-- **Cursor / Claude plugins:** `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` configure the HTTP server at `http://127.0.0.1:10007/mcp`. Note that host clients using these manifests must support MCP `2026-07-28` Streamable HTTP.
+- **Cursor / Claude plugins:** `.cursor-plugin/plugin.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` configure the HTTP server at `http://127.0.0.1:10007/mcp`. Host clients using these manifests must support MCP `2026-07-28` Streamable HTTP.
 
 ## Building & Testing
 
-Use Clang with C++26 and libc++ FAST hardening, CMake 3.31+, Ninja, [just](https://just.systems), a bootstrapped [vcpkg](https://vcpkg.io), Node, Ruby, and a compatible `clang-tidy` (set `CLANG_TIDY` if needed). Set `VCPKG_ROOT` and put vcpkg and the tools on `PATH`. Linux additionally needs `libc++` and `libc++abi`; select libc++ with `CXXFLAGS=-stdlib=libc++`.
+Prerequisites (`just doctor` checks all of them):
 
-Dependencies are declared in `vcpkg.json` (`slimr-mcp` with the `http` feature). During local development, `(cd /absolute/path/to/slimr-cpp && just publish --local --all)` publishes ports into vcpkg's local overlay; export `VCPKG_OVERLAY_PORTS="$VCPKG_ROOT/local-ports"` in your shell. `just deps` installs into `build/deps/` for the detected native triplet. `configure` always runs it, with CMake manifest installation disabled. CMake links installed `slimr::mcp_http`, `slimr::yaml`, `slimr::test` and `OpenSSL::Crypto` targets, never source-header overrides.
+- **macOS:** Xcode Command Line Tools (`/usr/bin/clang++` with C++26 + libc++ FAST hardening), Homebrew `llvm@23`, `cmake`, `ninja`, `just`, `bun`, `gh`, `jq`, and bootstrapped `vcpkg` (`VCPKG_ROOT` set).
+- **Linux (`ubuntu-24.04`):** Homebrew on Linux (`llvm@23` provides `clang++` with `-stdlib=libc++`, static libc++ in Release builds), `ninja`, `just`, `bun`, `gh`, `jq`, bootstrapped `vcpkg`, and `sudo loginctl enable-linger "$USER"` for `brew services`.
+
+Set `LLVM_BIN` to override the `$(brew --prefix llvm@23)/bin` path used by `just fmt` and `just lint`. Set `CXX` before first configure to override the compiler.
 
 ```bash
-just test      # Debug ASan/UBSan AST, diff, isolated-storage, mock-API and HTTP tests
-just build     # Optimized IPO Release app and tests; build/bin/gdocsmith-mcp
-just lint      # App and test translation units using the Debug compilation database (honors $CLANG_TIDY)
-just test-mcp  # MCP 2026-07-28 conformance: stdio (mcp) + ephemeral HTTP (server/discover & tools/list)
-just run status
-just clean     # Remove build/ only; leaves user data untouched
+just doctor            # Verify tools, C++26 compiler, LLVM_BIN, VCPKG_ROOT, and Linux linger
+just test              # Debug ASan/UBSan test suite (BUGSINK_DSN="")
+just test "<filter>"   # Build test target and run matching doctest cases
+just build             # Optimized IPO Release binary at build/bin/gdocsmith-mcp (no tests)
+just fmt               # Format C++ sources and justfile
+just lint              # Format check + clang-tidy
+just test-mcp          # Bun stdio + ephemeral HTTP MCP 2026-07-28 conformance check
+just upgrade-deps      # Pull vcpkg, update registry baselines, and run tests
+just release patch     # Trigger release.yml (test -> build -> tag -> GitHub release) and pull
+just clean             # Remove build/ only; leaves user data untouched
 ```
 
-Debug and Release graphs live in `build/cmake/Debug/` and `build/cmake/Release/`; only Release apps are emitted to `build/bin/`. Set `CXX` before the first configure to choose a compiler; CMake retains its absolute path even when lint uses a different `PATH`. Both configurations enable libc++ hardening and zero automatic-variable initialization; Debug uses fatal UBSan reports. `just test-mcp` isolates HOME/XDG directories under `build/`, clears credentials, disables error reporting and external CLI access, and cleans up afterward; it never invokes a tool or accesses live Google APIs.
+Debug and Release graphs live in `build/cmake/Debug/` and `build/cmake/Release/`; only Release binaries are emitted to `build/bin/`. For local development without touching the installed Homebrew service (`10007`), run `./build/bin/gdocsmith-mcp http --port 20007`.
 
-CI runs the same commands on native Linux/macOS. Configure `VCPKG_REF` to the tested full vcpkg commit SHA; slimr packages resolve from the public registry pinned in `vcpkg-configuration.json`, without a dependency token. Local macOS validation is not Linux execution evidence.
+`just test-mcp` isolates HOME/XDG directories under a temporary folder, passes `--skip-checks`, clears credentials, disables error reporting, and cleans up afterward without calling live Google APIs. Note: `just parity <run_id> <node>` runs offline Node-vs-C++ engine differential checks against a prebuilt `ParityChecks` adapter.
+
+## Qualification History
+
+Prior qualification runs on the C++26 engine verified `447` doctest cases (now extended with log rotation tests), isolated stdio/HTTP MCP discovery, and offline parity vectors; CI workflows (`test.yml` and `release.yml`) run on `macos-15` and `ubuntu-24.04` on pull requests or manual `just release` dispatch. Local macOS validation is not Linux execution evidence.
