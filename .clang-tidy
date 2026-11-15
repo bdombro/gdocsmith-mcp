@@ -1,4 +1,14 @@
-Checks: '-*,clang-analyzer-core.*,clang-analyzer-cplusplus.NewDelete,bugprone-dangling-handle,bugprone-sizeof-expression'
+# Pending lint follow-ups (enable one check per reviewed commit):
+#   -bugprone-unchecked-optional-access (70 findings)
+#   -bugprone-implicit-widening-of-multiplication-result (6 findings)
+#   -bugprone-narrowing-conversions (6 findings)
+#   -bugprone-optional-value-conversion (4 findings)
+#   -bugprone-empty-catch (3 findings)
+#   -bugprone-misplaced-widening-cast (2 findings)
+#   -bugprone-return-const-ref-from-parameter (2 findings)
+#   -bugprone-unchecked-string-to-number-conversion (1 finding)
+#   -bugprone-exception-escape (1 finding)
+Checks: '-*,clang-analyzer-core.*,clang-analyzer-cplusplus.*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-signed-bitwise,-bugprone-throwing-static-initialization,-bugprone-reserved-identifier,-bugprone-branch-clone,-bugprone-macro-parentheses,-bugprone-lambda-function-name,-bugprone-std-exception-baseclass,-bugprone-switch-missing-default-case,-bugprone-argument-comment,-bugprone-unintended-char-ostream-output,-bugprone-unchecked-optional-access,-bugprone-implicit-widening-of-multiplication-result,-bugprone-narrowing-conversions,-bugprone-optional-value-conversion,-bugprone-empty-catch,-bugprone-misplaced-widening-cast,-bugprone-return-const-ref-from-parameter,-bugprone-unchecked-string-to-number-conversion,-bugprone-exception-escape'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '[/\\](src|tests)[/\\]'
 SystemHeaders: false
