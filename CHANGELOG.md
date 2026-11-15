@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Bind HTTP server to 0.0.0.0:10007 by default (pass --host 127.0.0.1 for loopback-only)
 - Move default non-workspace work directory from $TMPDIR to $(brew --prefix)/var/gdocsmith-mcp (mode 0700)
 - Add --log-file <path> option with 10 MiB log rotation to <path>.1 (mode 0600)
 - Support --skip-checks before or after the mcp subcommand
