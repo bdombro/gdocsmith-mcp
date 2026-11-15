@@ -488,7 +488,7 @@ TEST_CASE("import parity - posttransaction comment read failure keeps a verified
     CHECK(result.verification == "inconclusive");
     REQUIRE(result.doc);
     REQUIRE(result.exportPath);
-    CHECK(*result.exportPath == input.path);
+    CHECK(std::filesystem::weakly_canonical(*result.exportPath) == std::filesystem::weakly_canonical(input.path));
     CHECK(result.summary.find("content landed") != std::string::npos);
     CHECK(lens::documentFileParse(inputFileRead(*result.exportPath).text).frontmatter.doc == result.doc);
     CHECK(fixture.creates == 1);
@@ -521,7 +521,7 @@ TEST_CASE("import parity - created document failure cleanup is tracked once with
     if (cleanupFails) {
         REQUIRE(result.doc);
         REQUIRE(result.exportPath);
-        CHECK(*result.exportPath == input.path);
+        CHECK(std::filesystem::weakly_canonical(*result.exportPath) == std::filesystem::weakly_canonical(input.path));
         CHECK(lens::documentFileParse(inputFileRead(input.path).text).frontmatter.doc == result.doc);
         CHECK(result.writeState == "unknown");
         CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto& warning) {

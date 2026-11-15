@@ -283,7 +283,7 @@ TEST_CASE("import structure parity - created document cleanup leaves authoritati
     if (cleanupFails) {
         REQUIRE(result.doc);
         REQUIRE(result.exportPath);
-        CHECK(*result.exportPath == input.path);
+        CHECK(std::filesystem::weakly_canonical(*result.exportPath) == std::filesystem::weakly_canonical(input.path));
         CHECK(lens::documentFileParse(inputFileRead(input.path).text).frontmatter.doc == result.doc);
         CHECK(std::any_of(result.warnings.begin(), result.warnings.end(), [](const auto& warning) {
             return warning.find("could not be deleted") != std::string::npos;

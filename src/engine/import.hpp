@@ -600,10 +600,21 @@ struct ImportImageUploads {
     std::vector<std::string> notes;
     WriteTracker* tracker = nullptr;
 
+    static std::string canonicalKey(const std::string& placeholder) {
+        const auto source = placeholder.substr(lens::IMAGE_UPLOAD_SCHEME.size());
+        if (source.starts_with("http://") || source.starts_with("HTTP://")) {
+            return placeholder;
+        }
+        std::error_code ec;
+        auto canonical = std::filesystem::weakly_canonical(std::filesystem::path(source), ec);
+        return std::string(lens::IMAGE_UPLOAD_SCHEME) + (ec ? source : canonical.string());
+    }
+
     void prepare(const std::vector<std::string>& placeholders) {
         std::vector<model::FileProblem> problems;
         for (const auto& placeholder : placeholders) {
-            if (prepared.contains(placeholder)) continue;
+            const auto key = canonicalKey(placeholder);
+            if (prepared.contains(key)) continue;
             const auto source = placeholder.substr(lens::IMAGE_UPLOAD_SCHEME.size());
             try {
                 std::string bytes;
@@ -629,7 +640,7 @@ struct ImportImageUploads {
                 if (std::max(info->widthPx, info->heightPx) > 2048) {
                     notes.push_back("Google stores image " + source + " downscaled to at most 2048 px per side.");
                 }
-                prepared.emplace(placeholder, DocxImage{.bytes = std::move(bytes), .widthPx = info->widthPx,
+                prepared.emplace(key, DocxImage{.bytes = std::move(bytes), .widthPx = info->widthPx,
                     .heightPx = info->heightPx, .type = info->type});
             } catch (const std::exception& error) {
                 problems.push_back({.code = "unsupportedSyntax",
@@ -644,14 +655,28 @@ struct ImportImageUploads {
 
     std::map<std::string, std::string> upload(const std::vector<std::string>& placeholders) {
         if (uploaded) {
-            for (const auto& placeholder : placeholders) if (!uploaded->contains(placeholder)) {
-                throw model::CoreError("unsupportedSyntax", "An image upload changed after planning; export again.");
+            std::map<std::string, std::string> mapped = *uploaded;
+            for (const auto& placeholder : placeholders) {
+                if (mapped.contains(placeholder)) continue;
+                const auto key = canonicalKey(placeholder);
+                if (!uploaded->contains(key)) {
+                    throw model::CoreError("unsupportedSyntax", "An image upload changed after planning; export again.");
+                }
+                mapped[placeholder] = uploaded->at(key);
             }
-            return *uploaded;
+            return mapped;
         }
         prepare(placeholders);
+        std::vector<std::string> uniqueKeys;
         std::vector<DocxImage> images;
-        for (const auto& placeholder : placeholders) images.push_back(prepared.at(placeholder));
+        std::set<std::string> seen;
+        for (const auto& placeholder : placeholders) {
+            const auto key = canonicalKey(placeholder);
+            if (seen.insert(key).second) {
+                uniqueKeys.push_back(key);
+                images.push_back(prepared.at(key));
+            }
+        }
         ImagesUploadResult result;
         const auto attempt = tracker ? tracker->writes.size() : 0;
         if (tracker) tracker->writes.push_back(WriteAttempt{.action = "imagesUpload", .outcome = "pending", .requestCount = 1});
@@ -666,7 +691,7 @@ struct ImportImageUploads {
             throw;
         }
         if (!result.documentId.empty()) documentId = result.documentId;
-        if (!documentId || result.contentUris.size() != placeholders.size() ||
+        if (!documentId || result.contentUris.size() != uniqueKeys.size() ||
             std::any_of(result.contentUris.begin(), result.contentUris.end(),
                 [](const auto& uri) { return !uri.starts_with("https://"); })) {
             if (tracker) tracker->writes[attempt].outcome = "unknown";
@@ -674,7 +699,8 @@ struct ImportImageUploads {
         }
         if (tracker) tracker->writes[attempt].outcome = "confirmed";
         std::map<std::string, std::string> mapped;
-        for (size_t i = 0; i < placeholders.size(); ++i) mapped[placeholders[i]] = result.contentUris[i];
+        for (size_t i = 0; i < uniqueKeys.size(); ++i) mapped[uniqueKeys[i]] = result.contentUris[i];
+        for (const auto& placeholder : placeholders) mapped[placeholder] = mapped.at(canonicalKey(placeholder));
         uploaded = mapped;
         return mapped;
     }
