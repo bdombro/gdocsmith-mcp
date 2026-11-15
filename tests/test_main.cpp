@@ -1,6 +1,8 @@
 #define SLIMR_TEST_MAIN
 #include "test.hpp"
 
+#include "test_log_file.hpp"
+
 // Phase 1: Diff & Model tests
 #include "diff/test_myers.hpp"
 #include "diff/test_unified.hpp"
