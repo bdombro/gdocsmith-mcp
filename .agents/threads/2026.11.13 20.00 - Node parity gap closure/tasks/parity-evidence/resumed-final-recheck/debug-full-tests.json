@@ -1,0 +1,25 @@
+{
+  "name": "debug-full-tests",
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/cmake/GapChecks",
+    "--output-on-failure",
+    "--no-tests=error"
+  ],
+  "startedAt": "2026-11-13T22:57:08.718951+00:00",
+  "pid": 33727,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T22:58:10.240781+00:00",
+  "elapsedSeconds": 61.522,
+  "outputSha256": "2ac7e33928f06710fc980fe5364f4f3740766142b6b0bf954c8a6804b95914ca",
+  "outputBytes": 245,
+  "rawOutputRetained": false,
+  "summaries": [
+    "100% tests passed out of 1",
+    "Total Test time (real) =  61.49 sec"
+  ],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-11-13T22:58:39.714279+00:00",
+  "source": "existing aggregate CTest runner summary only",
+  "summaries": [
+    "[doctest] test cases:  398 |  398 passed | 0 failed | 0 skipped",
+    "[doctest] assertions: 6521 | 6521 passed | 0 failed |",
+    "[doctest] Status: SUCCESS!"
+  ],
+  "rawOutputRetained": false
+}

@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-11-13T22:56:46.121144+00:00",
+  "retainedFrom": "../resumed-final-qualification/",
+  "changedProductionConfigurationDriverInputs": [],
+  "retainedBinaryIdentities": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "d5380255433a528b15457e4ebe150e1182af42af6b8ad42952e93ba63be4fa0c",
+      "matchesPrevious": true
+    },
+    "build/cmake/GapChecks/gdocsmith-mcp": {
+      "sha256": "fc3fda75b64a1beaa5471e5d4740151376652fbbcab3f1da065b2cd9d54aa0e0",
+      "matchesPrevious": true
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "cb10ff614af627265cde78f00dc65370cb23b5b60d76e729c744e86a8ea282fc",
+      "matchesPrevious": true
+    }
+  },
+  "retainedPassedGates": [
+    "Debug app build",
+    "Release app build",
+    "ParityChecks adapter build",
+    "app clang-tidy",
+    "adapter clang-tidy",
+    "isolated MCP stdio/HTTP"
+  ],
+  "cppDependencyChanges": [],
+  "originalInstalledDependencyChanges": [],
+  "originalViewPolicyProbe": "tests/engine/test_export.hpp original view lines1-12 succeeded before hashing; no denied alternate access",
+  "actualExportTestSha256": "c7d04d2718f193f5fc74388604e9fa1c94d5ee634b9ce843842712317bb6e863",
+  "messagesFileAccessed": false
+}

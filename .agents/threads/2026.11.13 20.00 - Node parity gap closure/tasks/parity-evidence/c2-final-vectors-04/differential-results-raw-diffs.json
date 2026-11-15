@@ -1,0 +1,4428 @@
+{
+  "schema": "engine-parity-all-raw-differences-v1",
+  "sourceResult": ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/c2-final-vectors-04/differential-results.json",
+  "completedAt": "2026-11-15T08:35:14.696Z",
+  "frozenInputs": true,
+  "compiledInputsCurrent": true,
+  "allValuesAreSynthetic": true,
+  "onlyOwnedRunPrefixSanitized": true,
+  "acceptedVariances": [
+    {
+      "authority": "parent-after-historical-22-differences",
+      "cases": [
+        "V003-stale",
+        "V004-landed-lost-response-replay"
+      ],
+      "paths": [
+        "$.result.exportPath",
+        "$.replay.exportPath"
+      ],
+      "disposition": "intentional equivalent recovery directory layout only; raw paths retained, no nonce normalization",
+      "required": "distinct fresh contained export/current revision/content/preserved input and retained edits"
+    }
+  ],
+  "totalLeafDifferences": 382,
+  "groupedExactPathAndValues": [
+    {
+      "path": "$.callLog.1.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title",
+        "W2-rename-fail-after-content",
+        "W3-reparent-order-noop",
+        "W3-orphan-refusal",
+        "W3-delete-subtree-and-all",
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes.",
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title",
+        "W2-rename-fail-after-content",
+        "W3-reparent-order-noop",
+        "W3-orphan-refusal",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes.",
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export.",
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1",
+      "original": {
+        "name": "Renamed"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "updateFile",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "name": "Renamed"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "updateFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title",
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes.",
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W2-rename-only",
+        "W2-delayed-docs-title",
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:476–554 asserts rename-only mutation with zero batchUpdate writes, unchanged protected tab, and updated remote/export title.",
+        "OB-002; confirmed Drive rename wins over lagged Docs getDocument title readback without duplicate writes.",
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.10",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.11",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": {
+        "name": "Renamed"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "updateFile",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "name": "Renamed"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "commentsList",
+      "target": "updateFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.exported.origRevision",
+      "original": "rev-1",
+      "target": "rev-2",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.exported.origTabs.0.markdown",
+      "original": "\n\nHello world\n\n",
+      "target": "\n\nHello revised world\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.exported.pathRole",
+      "original": "same",
+      "target": "distinct",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W2-rename-fail-after-content",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export.",
+        null
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-1/export.md",
+      "target": "<RUN>/work/recoveries/51508-307862477992708-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Content changes landed, but the document rename failed. The export is current; retry only the title change.",
+      "target": "Some writes may have landed; the fresh export at exportPath shows the document now. Reapply only the edits it lacks there, and don't import this file again.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W2-rename-fail-after-content"
+      ],
+      "sourceConstraints": [
+        "OB-002; partial failure after landed content returns failed/rename phase, non-none writeState, landed content, and preserves old title in export."
+      ]
+    },
+    {
+      "path": "$.callLog.1.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback",
+        "W1-create-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.14.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.14.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.15",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.16",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.17",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.18",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.19",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.2.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.args.1",
+      "original": [
+        {
+          "addDocumentTab": {
+            "tabProperties": {
+              "index": 1,
+              "title": "Second"
+            }
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.method",
+      "original": "batchUpdate",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "addDocumentTab": {
+            "tabProperties": {
+              "title": "Second",
+              "index": 1
+            }
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-1"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "First body"
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "range": {
+              "endIndex": 12,
+              "startIndex": 1,
+              "tabId": "t.0"
+            }
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 11,
+              "startIndex": 1,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 12,
+              "startIndex": 11,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "emu.t.1"
+            },
+            "text": "Second body"
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "range": {
+              "endIndex": 13,
+              "startIndex": 1,
+              "tabId": "emu.t.1"
+            }
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 12,
+              "startIndex": 1,
+              "tabId": "emu.t.1"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 13,
+              "startIndex": 12,
+              "tabId": "emu.t.1"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.2",
+      "original": {
+        "requiredRevisionId": "rev-2"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "batchUpdate",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": [
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "title": "Main",
+              "tabId": "t.0"
+            }
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.2",
+      "original": {
+        "requiredRevisionId": "rev-3"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "batchUpdate",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "First body"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 11,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "emu.t.1"
+            },
+            "text": "Second body"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 12,
+              "tabId": "emu.t.1"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-2"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.0",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "tabId": "t.0",
+              "title": "Main"
+            }
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-3"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "commentsList",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: fake-doc-1\nrevision: rev-4\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=Main}\n\n::section{id=s1}\n\nFirst body\n\n::tab{id=emu.t.1 title=Second}\n\n::section{id=s2}\n\nSecond body\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: doc_1\nrevision: rev-4\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=Main}\n\n::section{id=s1}\n\nFirst body\n\n::tab{id=emu.t.1 title=Second}\n\n::section{id=s1}\n\nSecond body\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: null\nrevision: null\ntitle: New Created Doc\n---\n\n::tab{id=tab-0 title=Main}\n\nFirst body\n\n::tab{id=tab-1 title=Second}\n\nSecond body\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: null\nrevision: null\ntitle: New Created Doc\n---\n\n::tab{id=tab-0 title=Main}\n\nFirst body\n\n\n::tab{id=tab-1 title=Second}\n\nSecond body\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "First body\n\n",
+      "target": "First body\n\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.4",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.5",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.6",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.7",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.1.updateParagraphStyle",
+      "original": {
+        "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+        "paragraphStyle": {
+          "namedStyleType": "NORMAL_TEXT"
+        },
+        "range": {
+          "endIndex": 12,
+          "startIndex": 1,
+          "tabId": "t.0"
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.1.updateTextStyle",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "range": {
+          "startIndex": 1,
+          "endIndex": 11,
+          "tabId": "t.0"
+        },
+        "textStyle": {},
+        "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.2.insertText",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "location": {
+          "index": 1,
+          "tabId": "emu.t.1"
+        },
+        "text": "Second body"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.2.updateTextStyle",
+      "original": {
+        "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+        "range": {
+          "endIndex": 11,
+          "startIndex": 1,
+          "tabId": "t.0"
+        },
+        "textStyle": {}
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.3.updateTextStyle.range.startIndex",
+      "original": 11,
+      "target": 1,
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.3.updateTextStyle.range.tabId",
+      "original": "t.0",
+      "target": "emu.t.1",
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.4",
+      "original": {
+        "insertText": {
+          "location": {
+            "index": 1,
+            "tabId": "emu.t.1"
+          },
+          "text": "Second body"
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.5",
+      "original": {
+        "updateParagraphStyle": {
+          "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT"
+          },
+          "range": {
+            "endIndex": 13,
+            "startIndex": 1,
+            "tabId": "emu.t.1"
+          }
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.6",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 12,
+            "startIndex": 1,
+            "tabId": "emu.t.1"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.7",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 13,
+            "startIndex": 12,
+            "tabId": "emu.t.1"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remote.documentId",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback",
+        "W1-create-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.documentId",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback",
+        "W1-create-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.result.doc",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-success-replay",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "Body"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 5,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-1"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "tabId": "t.0",
+              "title": "New Created Doc"
+            }
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-2"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_2"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "doc_2"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.14",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "doc_2"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.15",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_2"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.method",
+      "original": "deleteFile",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.0",
+      "original": "New Created Doc",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "Body"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 5,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "createDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "deleteFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.0",
+      "original": "fake-doc-2",
+      "target": "New Created Doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "createDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "Body"
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "range": {
+              "endIndex": 6,
+              "startIndex": 1,
+              "tabId": "t.0"
+            }
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 5,
+              "startIndex": 1,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 6,
+              "startIndex": 5,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "batchUpdate",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.0",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.id",
+      "original": "",
+      "target": "t.0",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback",
+        "W1-create-unknown-outcome",
+        "W1-create-invalid-syntax"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.title",
+      "original": "Tab 1",
+      "target": "New Created Doc",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback",
+        "W1-create-unknown-outcome",
+        "W1-create-invalid-syntax"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateParagraphStyle",
+      "original": {
+        "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+        "paragraphStyle": {
+          "namedStyleType": "NORMAL_TEXT"
+        },
+        "range": {
+          "endIndex": 6,
+          "startIndex": 1,
+          "tabId": "t.0"
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateTextStyle",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "range": {
+          "startIndex": 1,
+          "endIndex": 5,
+          "tabId": "t.0"
+        },
+        "textStyle": {},
+        "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.2",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 5,
+            "startIndex": 1,
+            "tabId": "t.0"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.3",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 6,
+            "startIndex": 5,
+            "tabId": "t.0"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.2",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.replies.3",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.1.updateParagraphStyle",
+      "original": {
+        "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+        "paragraphStyle": {
+          "namedStyleType": "NORMAL_TEXT"
+        },
+        "range": {
+          "endIndex": 6,
+          "startIndex": 1,
+          "tabId": "t.0"
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.1.updateTextStyle",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "range": {
+          "startIndex": 1,
+          "endIndex": 5,
+          "tabId": "t.0"
+        },
+        "textStyle": {},
+        "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.2",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 5,
+            "startIndex": 1,
+            "tabId": "t.0"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1.requests.3",
+      "original": {
+        "updateTextStyle": {
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+          "range": {
+            "endIndex": 6,
+            "startIndex": 5,
+            "tabId": "t.0"
+          },
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "kind": "batchUpdate",
+        "requests": [
+          {
+            "updateDocumentTabProperties": {
+              "fields": "title",
+              "tabProperties": {
+                "tabId": "t.0",
+                "title": "New Created Doc"
+              }
+            }
+          }
+        ],
+        "requiredRevisionId": "rev-2",
+        "receiptRevision": "rev-3",
+        "replies": [
+          {}
+        ]
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remote.documentId",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remote.revisionId",
+      "original": "rev-2",
+      "target": "rev-3",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.tabProperties.title",
+      "original": "Tab 1",
+      "target": "New Created Doc",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.documentId",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.revisionId",
+      "original": "rev-2",
+      "target": "rev-3",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.tabProperties.title",
+      "original": "Tab 1",
+      "target": "New Created Doc",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W1-create-rollback-retry",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.replay.doc",
+      "original": "fake-doc-2",
+      "target": "doc_2",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-rollback-retry"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "commentsList",
+      "target": "deleteFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-rejected",
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: fake-doc-1\nrevision: rev-1\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=\"Tab 1\"}\n\n::section{id=s1}\n\n\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: doc_1\nrevision: rev-1\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=\"Tab 1\"}\n\n::section{id=s1}\n\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Document fake-doc-1 was created, but the import failed and the document could not be deleted. Continue from the fresh export.",
+      "target": "Import failed; preserve this file and reapply only outstanding changes to a fresh export.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.warnings.0",
+      "original": "The created document could not be deleted: delete rejected",
+      "target": "The newly created document could not be deleted; inspect its fresh export before retrying.",
+      "classification": "warning-payload-difference-unresolved; preserve cleanup/loss/local-edit instructions; no blanket variance approved",
+      "cases": [
+        "W1-create-rollback-rejected"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.args.1",
+      "original": [
+        {
+          "insertText": {
+            "location": {
+              "index": 1,
+              "tabId": "t.0"
+            },
+            "text": "Body"
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "range": {
+              "endIndex": 6,
+              "startIndex": 1,
+              "tabId": "t.0"
+            }
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 5,
+              "startIndex": 1,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 6,
+              "startIndex": 5,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "tabId": "t.0",
+              "title": "New Created Doc"
+            }
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-2"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "doc_1"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: fake-doc-1\nrevision: rev-2\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=\"Tab 1\"}\n\n::section{id=s1}\n\nBodx\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: doc_1\nrevision: rev-3\ntitle: New Created Doc\napiUser: parity@example.test\n---\n::tab{id=t.0 title=\"New Created Doc\"}\n\n::section{id=s1}\n\nBodx\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.revision",
+      "original": "rev-2",
+      "target": "rev-3",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.tabs.0.title",
+      "original": "Tab 1",
+      "target": "New Created Doc",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.replies.2",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.0.replies.3",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.mutations.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "kind": "batchUpdate",
+        "requests": [
+          {
+            "updateDocumentTabProperties": {
+              "fields": "title",
+              "tabProperties": {
+                "tabId": "t.0",
+                "title": "New Created Doc"
+              }
+            }
+          }
+        ],
+        "requiredRevisionId": "rev-2",
+        "receiptRevision": "rev-3",
+        "replies": [
+          {}
+        ]
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.message",
+      "original": "send failed in phase \"verification\": post-write verification for fake-doc-1 did not match the intended document:\ntab \"Tab 1\" block 0 inline 0: text expected \"Body\", got \"Bodx\"",
+      "target": "send failed in phase \"verification\": post-write verification for doc_1 did not match the intended document:\ntab \"New Created Doc\" block 0 inline 0: text expected \"Body\", got \"Bodx\"",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Document fake-doc-1 was created, but its readback did not match the file. Inspect the fresh export before editing further.",
+      "target": "Document doc_1 was created, but its readback did not match the file. Inspect the fresh export before editing further.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W1-create-mismatch-readback"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.2",
+      "original": {
+        "args": [
+          "fake-doc-1"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W1-create-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.message",
+      "original": "This file creates a document; pass newDocStyleBaseline. Use generic when it should look like an existing document (a copy, recreation or split of an export); account would merge the source's styles with the user's saved ones. Use account for new content written for the user.",
+      "target": "A new document requires newDocStyleBaseline: generic or account.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W1-create-invalid-syntax"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.14",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-reparent-order-noop"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.b title=B parent=t.a namedStyleSet=1}\n\n::section{id=s2}\n\nB body\n\n::tab{id=t.a1 title=A1 namedStyleSet=1}\n\n::section{id=s3}\n\nA1 body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s4}\n\nC body\n\n::tab{id=t.a2 title=A2 parent=t.c namedStyleSet=1}\n\n::section{id=s5}\n\nA2 body\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.b title=B parent=t.a namedStyleSet=1}\n\n::section{id=s1}\n\nB body\n\n::tab{id=t.a1 title=A1 namedStyleSet=1}\n\n::section{id=s1}\n\nA1 body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s1}\n\nC body\n\n::tab{id=t.a2 title=A2 parent=t.c namedStyleSet=1}\n\n::section{id=s1}\n\nA2 body\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W3-reparent-order-noop"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.a1 title=A1 parent=t.a namedStyleSet=1}\n\n::section{id=s2}\n\nA1 body\n\n::tab{id=t.a2 title=A2 parent=t.a namedStyleSet=1}\n\n::section{id=s3}\n\nA2 body\n\n::tab{id=t.b title=B namedStyleSet=1}\n\n::section{id=s4}\n\nB body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s5}\n\nC body\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.a1 title=A1 parent=t.a namedStyleSet=1}\n\n::section{id=s1}\n\nA1 body\n\n::tab{id=t.a2 title=A2 parent=t.a namedStyleSet=1}\n\n::section{id=s1}\n\nA2 body\n\n::tab{id=t.b title=B namedStyleSet=1}\n\n::section{id=s1}\n\nB body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s1}\n\nC body\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.a1 title=A1 parent=t.a namedStyleSet=1}\n\n::section{id=s2}\n\nA1 body\n\n::tab{id=t.a2 title=A2 parent=t.a namedStyleSet=1}\n\n::section{id=s3}\n\nA2 body\n\n::tab{id=t.b title=B namedStyleSet=1}\n\n::section{id=s4}\n\nB body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s5}\n\nC body\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.a title=A namedStyleSet=1}\n\n::section{id=s1}\n\nA body\n\n::tab{id=t.a1 title=A1 parent=t.a namedStyleSet=1}\n\n::section{id=s1}\n\nA1 body\n\n::tab{id=t.a2 title=A2 parent=t.a namedStyleSet=1}\n\n::section{id=s1}\n\nA2 body\n\n::tab{id=t.b title=B namedStyleSet=1}\n\n::section{id=s1}\n\nB body\n\n::tab{id=t.c title=C namedStyleSet=1}\n\n::section{id=s1}\n\nC body\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W3-reparent-order-noop",
+        "W3-orphan-refusal",
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-orphan-refusal"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.line",
+      "original": 32,
+      "target": 39,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W3-orphan-refusal"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W3-orphan-refusal"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.1",
+      "original": [
+        {
+          "deleteTab": {
+            "tabId": "t.c"
+          }
+        },
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "title": "Tab 1",
+              "tabId": "t.b"
+            }
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.2",
+      "original": {
+        "requiredRevisionId": "rev-3"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "batchUpdate",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "deleteContentRange": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 7,
+              "tabId": "t.b"
+            }
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 2,
+              "tabId": "t.b"
+            },
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 2,
+              "tabId": "t.b"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "deleteTab": {
+            "tabId": "t.c"
+          }
+        },
+        {
+          "updateDocumentTabProperties": {
+            "fields": "title",
+            "tabProperties": {
+              "tabId": "t.b",
+              "title": "Tab 1"
+            }
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-3"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "commentsList",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.15",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.16",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.1",
+      "original": [
+        {
+          "deleteContentRange": {
+            "range": {
+              "endIndex": 7,
+              "startIndex": 1,
+              "tabId": "t.b"
+            }
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode",
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "range": {
+              "endIndex": 2,
+              "startIndex": 1,
+              "tabId": "t.b"
+            }
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 2,
+              "startIndex": 1,
+              "tabId": "t.b"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.2",
+      "original": {
+        "requiredRevisionId": "rev-2"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "batchUpdate",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-4\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.b title=\"Tab 1\" namedStyleSet=1}\n\n::section{id=s1}\n\n\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-4\ntitle: Nested\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.b title=\"Tab 1\" namedStyleSet=1}\n\n::section{id=s1}\n\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W3-delete-subtree-and-all"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.1",
+      "original": "c-other",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.2",
+      "original": {
+        "action": "resolve"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "commentReply",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.1",
+      "original": "c-own",
+      "target": "replyEdit",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.args.2",
+      "original": "My updated comment",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "commentUpdate",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.args.1",
+      "original": "New comment",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "commentCreate",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "resolve",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13.method",
+      "original": "getDocument",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.15.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "edit",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.15.method",
+      "original": "textExport",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.16.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.17.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "create",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.17.method",
+      "original": "getDocument",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.19",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "textExport",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.20",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.21",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.22",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.3.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "textExport",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "textExport",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.1",
+      "original": "c-other",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.2",
+      "original": "r-own",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.3",
+      "original": "My updated reply",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "replyUpdate",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-5\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada resolved}\nAda comment\n::reply{id=r-own author=Me mine}\nMy updated reply\n\n::comment{id=c-own author=Me mine}\nMy updated comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n\n::comment{id=fc2 author=Me mine}\nNew comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada resolved}\nAda comment\n::reply{id=r-own author=Me mine}\nMy updated reply\n\n::comment{id=c-own author=Me mine}\nMy updated comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n\n::comment{id=c-new-2 author=Me mine}\nNew comment\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada resolved}\nAda comment\n::reply{id=r-own author=Me mine}\nMy updated reply\n\n::comment{id=c-own author=Me mine}\nMy updated comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n\n::comment{id=c-new-2 author=Me mine}\nNew comment\n\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.revision",
+      "original": "rev-5",
+      "target": "rev-1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remote.revisionId",
+      "original": "rev-5",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.revisionId",
+      "original": "rev-5",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.commentsLine",
+      "original": 27,
+      "target": 33,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-allow-and-actions",
+        "W4-comment-ownership-and-readonly",
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.result.warnings.0",
+      "original": {
+        "absent": true
+      },
+      "target": "export.md already had local edits for this revision, so it was kept; delete it and export again for a clean copy.",
+      "classification": "warning-payload-difference-unresolved; preserve cleanup/loss/local-edit instructions; no blanket variance approved",
+      "cases": [
+        "W4-comment-allow-and-actions"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "textExport",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "getDocument",
+      "target": "textExport",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.14.method",
+      "original": "textExport",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.18.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.20",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-ownership-and-readonly"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": "c-resolved",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.2",
+      "original": {
+        "action": "reopen"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentReply",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "reopen",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "textExport",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo}\nResolved note\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo}\nResolved note\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo}\nResolved note\n\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.revision",
+      "original": "rev-2",
+      "target": "rev-1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n\n::comment{id=c-resolved author=Bo resolved}\nResolved note\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-resolved-reopen"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.remote.revisionId",
+      "original": "rev-2",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.remoteStored.revisionId",
+      "original": "rev-2",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "W4-comment-resolved-reopen",
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null,
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.13",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "textExport",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": "c-own",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.2",
+      "original": "First updated",
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentUpdate",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "edit",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": "create",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "textExport",
+      "target": "commentSend",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nFirst updated\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nFirst updated\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:comment{id=c-other start}Hello:comment{id=c-other end} world\n\n::comment{id=c-other tab=Overview quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nMy open comment\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::comment{id=c-other quote=Hello author=Ada}\nAda comment\n::reply{id=r-own author=Me mine}\nMy reply\n\n::comment{id=c-own author=Me mine}\nFirst updated\n\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.commentsLine",
+      "original": 27,
+      "target": {
+        "absent": true
+      },
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.line",
+      "original": {
+        "absent": true
+      },
+      "target": 42,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.errors.0.message",
+      "original": "creating the comment at line 35 failed or has an unknown outcome (network down); check the fresh export's comment blocks, then retry only this action.",
+      "target": "create comment action failed or has an unknown outcome; inspect the fresh export before retrying: network down",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-1/export.md",
+      "target": "<RUN>/work/recoveries/51578-307870870090125-3/exports/synthetic-doc/rev-1/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Document changes landed, but some comment actions failed; the export is current. Retry only the listed actions.",
+      "target": "Some comment actions failed; inspect the current export and retry only outstanding actions.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    },
+    {
+      "path": "$.result.verification",
+      "original": "match",
+      "target": "inconclusive",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "W4-comment-partial-unknown-outcome"
+      ],
+      "sourceConstraints": [
+        null
+      ]
+    }
+  ]
+}

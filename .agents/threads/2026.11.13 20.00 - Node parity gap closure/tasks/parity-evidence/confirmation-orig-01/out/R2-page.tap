@@ -1,0 +1,36 @@
+TAP version 13
+# Subtest: fileImport
+    # Subtest: tab page layout
+        # Subtest: rtl on a pageless tab's opening section keeps the tab pageless
+        ok 1 - rtl on a pageless tab's opening section keeps the tab pageless
+          ---
+          duration_ms: 71.452042
+          type: 'test'
+          ...
+        # Subtest: default pageful layout and a new pageful tab write explicit values
+        ok 2 - default pageful layout and a new pageful tab write explicit values
+          ---
+          duration_ms: 47.0215
+          type: 'test'
+          ...
+        1..2
+    ok 1 - tab page layout
+      ---
+      duration_ms: 118.859334
+      type: 'suite'
+      ...
+    1..1
+ok 1 - fileImport
+  ---
+  duration_ms: 119.565
+  type: 'suite'
+  ...
+1..1
+# tests 2
+# suites 2
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 314.768375

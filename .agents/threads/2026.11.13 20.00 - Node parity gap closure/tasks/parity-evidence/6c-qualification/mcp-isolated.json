@@ -1,0 +1,23 @@
+{
+  "name": "mcp-isolated",
+  "command": [
+    "<CACHED_NODE24_11_0>",
+    "scripts/test-mcp.mjs",
+    "build/bin/gdocsmith-mcp",
+    "export,import,file,status"
+  ],
+  "startedAt": "2026-11-13T21:37:39.370712+00:00",
+  "pid": 66191,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T21:37:39.881976+00:00",
+  "elapsedSeconds": 0.511,
+  "outputSha256": "3139da88703f0605476ccee59c77bc5bafca3d6f0c5575c932032b4dba0ab2b9",
+  "outputBytes": 69,
+  "rawOutputRetained": false,
+  "summaries": [
+    "MCP 2026-07-28 stdio+http conformance passed: gdocsmith-mcp, 5 tools"
+  ],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

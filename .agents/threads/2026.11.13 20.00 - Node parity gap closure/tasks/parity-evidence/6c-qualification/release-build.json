@@ -1,0 +1,25 @@
+{
+  "name": "release-build",
+  "command": [
+    "cmake",
+    "--build",
+    "build/cmake/GapRelease",
+    "--target",
+    "gdocsmith-mcp",
+    "gdocsmith_mcp_test",
+    "--parallel",
+    "2"
+  ],
+  "startedAt": "2026-11-13T21:34:53.404552+00:00",
+  "pid": 59890,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T21:36:45.995797+00:00",
+  "elapsedSeconds": 112.591,
+  "outputSha256": "7dcd2144385917e9bcbab4dfca4e34fdc150b75b223564e8fcf053ca99c514da",
+  "outputBytes": 805,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

@@ -1,0 +1,311 @@
+{
+  "task": "6-B",
+  "briefSha256": "b73ec9e97c82e2d9e12c5ec670688d2bc66f903bf5da0bb1375b89e33d7e0c3a",
+  "node": {
+    "version": "v26.13.1",
+    "path": "~/.local/share/nvm/versions/node/v26.13.1/bin/node"
+  },
+  "cwd": "../gdocsmith-node (via env -i -C)",
+  "envNames": [
+    "PATH=<nodedir>:/usr/bin:/bin",
+    "HOME=<root>/home",
+    "TMPDIR=<root>/tmp",
+    "GDOCSMITH_WORK_DIR=<root>/work",
+    "GDOCSMITH_CONFIG_DIR=<root>/config"
+  ],
+  "standardArgvPrefix": "env -i -C ../gdocsmith-node <ENV> <NODE> --test --test-reporter=tap",
+  "rows": {
+    "G2": {
+      "file": "src/core/fetchWithRetry.test.ts",
+      "argv": "--test-name-pattern=\\^does\\ not\\ retry\\ on\\ 404\\ client\\ errors\\$ src/core/fetchWithRetry.test.ts",
+      "selectedLeafTitles": [
+        "does not retry on 404 client errors"
+      ],
+      "leafSelected": 1,
+      "leafPassed": 1,
+      "tapCounts": {
+        "tests": 1,
+        "suites": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "Myers": {
+      "file": "src/core/diff/myers.test.ts",
+      "argv": "--test-name-pattern=\\^random\\ inputs:\\ hunks\\ reproduce\\ b\\ with\\ a\\ minimal\\ number\\ of\\ edits\\,\\ deterministically\\$ --test-name-pattern=\\^pairs\\ form\\ a\\ longest\\ common\\ subsequence\\$ src/core/diff/myers.test.ts",
+      "selectedLeafTitles": [
+        "random inputs: hunks reproduce b with a minimal number of edits, deterministically",
+        "pairs form a longest common subsequence"
+      ],
+      "leafSelected": 2,
+      "leafPassed": 2,
+      "tapCounts": {
+        "tests": 2,
+        "suites": 2,
+        "pass": 2,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "Myers-orig": {
+      "file": "src/core/diff/myers.test.ts",
+      "argv": "src/core/diff/myers.test.ts",
+      "selectedLeafTitles": [
+        "known scripts",
+        "random inputs: hunks reproduce b with a minimal number of edits, deterministically",
+        "custom equality",
+        "pairs form a longest common subsequence",
+        "ties go to the heavier element",
+        "a valued element is kept over a longer run of plain ones"
+      ],
+      "leafSelected": 6,
+      "leafPassed": 6,
+      "tapCounts": {
+        "tests": 6,
+        "suites": 2,
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "font": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^readback\\ tolerates\\ only\\ an\\ inherited\\ equivalent\\ of\\ omitted\\ explicit\\ font\\ \\(11\\|22\\)\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "readback tolerates only an inherited equivalent of omitted explicit font 11",
+        "readback tolerates only an inherited equivalent of omitted explicit font 22"
+      ],
+      "leafSelected": 2,
+      "leafPassed": 2,
+      "tapCounts": {
+        "tests": 2,
+        "suites": 1,
+        "pass": 2,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "R1": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^an\\ edit\\ inside\\ a\\ replacement\\'s\\ deletion\\ half\\ carries\\ it\\;\\ the\\ insertion\\ half\\ stays\\ \\\\\\(garbling\\ regression\\\\\\)\\$ --test-name-pattern=\\^an\\ edit\\ crossing\\ a\\ suggestion\\'s\\ edge\\ refuses\\ naming\\ it\\;\\ with\\ reject\\ it\\ lands\\ plain\\$ --test-name-pattern=\\^an\\ edit\\ inside\\ a\\ style\\ suggestion\\ keeps\\ it\\ on\\ the\\ new\\ text\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "an edit inside a replacement's deletion half carries it; the insertion half stays (garbling regression)",
+        "an edit crossing a suggestion's edge refuses naming it; with reject it lands plain",
+        "an edit inside a style suggestion keeps it on the new text"
+      ],
+      "leafSelected": 3,
+      "leafPassed": 3,
+      "tapCounts": {
+        "tests": 3,
+        "suites": 1,
+        "pass": 3,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "W2": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^a\\ frontmatter\\ title\\ change\\ alone\\ renames\\ the\\ document\\$ --test-name-pattern=\\^a\\ confirmed\\ Drive\\ rename\\ is\\ trusted\\ while\\ the\\ Docs\\ readback\\ still\\ shows\\ the\\ old\\ title\\$ --test-name-pattern=\\^content\\ and\\ title\\ changes\\ land\\ content\\ first\\,\\ then\\ rename\\$ --test-name-pattern=\\^a\\ rename\\ failure\\ after\\ content\\ lands\\ reports\\ the\\ landed\\ content\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "a frontmatter title change alone renames the document",
+        "a confirmed Drive rename is trusted while the Docs readback still shows the old title",
+        "content and title changes land content first, then rename",
+        "a rename failure after content lands reports the landed content"
+      ],
+      "leafSelected": 4,
+      "leafPassed": 4,
+      "tapCounts": {
+        "tests": 4,
+        "suites": 1,
+        "pass": 4,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "R2-hier": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^refuses\\ \\[\\\\s\\\\S\\]\\*\\ without\\ writes\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [],
+      "leafSelected": 0,
+      "leafPassed": 0,
+      "tapCounts": {
+        "tests": 1,
+        "suites": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": false,
+      "note": "selector mismatch: leaf selected=0, expected 6; tap shows only file-level ok; pattern not widened; escalated"
+    },
+    "R2-page": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^rtl\\ on\\ a\\ pageless\\ tab\\'s\\ opening\\ section\\ keeps\\ the\\ tab\\ pageless\\$ --test-name-pattern=\\^default\\ pageful\\ layout\\ and\\ a\\ new\\ pageful\\ tab\\ write\\ explicit\\ values\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "rtl on a pageless tab's opening section keeps the tab pageless",
+        "default pageful layout and a new pageful tab write explicit values"
+      ],
+      "leafSelected": 2,
+      "leafPassed": 2,
+      "tapCounts": {
+        "tests": 2,
+        "suites": 2,
+        "pass": 2,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "R2-section": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^a\\ later\\ section\\'s\\ header\\ exports\\ with\\ section=\\,\\ edits\\,\\ creates\\ and\\ deletes\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "a later section's header exports with section=, edits, creates and deletes"
+      ],
+      "leafSelected": 1,
+      "leafPassed": 1,
+      "tapCounts": {
+        "tests": 1,
+        "suites": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "P2": {
+      "file": "src/core/engine/import.test.ts",
+      "argv": "--test-name-pattern=\\^an\\ image\\ copied\\ from\\ another\\ document\\ by\\ a\\ gdoc:\\ source\\ is\\ read\\ from\\ that\\ document\\ once\\ and\\ recreated\\$ src/core/engine/import.test.ts",
+      "selectedLeafTitles": [
+        "an image copied from another document by a gdoc: source is read from that document once and recreated"
+      ],
+      "leafSelected": 1,
+      "leafPassed": 1,
+      "tapCounts": {
+        "tests": 1,
+        "suites": 1,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": true
+    },
+    "empty-control": {
+      "file": "src/core/fetchWithRetry.test.ts",
+      "argv": "--test-name-pattern=\\^__no_such_test__\\$ src/core/fetchWithRetry.test.ts",
+      "selectedLeafTitles": [],
+      "leafSelected": 0,
+      "leafPassed": 0,
+      "tapCounts": {
+        "tests": 1,
+        "suites": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "stderrBytes": 0,
+      "pass": false,
+      "note": "zero-selected = selection failure (expected classification). Node 26 reports the unmatched file as one top-level ok test: tap # tests 1 # pass 1, leaf selected=0; brief expected # tests 0"
+    }
+  },
+  "g2": "G2 original 404 row (fetchWithRetry.test.ts:61-75, hash unchanged): pass, selected=1, passed=1, exit=0",
+  "myersObservation": {
+    "artifact": "out/myers-observation.json",
+    "program": "out/myers-observation.program.js",
+    "argv": "env -i -C ../gdocsmith-node <ENV> <NODE> --input-type=module -e <PROGRAM (exact text in program file)>",
+    "exit": 0,
+    "stderr": "",
+    "seed7Raw3": [
+      50271532,
+      266108690,
+      4195786334
+    ],
+    "seeds": [
+      {
+        "seed": 7,
+        "trials": 500,
+        "byteLength": 7353,
+        "fnv1a32Hex": "ce022dfc",
+        "fnv1a32Dec": 3456249340,
+        "first3": [
+          "|",
+          "cbbbabcaacbab|baca",
+          "aaaabcacbbcc|ccaabbaa"
+        ]
+      },
+      {
+        "seed": 11,
+        "trials": 300,
+        "byteLength": 3261,
+        "fnv1a32Hex": "e9544ac7",
+        "fnv1a32Dec": 3914615495,
+        "first3": [
+          "yyyzy|",
+          "yyyzy|zxxxyy",
+          "xyyyz|zxyxxzzx"
+        ]
+      }
+    ],
+    "generatorIdentity": {
+      "42-43": "trimmed source sha256 689518618e2674ae3d8678290253c98f3d495bf2691cf56b566d418f0203189a == program lines 9-10",
+      "64-65": "trimmed source sha256 0febbed59361650b06576bf1b3a85a769d76782d5c0226c95cad6486d1b0923a == program lines 15-16"
+    },
+    "pass": true
+  },
+  "snapshot": {
+    "diff": "empty (snapshot-pre.txt == snapshot-post.txt)",
+    "dirtyNote": "HEAD and all 10 hashes + 2 line-range hashes match brief; dirty set = M package-lock.json + untracked tests/portable_integration/ which now holds 11 files (brief said 9); entry-level set unchanged; unchanged across run"
+  },
+  "containment": {
+    "leftovers": {
+      "tmp": 0,
+      "home": 0,
+      "work": 0,
+      "config": 0
+    },
+    "defaultTmpGdocsmithCount": {
+      "pre": 6,
+      "post": 6
+    }
+  },
+  "historicalVsExecuted": "All rows are fresh runs on 2026-11-14; prior 846-case/151/172/70 receipts are historical and not re-claimed. No parity or denominator claim."
+}

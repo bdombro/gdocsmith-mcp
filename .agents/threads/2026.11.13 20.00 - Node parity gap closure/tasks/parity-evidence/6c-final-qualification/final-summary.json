@@ -1,0 +1,67 @@
+{
+  "qualification": "RED, not release accepted",
+  "fullSuites": "Debug and Release each397cases396pass1fail0skip;6476assertions6475pass1fail",
+  "failure": "known excluded-export structural case; no source accessed",
+  "gates": [
+    [
+      "debug-build",
+      0
+    ],
+    [
+      "debug-full-tests",
+      8
+    ],
+    [
+      "release-build",
+      0
+    ],
+    [
+      "release-full-tests",
+      8
+    ],
+    [
+      "adapter-build",
+      0
+    ],
+    [
+      "tidy-app",
+      0
+    ],
+    [
+      "tidy-tests",
+      0
+    ],
+    [
+      "tidy-adapter",
+      0
+    ],
+    [
+      "mcp-isolated",
+      0
+    ],
+    [
+      "ten-vectors-known-id-controls",
+      -15
+    ]
+  ],
+  "differentialCompletion": {
+    "startedAt": "2026-11-13T21:58:13.298605+00:00",
+    "completedAt": "2026-11-13T21:58:13.404961+00:00",
+    "status": "hard-stop-stopped",
+    "exitCode": -9,
+    "scope": "Same final differential gate resumed after earlier internal buffer timeout; no source changes or deadline extension.",
+    "rawOutputRetained": false
+  },
+  "differentialSummary": null,
+  "originalAssertions": null,
+  "targetAssertions": null,
+  "frozenInputs": null,
+  "compiledInputsCurrent": null,
+  "binary": {
+    "sha256": "43fa8d38c3a9b0741e724b207f7f07a4b10d2d460949940149d284fc713e9772",
+    "bytes": 11613008
+  },
+  "sourceInputsUnchanged": true,
+  "originalBaselineStillCurrent": true,
+  "ownedCommandsRunning": []
+}

@@ -1,0 +1,2943 @@
+{
+  "schema": "engine-parity-all-raw-differences-v1",
+  "sourceResult": ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/c2-final-02/differential-results.json",
+  "completedAt": "2026-11-15T00:06:27.183Z",
+  "frozenInputs": true,
+  "compiledInputsCurrent": true,
+  "allValuesAreSynthetic": true,
+  "onlyOwnedRunPrefixSanitized": true,
+  "acceptedVariances": [
+    {
+      "authority": "parent-after-historical-22-differences",
+      "cases": [
+        "V003-stale",
+        "V004-landed-lost-response-replay"
+      ],
+      "paths": [
+        "$.result.exportPath",
+        "$.replay.exportPath"
+      ],
+      "disposition": "intentional equivalent recovery directory layout only; raw paths retained, no nonce normalization",
+      "required": "distinct fresh contained export/current revision/content/preserved input and retained edits"
+    }
+  ],
+  "totalLeafDifferences": 238,
+  "groupedExactPathAndValues": [
+    {
+      "path": "$.callLog.1.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V006-font-nondefault",
+        "V007-cell-style-edit",
+        "V008-reject-hidden-insertion",
+        "V009-image-upload-lifecycle",
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block.",
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup.",
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V006-font-nondefault",
+        "V007-cell-style-edit",
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell.",
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.11",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": {
+        "name": "Renamed"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "updateFile",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "name": "Renamed"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "updateFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Renamed\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/75178-277339487267416-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.12",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.13",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n  ns2:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.replay.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/75180-277339898339250-6/exports/synthetic-doc/rev-2/export.md",
+      "classification": "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/75180-277339892679083-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1.1.updateTextStyle.textStyle.fontSize",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "magnitude": 11,
+        "unit": "PT"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1.1.updateTextStyle.textStyle.weightedFontFamily",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "fontFamily": "Arial",
+        "weight": 400
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.exported.origTabs.0.markdown",
+      "original": "\n\nHello world\n",
+      "target": "\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\nHello world\n",
+      "target": "\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateTextStyle.textStyle.fontSize",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "magnitude": 11,
+        "unit": "PT"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateTextStyle.textStyle.weightedFontFamily",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "fontFamily": "Arial",
+        "weight": 400
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.0.endIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.0.textRun.content",
+      "original": "Hello ",
+      "target": "Hello revised world",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.endIndex",
+      "original": 15,
+      "target": 21,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.startIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.content",
+      "original": "revised ",
+      "target": "\n",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.3",
+      "original": {
+        "endIndex": 21,
+        "startIndex": 20,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.0.endIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.0.textRun.content",
+      "original": "Hello ",
+      "target": "Hello revised world",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.endIndex",
+      "original": 15,
+      "target": 21,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.startIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.content",
+      "original": "revised ",
+      "target": "\n",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {
+            "fontSize": {
+              "magnitude": 11,
+              "unit": "PT"
+            },
+            "weightedFontFamily": {
+              "fontFamily": "Arial",
+              "weight": 400
+            }
+          }
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.3",
+      "original": {
+        "endIndex": 21,
+        "startIndex": 20,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V006-font-nondefault",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ntextStyles:\n  size22:\n    fontSize: 22\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:style[Hello world]{.size22}\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[Hello world]{fontSize=22.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n:style[Hello world]{.size22}\n",
+      "target": "\n\n:style[Hello world]{fontSize=22.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.textStyle.fontSize",
+      "original": {
+        "magnitude": 22,
+        "unit": "PT"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {
+            "fontSize": {
+              "magnitude": 22,
+              "unit": "PT"
+            },
+            "weightedFontFamily": {
+              "fontFamily": "Arial",
+              "weight": 400
+            }
+          }
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.result.errors.0.message",
+      "original": "send failed in phase \"verification\": post-write verification for synthetic-doc did not match the intended document:\ntab \"Overview\" block 0 inline 0: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}\ntab \"Overview\" block 0 inline 1: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}\ntab \"Overview\" block 0 inline 2: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}",
+      "target": "send failed in phase \"verification\": post-write verification for synthetic-doc did not match the intended document:\ntab \"Overview\" block 0 inline 0: style differs (fontSize)",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\ncellStyles:\n  cell-1:\n    backgroundColor: \"#00FF00\"\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\ncellStyles:\n  c6f322d742d30:\n    backgroundColor: '#00FF00'\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncellStyles:\n  cell-1:\n    backgroundColor: \"#FF0000\"\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\ncellStyles:\n  c6f322d742d30:\n    backgroundColor: '#FF0000'\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.origTabs.0.markdown",
+      "original": "\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.tabs.0.markdown",
+      "original": "\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncellStyles:\n  cell-1:\n    backgroundColor: \"#FF0000\"\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\ncellStyles:\n  c6f322d742d30:\n    backgroundColor: '#FF0000'\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion",
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block.",
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "textExport",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.14",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "textExport",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.3.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "textExport",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "textExport",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[]{}\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 28\nsuggestionsLine: 35\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n\n::suggestion{id=s1 kind=text tab=Overview exportLine=22}\n::before\n:change[]\n::after\n:change[Hello world]\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n\n::suggestion{id=s1 kind=text tab=Overview exportLine=26}\n::before\n:change[]\n::after\n:change[Hello world]\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.origTabs.0.markdown",
+      "original": "\n\n\n\n",
+      "target": "\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.tabs.0.markdown",
+      "original": "\n\n\n\n",
+      "target": "\n\n:style[]{}\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncommentsLine: 28\nsuggestionsLine: 35\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n\n::suggestion{id=s1 kind=text tab=Overview exportLine=22}\n::before\n:change[]\n::after\n:change[Hello world]\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n::comment{id=c1 quote=\"Synthetic quote\" orphaned}\nSynthetic review\n\\::literal\n::reply{id=r1}\nSynthetic reply\n\\::literal reply\n\n::suggestion{id=s1 kind=text tab=Overview exportLine=26}\n::before\n:change[]\n::after\n:change[Hello world]\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n\n\n",
+      "target": "\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.result.commentsLine",
+      "original": 27,
+      "target": 32,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.snippetResult.errors.0.line",
+      "original": 35,
+      "target": 37,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.snippetResult.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.10.args.0",
+      "original": "fake-doc-1",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "deleteFile",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.13.args.0",
+      "original": "synthetic-doc",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.13.method",
+      "original": "getDocument",
+      "target": "deleteFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.14.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.15.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.16.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.17.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.19",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.20",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.21",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.22",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.0",
+      "original": "[gdocsmith upload] 2026-11-15T00:06:25.547Z",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": 2,
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "imagesUpload",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.0",
+      "original": "[gdocsmith upload] 2026-11-15T00:06:25.547Z",
+      "target": "[gdocsmith upload]",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": 2,
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "createDocument",
+      "target": "imagesUpload",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.0",
+      "original": "synthetic-doc",
+      "target": "[gdocsmith upload]",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.1",
+      "original": [
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/fake-doc-1/0"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/fake-doc-1/1"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/fake-doc-1/1"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 13,
+              "startIndex": 12,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 15,
+              "startIndex": 14,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 17,
+              "startIndex": 16,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "batchUpdate",
+      "target": "createDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/doc_1/0"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/doc_1/1"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://fake.googleusercontent.com/doc_1/1"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 12,
+              "endIndex": 13,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 14,
+              "endIndex": 15,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 16,
+              "endIndex": 17,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.9.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-1"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world :image{id=io.3} :image{id=io.2} :image{id=io.1}\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world :image{id=io.3} :image{id=io.2} :image{id=io.1}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle",
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup.",
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.deletionEvidence",
+      "original": "actual FakeGoogle.deleteFile completion; original getDocument ignores deleted flag",
+      "target": "actual FakeGoogle deleted flag and delete callback completion",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle",
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup.",
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.deletions.0.id",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.0.message",
+      "original": "image <RUN>/work/exports/synthetic-doc/rev-1/missing.png can't be read: ENOENT: no such file or directory, open '<RUN>/work/exports/synthetic-doc/rev-1/missing.png'",
+      "target": "image <RUN>/work/exports/synthetic-doc/rev-1/missing.png can't be read: file is missing or unreadable",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.1.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.temporaryDocuments.0.backendExists",
+      "original": {
+        "absent": true
+      },
+      "target": false,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.temporaryDocuments.0.id",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.contentUris.0",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/0",
+      "target": "https://fake.googleusercontent.com/doc_1/0",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.contentUris.1",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.documentId",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V009-image-upload-lifecycle",
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup.",
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.0.insertInlineImage.uri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/0",
+      "target": "https://fake.googleusercontent.com/doc_1/0",
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.2.insertInlineImage.uri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.4.insertInlineImage.uri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.inlineObjects.emu.io.1.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/0",
+      "target": "https://fake.googleusercontent.com/doc_1/0",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.inlineObjects.emu.io.2.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.inlineObjects.emu.io.3.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.inlineObjects.emu.io.1.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/0",
+      "target": "https://fake.googleusercontent.com/doc_1/0",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.inlineObjects.emu.io.2.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.inlineObjects.emu.io.3.inlineObjectProperties.embeddedObject.imageProperties.sourceUri",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V009-image-upload-lifecycle"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.1.args.0",
+      "original": "synthetic-source",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.15.args.0",
+      "original": "synthetic-source",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.15.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.16.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.17.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.18.args.0",
+      "original": "missing-source",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.19.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.21.args.0",
+      "original": "synthetic-doc",
+      "target": "synthetic-source",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.23",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.24",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.25",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "missing-source"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.26",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.3.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.0",
+      "original": "synthetic-source",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.5.args.0",
+      "original": "synthetic-doc",
+      "target": "synthetic-source",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "uri": "https://synthetic.googleusercontent.invalid/source-image",
+            "objectSize": {
+              "width": {
+                "magnitude": 100,
+                "unit": "PT"
+              },
+              "height": {
+                "magnitude": 50,
+                "unit": "PT"
+              }
+            }
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 12,
+              "endIndex": 13,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-1"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": [
+        {
+          "insertInlineImage": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "objectSize": {
+              "width": {
+                "magnitude": 100,
+                "unit": "PT"
+              },
+              "height": {
+                "magnitude": 50,
+                "unit": "PT"
+              }
+            },
+            "uri": "https://synthetic.googleusercontent.invalid/source-image"
+          }
+        },
+        {
+          "insertText": {
+            "location": {
+              "index": 12,
+              "tabId": "t.0"
+            },
+            "text": " "
+          }
+        },
+        {
+          "updateTextStyle": {
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily",
+            "range": {
+              "endIndex": 13,
+              "startIndex": 12,
+              "tabId": "t.0"
+            },
+            "textStyle": {}
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "batchUpdate",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world :image{id=io.1}\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world :image{id=io.1}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.0.result.errors.0.line",
+      "original": 24,
+      "target": 30,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.0.result.errors.0.message",
+      "original": "\":image{src=\"gdoc:synthetic-source/unknown-image\"}\": no single image with that id in that document (or it couldn't be read); use src=\"gdoc:<doc id>/<image id>\" with the id from its export",
+      "target": "no single image with that id in that document",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.0.result.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.1.result.errors.0.line",
+      "original": 24,
+      "target": 30,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.1.result.errors.0.message",
+      "original": "document missing-source couldn't be read (FakeGoogle: unknown document \"missing-source\"); share it with the API user or copy the image another way",
+      "target": "document missing-source couldn't be read: File not found: missing-source",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.images.imageErrors.1.result.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V010-cross-doc-image-copy"
+      ],
+      "sourceConstraints": [
+        "OB-034; original engine/import.test.ts:1811–1844 asserts actual exported source ID, one source read during import, owning contentUri recreation, unknown-image and unreadable-document errors; provider-ID/no-reinsert checks additionally protect integrated lifecycle."
+      ]
+    },
+    {
+      "path": "$.callLog.1.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.12.args.0",
+      "original": "synthetic-doc",
+      "target": "doc_1",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.12.method",
+      "original": "getDocument",
+      "target": "deleteFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.15",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.0",
+      "original": "[gdocsmith upload] 2026-11-15T00:06:26.024Z",
+      "target": "synthetic-doc",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": 2,
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "imagesUpload",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.0",
+      "original": "[gdocsmith upload] 2026-11-15T00:06:26.024Z",
+      "target": "[gdocsmith upload]",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": 2,
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "createDocument",
+      "target": "imagesUpload",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.args.0",
+      "original": "fake-doc-1",
+      "target": "[gdocsmith upload]",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "deleteFile",
+      "target": "createDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world ![](pic.png) ![](file:///Users/briandombrowski/dev/bdombro/gdocsmith-mcp/.agents/threads/2026.11.13%2020.00%20-%20Node%20parity%20gap%20closure/tasks/parity-evidence/c2-final-02/runs/run-5d06fe53-e307-4fb6-97cd-66d145c4a4b4/work/exports/synthetic-doc/rev-1/pic.png) ![](http://synthetic.invalid/image.png)\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world ![](pic.png) ![](file:///Users/briandombrowski/dev/bdombro/gdocsmith-mcp/.agents/threads/2026.11.13%2020.00%20-%20Node%20parity%20gap%20closure/tasks/parity-evidence/c2-final-02/runs/run-b2bf90fc-2c2e-4a4e-b74a-720d3531fa6f/work/exports/synthetic-doc/rev-1/pic.png) ![](http://synthetic.invalid/image.png)\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.exported.origMarkdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.exported.tabs.0.markdown",
+      "original": "\n\nHello world ![](pic.png) ![](file:///Users/briandombrowski/dev/bdombro/gdocsmith-mcp/.agents/threads/2026.11.13%2020.00%20-%20Node%20parity%20gap%20closure/tasks/parity-evidence/c2-final-02/runs/run-5d06fe53-e307-4fb6-97cd-66d145c4a4b4/work/exports/synthetic-doc/rev-1/pic.png) ![](http://synthetic.invalid/image.png)\n",
+      "target": "\n\nHello world ![](pic.png) ![](file:///Users/briandombrowski/dev/bdombro/gdocsmith-mcp/.agents/threads/2026.11.13%2020.00%20-%20Node%20parity%20gap%20closure/tasks/parity-evidence/c2-final-02/runs/run-b2bf90fc-2c2e-4a4e-b74a-720d3531fa6f/work/exports/synthetic-doc/rev-1/pic.png) ![](http://synthetic.invalid/image.png)\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.deletionEvidence",
+      "original": "actual FakeGoogle.deleteFile completion; original getDocument ignores deleted flag",
+      "target": "actual FakeGoogle deleted flag and delete callback completion",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.deletions.0.id",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.0.message",
+      "original": "image <RUN>/work/exports/synthetic-doc/rev-1/missing.png can't be read: ENOENT: no such file or directory, open '<RUN>/work/exports/synthetic-doc/rev-1/missing.png'",
+      "target": "image <RUN>/work/exports/synthetic-doc/rev-1/missing.png can't be read: file is missing or unreadable",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.preflight.result.errors.1.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.temporaryDocuments.0.backendExists",
+      "original": {
+        "absent": true
+      },
+      "target": false,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.temporaryDocuments.0.id",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.contentUris.0",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/0",
+      "target": "https://fake.googleusercontent.com/doc_1/0",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.contentUris.1",
+      "original": "https://fake.googleusercontent.com/fake-doc-1/1",
+      "target": "https://fake.googleusercontent.com/doc_1/1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.images.uploadReceipts.0.documentId",
+      "original": "fake-doc-1",
+      "target": "doc_1",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: 3.0.20\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      baselineOffset: null\n      bold: null\n      foregroundColor: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      italic: null\n      lineSpacing: null\n      smallCaps: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n      strikethrough: null\n      underline: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V009-image-upload-lifecycle/known-upload-error"
+      ],
+      "sourceConstraints": [
+        "OB-036; original engine/import.test.ts:1917–1947 asserts local/file/http inputs, one upload, three returned URIs, exact throwaway deletion/no warnings, aggregate invalid inputs and zero upload/batches; original import.ts:562–619 retains known failure.documentId for finally cleanup."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-11-13T22:48:23.398182+00:00",
+  "unchangedCppInstalledDependencies": true,
+  "changedCppDependencies": [],
+  "unchangedOriginalInstalledDependencies": true,
+  "changedOriginalDependencies": [],
+  "referenceManifest": "../6c-preflight/input-identities.json",
+  "buildCaches": {
+    "GapChecks": {
+      "cacheSha256": "18896bec8447258d5aff77b3c016c848733c3be00b963c2eeb1611a70da243be",
+      "compileDatabaseSha256": "1d288656a8b109b8ef1c70927037f144e92b91a3d0992221fbac1009cdd688ee",
+      "commands": [
+        {
+          "directory": "<PROJECT>/build/cmake/GapChecks",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o -c <PROJECT>/src/main.cpp",
+          "file": "<PROJECT>/src/main.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapChecks/CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/GapChecks",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o -c <PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "file": "<PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapChecks/CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/GapChecks",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -I<PROJECT>/tests -I<PROJECT>/tests/emulator -I<PROJECT>/tests/lens -I<PROJECT>/tests/model -I<PROJECT>/tests/diff -I<PROJECT>/tests/reconcile -I<PROJECT>/tests/engine -I<PROJECT>/tests/api -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-test/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o -c <PROJECT>/tests/test_main.cpp",
+          "file": "<PROJECT>/tests/test_main.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapChecks/CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o"
+        }
+      ]
+    },
+    "GapRelease": {
+      "cacheSha256": "881f44891eabbb67a081af371848f04e9aa19f09345c13060e405f72841e8e93",
+      "compileDatabaseSha256": "57edda3edb0994c7788ee9274038c57b6b177eaf6421d1c169c59664c21fdcec",
+      "commands": [
+        {
+          "directory": "<PROJECT>/build/cmake/GapRelease",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -O3 -DNDEBUG -std=c++26 -flto=thin -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -o CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o -c <PROJECT>/src/main.cpp",
+          "file": "<PROJECT>/src/main.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapRelease/CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/GapRelease",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -O3 -DNDEBUG -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -o CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o -c <PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "file": "<PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapRelease/CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/GapRelease",
+          "command": "/usr/bin/clang++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -I<PROJECT>/tests -I<PROJECT>/tests/emulator -I<PROJECT>/tests/lens -I<PROJECT>/tests/model -I<PROJECT>/tests/diff -I<PROJECT>/tests/reconcile -I<PROJECT>/tests/engine -I<PROJECT>/tests/api -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-test/../../include -O3 -DNDEBUG -std=c++26 -flto=thin -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -o CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o -c <PROJECT>/tests/test_main.cpp",
+          "file": "<PROJECT>/tests/test_main.cpp",
+          "output": "/Users/briandombrowski/dev/bdombro/gdocsmith-mcp/build/cmake/GapRelease/CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o"
+        }
+      ]
+    },
+    "ParityChecks": {
+      "cacheSha256": "7e20fa92f25c0b17092d383b39fa7f3010af70aa2967a452bec78b746f6f7dd9",
+      "compileDatabaseSha256": "0d258ad72460d57398530aef0f776956e962abfb264e57e036dd4d3d798e5551",
+      "commands": [
+        {
+          "directory": "<PROJECT>/build/cmake/ParityChecks",
+          "command": "/usr/bin/c++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o -c <PROJECT>/src/main.cpp",
+          "file": "<PROJECT>/src/main.cpp",
+          "output": "CMakeFiles/gdocsmith-mcp.dir/src/main.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/ParityChecks",
+          "command": "/usr/bin/c++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o -c <PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "file": "<PROJECT>/tests/parity/cpp-import-adapter.cpp",
+          "output": "CMakeFiles/gdocsmith_parity_adapter.dir/tests/parity/cpp-import-adapter.cpp.o"
+        },
+        {
+          "directory": "<PROJECT>/build/cmake/ParityChecks",
+          "command": "/usr/bin/c++ -DCURL_STATICLIB -DHV_STATICLIB -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -I<PROJECT>/src -I<PROJECT>/tests -I<PROJECT>/tests/emulator -I<PROJECT>/tests/lens -I<PROJECT>/tests/model -I<PROJECT>/tests/diff -I<PROJECT>/tests/reconcile -I<PROJECT>/tests/engine -I<PROJECT>/tests/api -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-mcp/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-json/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-reflect/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-bugsink/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-curl/../../include -isystem <PROJECT>/build/deps/arm64-osx/include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-yaml/../../include -isystem <PROJECT>/build/deps/arm64-osx/share/slimr-test/../../include -g -std=c++26 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -ftrivial-auto-var-init=zero -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -o CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o -c <PROJECT>/tests/test_main.cpp",
+          "file": "<PROJECT>/tests/test_main.cpp",
+          "output": "CMakeFiles/gdocsmith_mcp_test.dir/tests/test_main.cpp.o"
+        }
+      ]
+    }
+  }
+}

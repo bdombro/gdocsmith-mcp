@@ -1,0 +1,244 @@
+{
+  "schema": "confirmation-engine-vectors-v1",
+  "state": "w2-adapters-ready-for-confirmation-run",
+  "seedDigests": {
+    "tests/parity/seeds/w2-rename-v1.json": "747c25c9981320602c3d95cfc4a07e4a9a7fdd720e00e5a4977d1a2e7769a4b5",
+    "tests/parity/seeds/w1-create-v1.json": "8694fc6ed574cd8aeb2aba31b0110e9f41c6650d47a6d639ffbcb50eac301607",
+    "tests/parity/seeds/w3-nested-tabs-v1.json": "f60efae20fdb4c08131df0e792e842801f0be825bd9745eb5a0d1466143a1c6a",
+    "tests/parity/seeds/w4-comments-v1.json": "4464b44a4e8398237dd327d41abd4f4cd4478f162995542ab16624430bd7d6a2"
+  },
+  "vectors": [
+    {
+      "id": "W2-rename-only",
+      "readyForExecution": true,
+      "obligations": ["W2-rename-only"],
+      "seed": "tests/parity/seeds/w2-rename-v1.json",
+      "scenario": "export-edit-title-only-import",
+      "edits": {"titleFrom": "Example", "titleTo": "Renamed"},
+      "expected": {
+        "status": "applied",
+        "verification": "match",
+        "errorsAbsent": true,
+        "contentBatches": 0,
+        "renameCalls": 1,
+        "remoteAndExportTitle": "Renamed",
+        "secondTabUnchanged": true
+      },
+      "controls": ["ack-rename-without-mutation"]
+    },
+    {
+      "id": "W2-delayed-docs-title",
+      "readyForExecution": true,
+      "obligations": ["W2-delayed-docs-title"],
+      "seed": "tests/parity/seeds/w2-rename-v1.json",
+      "scenario": "export-edit-title-only-import-with-delayed-docs-readback",
+      "fault": "delayed-docs-title",
+      "edits": {"titleFrom": "Example", "titleTo": "Renamed"},
+      "expected": {
+        "faultCallsAtLeast": 1,
+        "remoteTitle": "Example",
+        "remoteStoredTitle": "Renamed",
+        "secondTabUnchanged": true
+      },
+      "controls": ["delayed-docs-title"]
+    },
+    {
+      "id": "W2-rename-fail-after-content",
+      "readyForExecution": true,
+      "obligations": ["W2-rename-fail-after-content"],
+      "seed": "tests/parity/seeds/w2-rename-v1.json",
+      "scenario": "export-edit-body-and-title-fail-rename-after-content-import",
+      "fault": "fail-rename-after-content",
+      "edits": {"textFrom": "Hello world", "textTo": "Hello revised world", "titleFrom": "Example", "titleTo": "Renamed"},
+      "expected": {
+        "faultCallsAtLeast": 1,
+        "status": "failed",
+        "errorPhase": "rename",
+        "writeStateNotNone": true,
+        "contentBatchesAtLeast": 1,
+        "remoteBodyIncludes": "Hello revised world",
+        "remoteStoredTitle": "Example",
+        "secondTabUnchanged": true
+      },
+      "controls": ["fail-rename-after-content"]
+    },
+    {
+      "id": "W1-create-success-replay",
+      "readyForExecution": true,
+      "obligations": ["W1-create-success-replay"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "null-id-create-two-tabs-and-replay",
+      "expected": {
+        "status": "applied",
+        "writeState": "complete",
+        "replayStatus": "unchanged",
+        "createDocumentCalls": 1,
+        "initialTabReused": "t.0"
+      },
+      "controls": []
+    },
+    {
+      "id": "W1-create-rollback-retry",
+      "readyForExecution": true,
+      "obligations": ["W1-create-rollback-retry"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "create-fail-content-rollback-then-retry",
+      "expected": {
+        "status": "failed",
+        "writeState": "reverted",
+        "deleteFileCalls": 1,
+        "replayStatus": "applied",
+        "createDocumentCallsAfterRetry": 2
+      },
+      "controls": ["ack-delete-without-mutation"]
+    },
+    {
+      "id": "W1-create-rollback-rejected",
+      "readyForExecution": true,
+      "obligations": ["W1-create-rollback-rejected"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "create-fail-content-and-delete-rejected",
+      "expected": {
+        "status": "failed",
+        "writeState": "unknown",
+        "docRetained": true,
+        "warningPattern": "could not be deleted"
+      },
+      "controls": []
+    },
+    {
+      "id": "W1-create-mismatch-readback",
+      "readyForExecution": true,
+      "obligations": ["W1-create-mismatch-readback"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "create-write-then-mismatch-readback",
+      "expected": {
+        "status": "failed",
+        "verification": "mismatch",
+        "writeState": "complete",
+        "docRetained": true,
+        "deleteFileCalls": 0
+      },
+      "controls": []
+    },
+    {
+      "id": "W1-create-unknown-outcome",
+      "readyForExecution": true,
+      "obligations": ["W1-create-unknown-outcome"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "create-lost-response-no-blind-retry",
+      "expected": {
+        "status": "failed",
+        "writeState": "unknown",
+        "docAbsent": true,
+        "deleteFileCalls": 0,
+        "createDocumentCalls": 1
+      },
+      "controls": []
+    },
+    {
+      "id": "W1-create-invalid-syntax",
+      "readyForExecution": true,
+      "obligations": ["W1-create-invalid-syntax"],
+      "seed": "tests/parity/seeds/w1-create-v1.json",
+      "scenario": "invalid-syntax-pre-create-refusal",
+      "expected": {
+        "status": "refused",
+        "writeState": "none",
+        "createDocumentCalls": 0
+      },
+      "controls": []
+    },
+    {
+      "id": "W3-reparent-order-noop",
+      "readyForExecution": true,
+      "obligations": ["W3-reparent-order-noop"],
+      "seed": "tests/parity/seeds/w3-nested-tabs-v1.json",
+      "scenario": "reparent-reorder-tabs-and-noop-replay",
+      "expected": {
+        "status": "applied",
+        "verification": "match",
+        "replayStatus": "unchanged"
+      },
+      "controls": [
+        {"fault": "ack-move-without-mutation", "expectedBy": "w3:reparent-order-hierarchy"}
+      ]
+    },
+    {
+      "id": "W3-orphan-refusal",
+      "readyForExecution": true,
+      "obligations": ["W3-orphan-refusal"],
+      "seed": "tests/parity/seeds/w3-nested-tabs-v1.json",
+      "scenario": "refuse-orphan-tab-under-deleted-parent",
+      "expected": {
+        "status": "refused",
+        "writeState": "none",
+        "errorCode": "invalidPlacement"
+      },
+      "controls": []
+    },
+    {
+      "id": "W3-delete-subtree-and-all",
+      "readyForExecution": true,
+      "obligations": ["W3-delete-subtree-and-all"],
+      "seed": "tests/parity/seeds/w3-nested-tabs-v1.json",
+      "scenario": "delete-subtree-then-delete-all-clears-tab1",
+      "expected": {
+        "subtreeStatus": "applied",
+        "deleteAllStatus": "applied"
+      },
+      "controls": []
+    },
+    {
+      "id": "W4-comment-allow-and-actions",
+      "readyForExecution": true,
+      "obligations": ["W4-comment-allow-and-actions"],
+      "seed": "tests/parity/seeds/w4-comments-v1.json",
+      "scenario": "refuse-without-allow-then-apply-comment-actions",
+      "expected": {
+        "refusedStatus": "refused",
+        "status": "applied"
+      },
+      "controls": [
+        {"fault": "ack-comment-without-mutation", "expectedBy": "w4:allow-and-actions"}
+      ]
+    },
+    {
+      "id": "W4-comment-ownership-and-readonly",
+      "readyForExecution": true,
+      "obligations": ["W4-comment-ownership-and-readonly"],
+      "seed": "tests/parity/seeds/w4-comments-v1.json",
+      "scenario": "refuse-other-comment-edit-delete-and-quote-mutation",
+      "expected": {
+        "status": "refused",
+        "commentSends": 0
+      },
+      "controls": []
+    },
+    {
+      "id": "W4-comment-resolved-reopen",
+      "readyForExecution": true,
+      "obligations": ["W4-comment-resolved-reopen"],
+      "seed": "tests/parity/seeds/w4-comments-v1.json",
+      "scenario": "export-resolved-comment-and-reopen",
+      "expected": {
+        "status": "applied",
+        "resolved": false
+      },
+      "controls": []
+    },
+    {
+      "id": "W4-comment-partial-unknown-outcome",
+      "readyForExecution": true,
+      "obligations": ["W4-comment-partial-unknown-outcome"],
+      "seed": "tests/parity/seeds/w4-comments-v1.json",
+      "scenario": "fail-second-comment-action-preserves-partial-no-replay",
+      "fault": "fail-second-comment-action",
+      "expected": {
+        "writeState": "partial",
+        "commentSends": 2
+      },
+      "controls": []
+    }
+  ]
+}

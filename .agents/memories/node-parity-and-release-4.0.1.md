@@ -1,0 +1,10 @@
+<!-- Generated from the swarm-mode skill template: templates/memory.md -->
+<!-- Never include secrets or other sensitive information; sanitize before writing. -->
+# Node Parity Closure and v4.0.1 Release
+
+- Full Node.js behavioral parity is the product standard over documented narrowings: `Q-L1` inherited-vs-explicit text runs (`src/lens/project.hpp`), `Q-L2` `apiUser` export/import (`src/engine/export.hpp`, `src/app.hpp`), `Q-L3` `"1"`/`"2"` deduplicated `namedStyleSets` and declaration edits, `10-T4` O(N) `gdoc:` pre-fetch before `transactionRun` (`src/engine/import.hpp`), and removing `:style[]{}` (`src/lens/render.hpp`, `src/lens/put.hpp`) (`plans/confirmation/tasks/19.md`, 2026-11-15).
+- C++ `gdocsmith_mcp_test` requires an absolute `TMPDIR` (e.g. `TMPDIR="$PWD/build/cmake/GapChecks" BUGSINK_DSN=`) and `clang-tidy` on `tests/test_main.cpp` requires `--extra-arg=-DDOCTEST_COUNTER=__COUNTER__` (`plans/confirmation/assessments/final-reconciliation.md`, 2026-11-15).
+- `just parity <run_id> node` takes the `node` executable as `$2` (not `../gdocsmith-node`), and `run-engine-differential.mjs` requires `--target-adapter build/cmake/ParityChecks/gdocsmith_parity_adapter` when running outside default `build/tests/parity/` (`justfile`, `plans/confirmation/tasks/16-A.md`, 2026-11-15).
+- Synthetic project-local corpus tests in `tests/model/test_corpus.hpp` explicitly classify `unavailable`/`empty`/`nonempty` and fail closed on zero execution without touching `~/.cache/gdocsmith/db.sqlite` or adding `sqlite3` (`plans/confirmation/assessments/corpus-brief.md`, 2026-11-15).
+- Differential parity assertions (`V001`–`V010` `70/70` controls, `W1`–`W4` `82/82` controls) and `447/447` C++ tests (`7181/7181` assertions) passed before `v4.0.1` (`f25ffb4`, `40f1bab`), with a live Google Docs/Drive throwaway smoke test also passing (`plans/confirmation/tasks/19-RC.md`, 2026-11-15).
+- Remaining raw JSON/Markdown leaf diffs in `run-engine-differential.mjs` are non-normalized formatting/wording differences (e.g. `std::map` key order); never normalize differential outputs (`plans/confirmation/rules.md`, 2026-11-15).

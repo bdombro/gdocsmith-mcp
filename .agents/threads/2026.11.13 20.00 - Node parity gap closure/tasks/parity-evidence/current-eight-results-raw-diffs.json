@@ -1,0 +1,2370 @@
+{
+  "schema": "engine-parity-all-raw-differences-v1",
+  "sourceResult": ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/current-eight-results.json",
+  "completedAt": "2026-11-13T20:41:46.439Z",
+  "frozenInputs": true,
+  "compiledInputsCurrent": true,
+  "allValuesAreSynthetic": true,
+  "onlyOwnedRunPrefixSanitized": true,
+  "acceptedVariances": [],
+  "totalLeafDifferences": 189,
+  "groupedExactPathAndValues": [
+    {
+      "path": "$.callLog.1.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V006-font-nondefault",
+        "V007-cell-style-edit",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.2.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay",
+        "V005-font-default",
+        "V006-font-nondefault",
+        "V007-cell-style-edit",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt.",
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n  ns2:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V001-noop"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n  ns2:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V001-noop",
+        "V002-body-and-title",
+        "V003-stale",
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-001; original engine/import.test.ts:451–463 asserts status/match/none/zero content+rename writes/same existing export path, not exact body whitespace or warning prose.",
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout.",
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.10.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.11",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": {
+        "name": "Renamed"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "updateFile",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "name": "Renamed"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "updateFile",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.8.method",
+      "original": "commentsList",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V002-body-and-title",
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose.",
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Renamed\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Renamed\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n  ns2:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V002-body-and-title"
+      ],
+      "sourceConstraints": [
+        "OB-002; original engine/import.test.ts:512–533 asserts no errors/applied/match/content before final rename/export title and included body text, not exact body whitespace or summary prose."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n  ns2:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/74546-178660734216083-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "V003-stale"
+      ],
+      "sourceConstraints": [
+        "OB-006; original engine/import.test.ts:569–583 asserts refused/staleBase/none/preserved input/distinct export/current revision/zero batches, not exact stale message/summary or recovery-directory layout."
+      ]
+    },
+    {
+      "path": "$.callLog.11.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.12",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.13",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay",
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay",
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test.",
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.callLog.9.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=1}\n\n::section{id=s2}\n\nProtected by omission\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n  ns2:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n\n::tab{id=t.1 title=\"Other Tab\" namedStyleSet=ns2}\n\n::section{id=s1}\n\nProtected by omission\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.replay.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/74548-178661120158791-6/exports/synthetic-doc/rev-2/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-2/export.md",
+      "target": "<RUN>/work/recoveries/74548-178661115685708-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "V004-landed-lost-response-replay"
+      ],
+      "sourceConstraints": [
+        "OB-008; original engine/import.test.ts:410–429 asserts failed/unknown/distinct fresh export/staleBase replay/one batch. Original production import.ts:546 + actual executions require inconclusive verification after unknown write. Other summary/recovery layout exact bytes not asserted by that test."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1.1.updateTextStyle.textStyle.fontSize",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "magnitude": 11,
+        "unit": "PT"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1.1.updateTextStyle.textStyle.weightedFontFamily",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "fontFamily": "Arial",
+        "weight": 400
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello revised world\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\nHello world\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\nHello world\n",
+      "target": "\n\n:style[Hello world]{fontSize=11.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateTextStyle.textStyle.fontSize",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "magnitude": 11,
+        "unit": "PT"
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1.updateTextStyle.textStyle.weightedFontFamily",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "fontFamily": "Arial",
+        "weight": 400
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.0.endIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.0.textRun.content",
+      "original": "Hello ",
+      "target": "Hello revised world",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.endIndex",
+      "original": 15,
+      "target": 21,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.startIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.content",
+      "original": "revised ",
+      "target": "\n",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.elements.3",
+      "original": {
+        "endIndex": 21,
+        "startIndex": 20,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.0.endIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.0.textRun.content",
+      "original": "Hello ",
+      "target": "Hello revised world",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.endIndex",
+      "original": 15,
+      "target": 21,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.startIndex",
+      "original": 7,
+      "target": 20,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.content",
+      "original": "revised ",
+      "target": "\n",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {
+            "fontSize": {
+              "magnitude": 11,
+              "unit": "PT"
+            },
+            "weightedFontFamily": {
+              "fontFamily": "Arial",
+              "weight": 400
+            }
+          }
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.3",
+      "original": {
+        "endIndex": 21,
+        "startIndex": 20,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V005-font-default",
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.11; original engine/import.test.ts:115–149 requires no errors/applied/match when omitted explicit font is inherited-equivalent 11pt.",
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.10",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getDocument",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "getDocument",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.8",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "getFileMetadata",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.9",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "method": "commentsList",
+        "args": [
+          "synthetic-doc"
+        ]
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.exists",
+      "original": false,
+      "target": true,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": null,
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\nHello revised world\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.pathRole",
+      "original": "absent",
+      "target": "distinct",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.revision",
+      "original": {
+        "absent": true
+      },
+      "target": "rev-2",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.tabs",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "id": "t.0",
+          "title": "Overview",
+          "markdown": "\n\nHello revised world\n"
+        }
+      ],
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.exported.title",
+      "original": {
+        "absent": true
+      },
+      "target": "Example",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ntextStyles:\n  size22:\n    fontSize: 22\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n:style[Hello world]{.size22}\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[Hello world]{fontSize=22.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n:style[Hello world]{.size22}\n",
+      "target": "\n\n:style[Hello world]{fontSize=22.000000 fontFamily=Arial fontWeight=400}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.1.textRun.textStyle.fontSize",
+      "original": {
+        "magnitude": 22,
+        "unit": "PT"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.elements.2",
+      "original": {
+        "endIndex": 20,
+        "startIndex": 15,
+        "textRun": {
+          "content": "world",
+          "textStyle": {
+            "fontSize": {
+              "magnitude": 22,
+              "unit": "PT"
+            },
+            "weightedFontFamily": {
+              "fontFamily": "Arial",
+              "weight": 400
+            }
+          }
+        }
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.result.errors.0.message",
+      "original": "send failed in phase \"verification\": post-write verification for synthetic-doc did not match the intended document:\ntab \"Overview\" block 0 inline 0: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}\ntab \"Overview\" block 0 inline 1: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}\ntab \"Overview\" block 0 inline 2: style differs (fontSize): {\"fontSize\":{\"expected\":{\"magnitude\":22,\"unit\":\"PT\"}}}",
+      "target": "send failed in phase \"verification\": post-write verification for synthetic-doc did not match the intended document:\ntab \"Overview\" block 0 inline 0: style differs (fontSize)",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": {
+        "absent": true
+      },
+      "target": "<RUN>/work/recoveries/74552-178661842556333-3/exports/synthetic-doc/rev-2/export.md",
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Every write landed, but the readback did not match the file (see errors). Export fresh and continue from that.",
+      "target": "Every write landed, but the readback did not match the file (see errors). The fresh export at exportPath shows the document now; continue from it.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V006-font-nondefault"
+      ],
+      "sourceConstraints": [
+        "OB-009.22; original engine/import.test.ts:115–149 requires failed/mismatch and landed-but-mismatched summary for omitted nondefault 22pt."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.1",
+      "original": [
+        {
+          "updateTableCellStyle": {
+            "fields": "backgroundColor",
+            "tableCellStyle": {
+              "backgroundColor": {
+                "color": {
+                  "rgbColor": {
+                    "blue": 0,
+                    "green": 1,
+                    "red": 0
+                  }
+                }
+              }
+            },
+            "tableRange": {
+              "columnSpan": 1,
+              "rowSpan": 1,
+              "tableCellLocation": {
+                "columnIndex": 0,
+                "rowIndex": 0,
+                "tableStartLocation": {
+                  "index": 1,
+                  "tabId": "t.0"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.4.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.4.method",
+      "original": "batchUpdate",
+      "target": "getDocument",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.5",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.6",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "commentsList"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.7",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.8",
+      "original": {
+        "args": [
+          "synthetic-doc"
+        ],
+        "method": "getDocument"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.exists",
+      "original": true,
+      "target": false,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\ncellStyles:\n  cell-1:\n    backgroundColor: \"#00FF00\"\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": null,
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.pathRole",
+      "original": "same",
+      "target": "absent",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.revision",
+      "original": "rev-2",
+      "target": {
+        "absent": true
+      },
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.tabs",
+      "original": [
+        {
+          "id": "t.0",
+          "title": "Overview",
+          "markdown": "\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n"
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.exported.title",
+      "original": "Example",
+      "target": {
+        "absent": true
+      },
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\ncellStyles:\n  cell-1:\n    backgroundColor: \"#FF0000\"\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\ncellStyles:\n  c6f322d742d30:\n    backgroundColor: '#FF0000'\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n| A :cell{.cell-1} | B |\n| --- | --- |\n\nTail\n",
+      "target": "\n\n| A :cell{.c6f322d742d30} | B |\n| --- | --- |\n\nTail\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.mutations.0",
+      "original": {
+        "kind": "batchUpdate",
+        "requests": [
+          {
+            "updateTableCellStyle": {
+              "fields": "backgroundColor",
+              "tableCellStyle": {
+                "backgroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "blue": 0,
+                      "green": 1,
+                      "red": 0
+                    }
+                  }
+                }
+              },
+              "tableRange": {
+                "columnSpan": 1,
+                "rowSpan": 1,
+                "tableCellLocation": {
+                  "columnIndex": 0,
+                  "rowIndex": 0,
+                  "tableStartLocation": {
+                    "index": 1,
+                    "tabId": "t.0"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requiredRevisionId": "rev-1",
+        "receiptRevision": "rev-2",
+        "replies": [
+          {}
+        ]
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.revisionId",
+      "original": "rev-2",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.0.endIndex",
+      "original": 6,
+      "target": 5,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.0.textRun.content",
+      "original": "A\n",
+      "target": "A",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 5,
+        "endIndex": 6,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.blue",
+      "original": 0,
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.green",
+      "original": 1,
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.red",
+      "original": 0,
+      "target": 1,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.0.endIndex",
+      "original": 9,
+      "target": 8,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.0.textRun.content",
+      "original": "B\n",
+      "target": "B",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 8,
+        "endIndex": 9,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.2.paragraph.elements.0.endIndex",
+      "original": 15,
+      "target": 14,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.2.paragraph.elements.0.textRun.content",
+      "original": "Tail\n",
+      "target": "Tail",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.2.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 14,
+        "endIndex": 15,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.documentStyle",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.footers",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.footnotes",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.headers",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.inlineObjects",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.namedRanges",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.positionedObjects",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.revisionId",
+      "original": "rev-2",
+      "target": "rev-1",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.0.endIndex",
+      "original": 6,
+      "target": 5,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.0.textRun.content",
+      "original": "A\n",
+      "target": "A",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.content.0.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 5,
+        "endIndex": 6,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.blue",
+      "original": 0,
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.green",
+      "original": 1,
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.0.tableCellStyle.backgroundColor.color.rgbColor.red",
+      "original": 0,
+      "target": 1,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.0.endIndex",
+      "original": 9,
+      "target": 8,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.0.textRun.content",
+      "original": "B\n",
+      "target": "B",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.table.tableRows.0.tableCells.1.content.0.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 8,
+        "endIndex": 9,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.2.paragraph.elements.0.endIndex",
+      "original": 15,
+      "target": 14,
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.2.paragraph.elements.0.textRun.content",
+      "original": "Tail\n",
+      "target": "Tail",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.2.paragraph.elements.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "startIndex": 14,
+        "endIndex": 15,
+        "textRun": {
+          "content": "\n",
+          "textStyle": {}
+        }
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.documentStyle",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.footers",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.footnotes",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.headers",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.inlineObjects",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.namedRanges",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.positionedObjects",
+      "original": {},
+      "target": {
+        "absent": true
+      },
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.errors",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "code": "internal",
+          "message": "no paragraph to insert next to",
+          "phase": "planning"
+        }
+      ],
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.exportPath",
+      "original": "<RUN>/work/exports/synthetic-doc/rev-1/export.md",
+      "target": {
+        "absent": true
+      },
+      "classification": "native-recovery-layout-variance-proposal-unaccepted; owned prefix only normalized",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.status",
+      "original": "applied",
+      "target": "refused",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.summary",
+      "original": "Document changes applied.",
+      "target": "No cloud writes were confirmed.",
+      "classification": "wording-variance-proposal-unaccepted; retain exact instructions and semantics",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.verification",
+      "original": "match",
+      "target": "notApplicable",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.result.writeState",
+      "original": "complete",
+      "target": "none",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V007-cell-style-edit"
+      ],
+      "sourceConstraints": [
+        "OB-027; original engine/import.test.ts:1323–1351 and importClean:1205–1212 require declaration+marker export, absent errors/match and actual green remote cell."
+      ]
+    },
+    {
+      "path": "$.callLog.5.method",
+      "original": "commentsList",
+      "target": "getFileMetadata",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.1",
+      "original": [
+        {
+          "deleteContentRange": {
+            "range": {
+              "endIndex": 12,
+              "startIndex": 1,
+              "tabId": "t.0"
+            }
+          }
+        }
+      ],
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.6.args.2",
+      "original": {
+        "requiredRevisionId": "rev-1"
+      },
+      "target": {
+        "absent": true
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.6.method",
+      "original": "batchUpdate",
+      "target": "commentsList",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.1",
+      "original": {
+        "absent": true
+      },
+      "target": [
+        {
+          "deleteContentRange": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 12,
+              "tabId": "t.0"
+            }
+          }
+        },
+        {
+          "updateParagraphStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 2,
+              "tabId": "t.0"
+            },
+            "paragraphStyle": {
+              "namedStyleType": "NORMAL_TEXT"
+            },
+            "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode"
+          }
+        },
+        {
+          "updateTextStyle": {
+            "range": {
+              "startIndex": 1,
+              "endIndex": 2,
+              "tabId": "t.0"
+            },
+            "textStyle": {},
+            "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+          }
+        }
+      ],
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.7.args.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "requiredRevisionId": "rev-1"
+      },
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.callLog.7.method",
+      "original": "getDocument",
+      "target": "batchUpdate",
+      "classification": "external-call-schedule-or-payload-difference-unresolved; ordered calls retained",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\napiUser: parity@example.test\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-2\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:style[]{}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.exported.tabs.0.markdown",
+      "original": "\n\n\n",
+      "target": "\n\n:style[]{}\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.initial.markdown",
+      "original": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\napiUser: parity@example.test\nsuggestionsLine: 27\nnamedStyleSets:\n  \"1\":\n    NORMAL_TEXT:\n      alignment: null\n      avoidWidowAndOrphan: null\n      indentEnd: null\n      indentFirstLine: null\n      indentStart: null\n      lineSpacing: null\n      spaceAbove: null\n      spaceBelow: null\n      spacingMode: null\n---\n::tab{id=t.0 title=Overview namedStyleSet=1}\n\n::section{id=s1}\n\n\n\n::suggestion{id=s1 kind=text tab=Overview exportLine=21}\n::before\n:change[]\n::after\n:change[Hello world]\n",
+      "target": "---\ngdocsmith: <NATIVE-VERSION>\ndoc: synthetic-doc\nrevision: rev-1\ntitle: Example\nnamedStyleSets:\n  ns1:\n    NORMAL_TEXT:\n      fontSize: 11\n      fontFamily: Arial\n      fontWeight: 400\n---\n::tab{id=t.0 title=Overview namedStyleSet=ns1}\n\n::section{id=s1}\n\n:suggestion{id=s1 start}:suggestion{id=s1 end}\n\n::suggestion{id=s1 kind=text}\n::before\n:change[]\n::after\n:change[Hello world]\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.initial.tabs.0.markdown",
+      "original": "\n\n\n\n",
+      "target": "\n\n:suggestion{id=s1 start}:suggestion{id=s1 end}\n\n",
+      "classification": "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.mutations.0.replies.1",
+      "original": {
+        "absent": true
+      },
+      "target": {},
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.mutations.0.replies.2",
+      "original": {
+        "absent": true
+      },
+      "target": {},
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.1",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "updateParagraphStyle": {
+          "range": {
+            "startIndex": 1,
+            "endIndex": 2,
+            "tabId": "t.0"
+          },
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT"
+          },
+          "fields": "alignment,avoidWidowAndOrphan,borderBetween,borderBottom,borderLeft,borderRight,borderTop,direction,indentEnd,indentFirstLine,indentStart,keepLinesTogether,keepWithNext,lineSpacing,namedStyleType,pageBreakBefore,shading,spaceAbove,spaceBelow,spacingMode"
+        }
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.mutations.0.requests.2",
+      "original": {
+        "absent": true
+      },
+      "target": {
+        "updateTextStyle": {
+          "range": {
+            "startIndex": 1,
+            "endIndex": 2,
+            "tabId": "t.0"
+          },
+          "textStyle": {},
+          "fields": "backgroundColor,baselineOffset,bold,fontSize,foregroundColor,italic,link,smallCaps,strikethrough,underline,weightedFontFamily"
+        }
+      },
+      "classification": "write-request-payload-or-order-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.paragraphStyle.direction",
+      "original": {
+        "absent": true
+      },
+      "target": "LEFT_TO_RIGHT",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.remote.tabs.0.documentTab.body.content.1.paragraph.paragraphStyle.namedStyleType",
+      "original": {
+        "absent": true
+      },
+      "target": "NORMAL_TEXT",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.paragraphStyle.direction",
+      "original": {
+        "absent": true
+      },
+      "target": "LEFT_TO_RIGHT",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.remoteStored.tabs.0.documentTab.body.content.1.paragraph.paragraphStyle.namedStyleType",
+      "original": {
+        "absent": true
+      },
+      "target": "NORMAL_TEXT",
+      "classification": "provider-state-difference-potential-defect",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.snippetResult.errors.0.line",
+      "original": 27,
+      "target": 7,
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    },
+    {
+      "path": "$.snippetResult.errors.0.phase",
+      "original": {
+        "absent": true
+      },
+      "target": "planning",
+      "classification": "observable-contract-difference-unresolved",
+      "cases": [
+        "V008-reject-hidden-insertion"
+      ],
+      "sourceConstraints": [
+        "OB-029; original engine/import.test.ts:330–350 requires hidden body text, exact review content, immutable-snippet refusal, then reject/no errors/match and removed content/review block."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "created-upload-id-bijections-v1",
+  "sourceReceipt": "ten-vector-final-results.json",
+  "derivation": "Ordered actual imagesUpload receipts, each isolated run separately; exact cleanup assertion passed on each side. No values normalized.",
+  "entries": [
+    {
+      "caseId": "V009-image-upload-lifecycle",
+      "variant": "main",
+      "kind": "created-upload-document",
+      "pairs": [
+        {
+          "original": "fake-doc-1",
+          "target": "doc_1"
+        }
+      ],
+      "validBijection": true,
+      "appliedToComparison": false
+    },
+    {
+      "caseId": "V010-cross-doc-image-copy",
+      "variant": "main",
+      "kind": "created-upload-document",
+      "pairs": [],
+      "validBijection": true,
+      "appliedToComparison": false
+    },
+    {
+      "caseId": "V009-image-upload-lifecycle",
+      "variant": "known-upload-error",
+      "kind": "created-upload-document",
+      "pairs": [
+        {
+          "original": "fake-doc-1",
+          "target": "doc_1"
+        }
+      ],
+      "validBijection": true,
+      "appliedToComparison": false
+    }
+  ]
+}

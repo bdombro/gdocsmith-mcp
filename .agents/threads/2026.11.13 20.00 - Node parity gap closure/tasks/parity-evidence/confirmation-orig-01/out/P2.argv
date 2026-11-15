@@ -1,0 +1,1 @@
+--test-name-pattern=\^an\ image\ copied\ from\ another\ document\ by\ a\ gdoc:\ source\ is\ read\ from\ that\ document\ once\ and\ recreated\$ src/core/engine/import.test.ts 

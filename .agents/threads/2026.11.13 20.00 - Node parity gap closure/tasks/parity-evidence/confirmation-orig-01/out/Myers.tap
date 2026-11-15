@@ -1,0 +1,36 @@
+TAP version 13
+# Subtest: diffHunks
+    # Subtest: random inputs: hunks reproduce b with a minimal number of edits, deterministically
+    ok 1 - random inputs: hunks reproduce b with a minimal number of edits, deterministically
+      ---
+      duration_ms: 6.078834
+      type: 'test'
+      ...
+    1..1
+ok 1 - diffHunks
+  ---
+  duration_ms: 6.515833
+  type: 'suite'
+  ...
+# Subtest: lcsPairs
+    # Subtest: pairs form a longest common subsequence
+    ok 1 - pairs form a longest common subsequence
+      ---
+      duration_ms: 1.444959
+      type: 'test'
+      ...
+    1..1
+ok 2 - lcsPairs
+  ---
+  duration_ms: 1.534209
+  type: 'suite'
+  ...
+1..2
+# tests 2
+# suites 2
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 101.886708

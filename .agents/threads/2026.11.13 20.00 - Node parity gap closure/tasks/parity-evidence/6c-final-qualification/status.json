@@ -1,0 +1,282 @@
+{
+  "startedAt": "2026-11-13T21:53:12.752853+00:00",
+  "classification": "frozen qualification, not release acceptance",
+  "gates": [
+    {
+      "name": "debug-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapChecks",
+        "--target",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:53:12.753013+00:00",
+      "pid": 6530,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:53:48.606253+00:00",
+      "elapsedSeconds": 35.853,
+      "outputSha256": "d6fe240f282cbec1c158b07b61f99ff89e36a3d3ef862add3ad7fac86b22d87e",
+      "outputBytes": 130,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "debug-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapChecks",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T21:53:48.607041+00:00",
+      "pid": 8059,
+      "status": "completed",
+      "exitCode": 8,
+      "completedAt": "2026-11-13T21:54:51.019127+00:00",
+      "elapsedSeconds": 62.412,
+      "outputSha256": "3dfa4364ea63767f05162c5cd9b3d0feff674cc1f52b7ae640cb0f15dc4c5cbd",
+      "outputBytes": 1102,
+      "rawOutputRetained": false,
+      "summaries": [
+        "[doctest] test cases:  397 |  396 passed | 1 failed | 0 skipped",
+        "[doctest] assertions: 6476 | 6475 passed | 1 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =  62.37 sec"
+      ],
+      "failingCaseMetadata": [
+        "export - rich synthetic content does not claim editable segments are read-only"
+      ],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapRelease",
+        "--target",
+        "gdocsmith-mcp",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:54:51.019604+00:00",
+      "pid": 10581,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:56:44.794200+00:00",
+      "elapsedSeconds": 113.774,
+      "outputSha256": "0e452a8b770e5e9963b0d0f7013861184f5988b0cc595093d1e74de852ca0c69",
+      "outputBytes": 302,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapRelease",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T21:56:44.794647+00:00",
+      "pid": 14644,
+      "status": "completed",
+      "exitCode": 8,
+      "completedAt": "2026-11-13T21:56:47.561245+00:00",
+      "elapsedSeconds": 2.767,
+      "outputSha256": "4b9cbae760b383706b726486ffb5ab307f20200082d332860cd932df9716be84",
+      "outputBytes": 1103,
+      "rawOutputRetained": false,
+      "summaries": [
+        "[doctest] test cases:  397 |  396 passed | 1 failed | 0 skipped",
+        "[doctest] assertions: 6476 | 6475 passed | 1 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =   2.75 sec"
+      ],
+      "failingCaseMetadata": [
+        "export - rich synthetic content does not claim editable segments are read-only"
+      ],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "adapter-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/ParityChecks",
+        "--target",
+        "gdocsmith_parity_adapter",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:56:47.561792+00:00",
+      "pid": 14717,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:57:10.316828+00:00",
+      "elapsedSeconds": 22.755,
+      "outputSha256": "1525d9bc83a7c790639907f1ddf96f495730dceedd561cebcd38b89ac6a344cb",
+      "outputBytes": 205,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-app",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/GapChecks",
+        "src/main.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:57:10.317573+00:00",
+      "pid": 15758,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:57:18.283151+00:00",
+      "elapsedSeconds": 7.966,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-tests",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/GapChecks",
+        "tests/test_main.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:57:18.283731+00:00",
+      "pid": 15939,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:57:26.770111+00:00",
+      "elapsedSeconds": 8.486,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-adapter",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/ParityChecks",
+        "tests/parity/cpp-import-adapter.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:57:26.770721+00:00",
+      "pid": 16136,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:57:38.629054+00:00",
+      "elapsedSeconds": 11.858,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "mcp-isolated",
+      "command": [
+        "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+        "scripts/test-mcp.mjs",
+        "build/bin/gdocsmith-mcp",
+        "export,import,file,status"
+      ],
+      "startedAt": "2026-11-13T21:57:38.629673+00:00",
+      "pid": 16347,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:57:39.114646+00:00",
+      "elapsedSeconds": 0.485,
+      "outputSha256": "3139da88703f0605476ccee59c77bc5bafca3d6f0c5575c932032b4dba0ab2b9",
+      "outputBytes": 69,
+      "rawOutputRetained": false,
+      "summaries": [
+        "MCP 2026-07-28 stdio+http conformance passed: gdocsmith-mcp, 5 tools"
+      ],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "ten-vectors-known-id-controls",
+      "command": [
+        "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+        "tests/parity/run-engine-differential.mjs",
+        "--original-root",
+        "../gdocsmith-node",
+        "--target-adapter",
+        "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+        "--vectors",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+        "--case-ids",
+        "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+        "--owned-run-root",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-final-qualification/runs",
+        "--results",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-final-qualification/differential-results.json"
+      ],
+      "startedAt": "2026-11-13T21:57:39.115259+00:00",
+      "pid": 16350,
+      "status": "timeout-stopped",
+      "exitCode": -15,
+      "completedAt": "2026-11-13T21:57:43.009504+00:00",
+      "elapsedSeconds": 3.894,
+      "outputSha256": "a1660557358362648a802c07b440815cb8673e725be16a21373a8dffe81f3641",
+      "outputBytes": 393,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    }
+  ],
+  "excludedSourceNotRead": "tests/engine/test_export.hpp",
+  "completedAt": "2026-11-13T21:57:43.056521+00:00",
+  "elapsedSeconds": 270.341,
+  "sourceInputsUnchanged": true,
+  "changedInputs": [],
+  "binaries": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "43fa8d38c3a9b0741e724b207f7f07a4b10d2d460949940149d284fc713e9772",
+      "bytes": 11613008
+    },
+    "build/cmake/GapChecks/gdocsmith_mcp_test": {
+      "sha256": "2043f65c475795cfccecd4e2e04b045b6921ba83ed05f2739a828b32f65d8319",
+      "bytes": 83242896
+    },
+    "build/cmake/GapRelease/gdocsmith_mcp_test": {
+      "sha256": "ee45ebad90aaf358f4dd6b3388ae65e73ddc1a9cfe7983e1fd1af47f4c4229a2",
+      "bytes": 17771120
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "f09126d4f09050fde8e4f308229722d22328f88f73df38a62e4d751376e3cda5",
+      "bytes": 51721640
+    }
+  },
+  "originalBaselineStillCurrent": true,
+  "runningOwnedCommands": []
+}

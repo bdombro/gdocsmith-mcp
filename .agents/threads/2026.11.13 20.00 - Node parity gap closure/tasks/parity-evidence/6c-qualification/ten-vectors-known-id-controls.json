@@ -1,0 +1,31 @@
+{
+  "name": "ten-vectors-known-id-controls",
+  "command": [
+    "<CACHED_NODE24_11_0>",
+    "tests/parity/run-engine-differential.mjs",
+    "--original-root",
+    "../gdocsmith-node",
+    "--target-adapter",
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+    "--vectors",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+    "--case-ids",
+    "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+    "--owned-run-root",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-qualification/runs",
+    "--results",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-qualification/differential-results.json"
+  ],
+  "startedAt": "2026-11-13T21:37:39.882803+00:00",
+  "pid": 66196,
+  "status": "completed",
+  "exitCode": 1,
+  "completedAt": "2026-11-13T21:37:46.337391+00:00",
+  "elapsedSeconds": 6.455,
+  "outputSha256": "792be2b3b48e3b416f33f0722cbfdbdac14ad787d89438798d32beab45453e3a",
+  "outputBytes": 988,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

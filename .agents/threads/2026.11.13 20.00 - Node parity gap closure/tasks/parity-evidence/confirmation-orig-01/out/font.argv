@@ -1,0 +1,1 @@
+--test-name-pattern=\^readback\ tolerates\ only\ an\ inherited\ equivalent\ of\ omitted\ explicit\ font\ \(11\|22\)\$ src/core/engine/import.test.ts 

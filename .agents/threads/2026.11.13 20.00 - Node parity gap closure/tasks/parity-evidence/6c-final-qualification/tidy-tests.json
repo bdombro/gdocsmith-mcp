@@ -1,0 +1,22 @@
+{
+  "name": "tidy-tests",
+  "command": [
+    "/opt/homebrew/opt/llvm/bin/clang-tidy",
+    "-p",
+    "build/cmake/GapChecks",
+    "tests/test_main.cpp",
+    "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+  ],
+  "startedAt": "2026-11-13T21:57:18.283731+00:00",
+  "pid": 15939,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T21:57:26.770111+00:00",
+  "elapsedSeconds": 8.486,
+  "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outputBytes": 0,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

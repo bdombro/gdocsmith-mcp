@@ -1,0 +1,300 @@
+{
+  "startedAt": "2026-11-13T21:33:16.873595+00:00",
+  "classification": "frozen qualification, not release acceptance",
+  "gates": [
+    {
+      "name": "debug-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapChecks",
+        "--target",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:33:16.873755+00:00",
+      "pid": 55400,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:33:53.177506+00:00",
+      "elapsedSeconds": 36.304,
+      "outputSha256": "c1f3ebc1b606842755c30b319a7a3f738e2fa0581fcf4719e2df962d9fc11c24",
+      "outputBytes": 632,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "debug-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapChecks",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T21:33:53.178324+00:00",
+      "pid": 58077,
+      "status": "completed",
+      "exitCode": 8,
+      "completedAt": "2026-11-13T21:34:53.403743+00:00",
+      "elapsedSeconds": 60.225,
+      "outputSha256": "ca44b22c3ec0f511302466ffd2f2550104c5d6885b100b32a4559f0adc0b1db1",
+      "outputBytes": 21048,
+      "rawOutputRetained": false,
+      "summaries": [
+        "[doctest] test cases:  395 |  391 passed |  4 failed | 0 skipped",
+        "[doctest] assertions: 6440 | 6401 passed | 39 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =  60.19 sec"
+      ],
+      "failingCaseMetadata": [
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "export - rich synthetic content does not claim editable segments are read-only",
+        "transaction Markdown uses typed putback and rejects atom changes atomically",
+        "review export keeps table cell and nonbody context and round-trips immutable snippets"
+      ],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapRelease",
+        "--target",
+        "gdocsmith-mcp",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:34:53.404552+00:00",
+      "pid": 59890,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:36:45.995797+00:00",
+      "elapsedSeconds": 112.591,
+      "outputSha256": "7dcd2144385917e9bcbab4dfca4e34fdc150b75b223564e8fcf053ca99c514da",
+      "outputBytes": 805,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapRelease",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T21:36:45.996263+00:00",
+      "pid": 63150,
+      "status": "completed",
+      "exitCode": 8,
+      "completedAt": "2026-11-13T21:36:48.614878+00:00",
+      "elapsedSeconds": 2.619,
+      "outputSha256": "ac6576dbf7c0f12d2235abad18f949168de5ce54611e5df878d925fd0a8a0adc",
+      "outputBytes": 21049,
+      "rawOutputRetained": false,
+      "summaries": [
+        "[doctest] test cases:  395 |  391 passed |  4 failed | 0 skipped",
+        "[doctest] assertions: 6440 | 6401 passed | 39 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =   2.59 sec"
+      ],
+      "failingCaseMetadata": [
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "public import defaults to injected Docs and Drive through revision-locked transaction",
+        "export - rich synthetic content does not claim editable segments are read-only",
+        "transaction Markdown uses typed putback and rejects atom changes atomically",
+        "review export keeps table cell and nonbody context and round-trips immutable snippets"
+      ],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "adapter-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/ParityChecks",
+        "--target",
+        "gdocsmith_parity_adapter",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T21:36:48.615470+00:00",
+      "pid": 63657,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:37:11.434416+00:00",
+      "elapsedSeconds": 22.819,
+      "outputSha256": "1525d9bc83a7c790639907f1ddf96f495730dceedd561cebcd38b89ac6a344cb",
+      "outputBytes": 205,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-app",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/GapChecks",
+        "src/main.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:37:11.435004+00:00",
+      "pid": 64540,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:37:19.177765+00:00",
+      "elapsedSeconds": 7.743,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-tests",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/GapChecks",
+        "tests/test_main.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:37:19.178319+00:00",
+      "pid": 64759,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:37:27.601742+00:00",
+      "elapsedSeconds": 8.423,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-adapter",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/ParityChecks",
+        "tests/parity/cpp-import-adapter.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T21:37:27.602336+00:00",
+      "pid": 65236,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:37:39.370106+00:00",
+      "elapsedSeconds": 11.768,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "mcp-isolated",
+      "command": [
+        "<CACHED_NODE24_11_0>",
+        "scripts/test-mcp.mjs",
+        "build/bin/gdocsmith-mcp",
+        "export,import,file,status"
+      ],
+      "startedAt": "2026-11-13T21:37:39.370712+00:00",
+      "pid": 66191,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T21:37:39.881976+00:00",
+      "elapsedSeconds": 0.511,
+      "outputSha256": "3139da88703f0605476ccee59c77bc5bafca3d6f0c5575c932032b4dba0ab2b9",
+      "outputBytes": 69,
+      "rawOutputRetained": false,
+      "summaries": [
+        "MCP 2026-07-28 stdio+http conformance passed: gdocsmith-mcp, 5 tools"
+      ],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "ten-vectors-known-id-controls",
+      "command": [
+        "<CACHED_NODE24_11_0>",
+        "tests/parity/run-engine-differential.mjs",
+        "--original-root",
+        "../gdocsmith-node",
+        "--target-adapter",
+        "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+        "--vectors",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+        "--case-ids",
+        "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+        "--owned-run-root",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-qualification/runs",
+        "--results",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/6c-qualification/differential-results.json"
+      ],
+      "startedAt": "2026-11-13T21:37:39.882803+00:00",
+      "pid": 66196,
+      "status": "completed",
+      "exitCode": 1,
+      "completedAt": "2026-11-13T21:37:46.337391+00:00",
+      "elapsedSeconds": 6.455,
+      "outputSha256": "792be2b3b48e3b416f33f0722cbfdbdac14ad787d89438798d32beab45453e3a",
+      "outputBytes": 988,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    }
+  ],
+  "excludedSourceNotRead": "tests/engine/test_export.hpp",
+  "completedAt": "2026-11-13T21:37:46.384074+00:00",
+  "elapsedSeconds": 269.548,
+  "sourceInputsUnchanged": true,
+  "changedInputs": [],
+  "binaries": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "4cb9df48a10fd4a0b627185b1a410268ed0797a60c3bea7a4b61fcae7ea7f04c",
+      "bytes": 11612544
+    },
+    "build/cmake/GapChecks/gdocsmith_mcp_test": {
+      "sha256": "5bf9de5c16db6e430b2a3cdb5a06b5f407e07d2ffee999552edc6cfb4dbcc5e8",
+      "bytes": 83121328
+    },
+    "build/cmake/GapRelease/gdocsmith_mcp_test": {
+      "sha256": "0d593f477f3d772bf08dbd6ee93481623ec8638950396ff50d72ad1adcb2fe1e",
+      "bytes": 17736864
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "505fe77e0abbaccdf0148735cad8622bbeb01937660beb5f1a4572bdb63241d1",
+      "bytes": 51681864
+    }
+  },
+  "originalBaselineStillCurrent": true,
+  "runningOwnedCommands": []
+}

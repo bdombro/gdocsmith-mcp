@@ -1,0 +1,83 @@
+{
+  "schema": "parity-inventory-initial-v1",
+  "phase": "preparation",
+  "execution": "not-run",
+  "sourceReadOnly": true,
+  "fingerprintMethod": "For each listed glob set, sort paths lexically relative to root; SHA256(concat(utf8(relativePath), NUL, raw SHA256(fileBytes))). Counts include tests in the source glob.",
+  "original": {
+    "rootRelativeToTarget": "../gdocsmith-node",
+    "head": "d00069dd188ca995bfda9828cc9eee5016603b63",
+    "dirty": true,
+    "sourceGlob": "src/**/*.ts",
+    "sourceFiles": 148,
+    "sourceDigest": "b9ca26b46aafc99ee34340af67b4e44e223a199c362b604eb63c9ab3245b6318",
+    "testGlobs": ["src/**/*.test.ts", "scripts/**/*.test.ts"],
+    "testFiles": 61,
+    "testDigest": "aa5c81139db931055cd16e3522407766d77a2cb2e0c7096bdcbd8b716bb4aeca",
+    "runner": "node --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
+    "testGroups": {
+      "commands": 3,
+      "core-root": 4,
+      "diff": 2,
+      "emulator": 6,
+      "engine": 7,
+      "lens": 17,
+      "model": 14,
+      "reconcile": 6,
+      "scripts": 2
+    },
+    "fileDigests": {
+      "justfile": "a8db68ced0af14fdc981e784847b02362d9bc44130e1ec12ea0f5c99fd5caa24",
+      "package-lock.json": "5e3127b135f185fe92374a962a8e6b3abe80f0cd030d93dca54e30bf5153d492",
+      "src/core/testing.ts": "8a6d686d8da4a09aff62e41c43d2fd0141bde80352ccead063fd957476712e73"
+    }
+  },
+  "target": {
+    "rootRelativeToTarget": ".",
+    "head": "20ed42e6a67341d71a13f404f149aee34b4c30bc",
+    "dirty": true,
+    "concurrentWritesExpected": true,
+    "sourceGlob": "src/**/*.hpp",
+    "sourceFiles": 86,
+    "sourceDigest": "98846a95141d0e1067c5082f0cae578147b0c0eb70f94dccb67cfe45a45423de",
+    "testGlob": "tests/**/*.hpp",
+    "testHeaderFiles": 49,
+    "testDigest": "b4871e364b4824dd814cfa12d24855aa84f355a350b736040df2e694cb757eaf",
+    "collectionEntrypoint": "tests/test_main.cpp",
+    "fileDigests": {
+      "tests/test_main.cpp": "86408dcc6f7b3b9b4bee7d0efcd2b80c681cffd01379c36eb5eeaad1ccd8c827",
+      "src/engine/import.hpp": "e9c66d1cd09f0ec2d6478889bac80405d7eb05ad1ca35a5ce777f58bb6c15d1f"
+    }
+  },
+  "baselineProvenance": "Supplied preceding assessment; not executed by task 5.",
+  "reportedBaseline": {
+    "nodePassed": 846,
+    "nodeSkipped": 0,
+    "cppCases": 308,
+    "cppAssertions": 5302,
+    "cppSkipped": 0,
+    "byteIdenticalConformanceFiles": 149,
+    "conformanceMechanism": "known-false-green-repair-in-progress-task-1"
+  },
+  "assertionReadingScope": [
+    "Selected engine/import.test.ts ranges cited individually in obligations.md",
+    "lens/put.test.ts fixture/helper and selected token/table-setting assertion ranges",
+    "engine/lifecycle.test.ts allow/permission assertions",
+    "core/testing.ts complete helper implementation",
+    "engine import/export and emulator interfaces; target import/export/app/test collection counterparts"
+  ],
+  "dispositionPolicy": {
+    "allListedObligations": "unresolved",
+    "translatedCandidates": "static correspondence only; no execution claim",
+    "directVerified": 0,
+    "equivalentReplacementVerified": 0,
+    "retired": 0,
+    "totalMeaningfulSourceObligationCount": null,
+    "all846Mapped": false
+  },
+  "portableIntegration": {
+    "state": "closed-execution-and-containment-gate",
+    "executed": false,
+    "receiptsReused": false
+  }
+}

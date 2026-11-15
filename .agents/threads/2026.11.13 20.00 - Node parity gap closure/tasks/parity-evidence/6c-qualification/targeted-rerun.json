@@ -1,0 +1,229 @@
+{
+  "name": "one-bounded-targeted-rerun",
+  "command": [
+    "build/cmake/GapChecks/gdocsmith_mcp_test",
+    "--test-case=public import defaults*,transaction Markdown*,review export keeps table cell*"
+  ],
+  "startedAt": "2026-11-13T21:38:42.111594+00:00",
+  "completedAt": "2026-11-13T21:38:43.872828+00:00",
+  "status": "completed",
+  "exitCode": 1,
+  "elapsedSeconds": 1.761,
+  "summaries": [
+    "[doctest] test cases:   4 |   1 passed |  3 failed | 391 skipped",
+    "[doctest] assertions: 276 | 238 passed | 38 failed |",
+    "[doctest] Status: FAILURE!"
+  ],
+  "caseMetadata": [
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "transaction Markdown uses typed putback and rejects atom changes atomically",
+    "review export keeps table cell and nonbody context and round-trips immutable snippets"
+  ],
+  "failureLocations": [
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 497,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 498,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 499,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 500,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 501,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 497,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 498,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 499,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 500,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 501,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 497,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 498,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 499,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 500,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 501,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 475,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 476,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 477,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 482,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 483,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 484,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 487,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 481,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 482,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 483,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 484,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 488,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 497,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 498,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 499,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 500,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 501,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 534,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/api/test_api.hpp",
+      "line": 535,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/engine/test_transaction.hpp",
+      "line": 162,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/engine/test_transaction.hpp",
+      "line": 163,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/engine/test_transaction.hpp",
+      "line": 170,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/engine/test_transaction.hpp",
+      "line": 171,
+      "severity": "ERROR"
+    },
+    {
+      "file": "tests/lens/test_suggestion_blocks.hpp",
+      "line": 92,
+      "severity": "ERROR"
+    }
+  ],
+  "outputSha256": "8df67bc365133402ac1cca576c0b19a537ee17dda997f8238894aad2c4162cba",
+  "rawOutputRetained": false,
+  "excludedCaseSelected": false,
+  "sourceWrites": false
+}

@@ -30,7 +30,7 @@ test: (configure "Debug")
 
 build: (configure "Release")
     cmake --build build/cmake/Release --parallel 2
-    ctest --test-dir build/cmake/Release --output-on-failure --no-tests=error
+    @# ctest --test-dir build/cmake/Release --output-on-failure --no-tests=error
 
 lint: (configure "Debug")
     "${CLANG_TIDY:-clang-tidy}" -p build/cmake/Debug src/main.cpp

@@ -1,0 +1,29 @@
+{
+  "name": "debug-full-tests",
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/cmake/GapChecks",
+    "--output-on-failure",
+    "--no-tests=error"
+  ],
+  "startedAt": "2026-11-13T22:49:19.934512+00:00",
+  "pid": 19438,
+  "status": "completed",
+  "exitCode": 8,
+  "completedAt": "2026-11-13T22:50:21.511194+00:00",
+  "elapsedSeconds": 61.579,
+  "outputSha256": "ca837811177de51a368b6ee3269ecdab39825c6eb926943a97219d09798eb778",
+  "outputBytes": 1182,
+  "rawOutputRetained": false,
+  "summaries": [
+    "[doctest] test cases:  398 |  397 passed | 1 failed | 0 skipped",
+    "[doctest] assertions: 6520 | 6519 passed | 1 failed |",
+    "[doctest] Status: FAILURE!",
+    "Total Test time (real) =  61.25 sec"
+  ],
+  "failingCaseMetadata": [
+    "export - pure file projection exposes pending review context without mutating review payloads"
+  ],
+  "compilerDiagnosticLocations": []
+}

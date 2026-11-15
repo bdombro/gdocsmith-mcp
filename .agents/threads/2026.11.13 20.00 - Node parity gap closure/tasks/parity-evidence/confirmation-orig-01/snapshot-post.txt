@@ -1,0 +1,27 @@
+d00069dd188ca995bfda9828cc9eee5016603b63
+ M package-lock.json
+?? tests/portable_integration/README.md
+?? tests/portable_integration/__init__.py
+?? tests/portable_integration/conftest.py
+?? tests/portable_integration/diagnostics.py
+?? tests/portable_integration/fixtures/auth-replies.json
+?? tests/portable_integration/launchers/gws
+?? tests/portable_integration/launchers/shell
+?? tests/portable_integration/mock_gws.py
+?? tests/portable_integration/source-launch.example.json
+?? tests/portable_integration/target.py
+?? tests/portable_integration/test_foundation.py
+de70991877e2d7d65a23a02d3fd4c9916ab30bd87e6cecd1ece01b50beb26d82  src/core/engine/import.test.ts
+779e36047d223b655338584a30b5c14042079f875f75d15c334c9e526c881e93  src/core/fetchWithRetry.test.ts
+365781224acf09ea38da8363c3b3d72d29876ad7681d4861c6a842bde5d201cb  src/core/fetchWithRetry.ts
+4f29eede9ad4f65e4336aeb2118f13a67596165528f45e5445b11820d1a7a220  src/core/diff/myers.test.ts
+28a124792608cb7217f63f86efcb65ba1c6179a82faea9e11dc9ce49832b3533  src/core/diff/myers.ts
+47540ce315959ca30e2e7c24c43545da6274712704c4fb2302a8703d00c91d4e  src/core/model/testDocs.ts
+8a6d686d8da4a09aff62e41c43d2fd0141bde80352ccead063fd957476712e73  src/core/testing.ts
+a8db68ced0af14fdc981e784847b02362d9bc44130e1ec12ea0f5c99fd5caa24  justfile
+034f3616866a3d9e503b287cef5717b37a09ceda1b39734abe7ac00b03a2d48e  package.json
+5e3127b135f185fe92374a962a8e6b3abe80f0cd030d93dca54e30bf5153d492  package-lock.json
+L42-43 1c92737f4efea757f8f81a2b78aa02fe4c9cd3c88dcf7505264fad2b6e7af488
+L64-65 654354f0d4b787300df4bc94bd57e30f0fd8db1caa0278cf82a8d64cf3ec0544
+node v26.13.1
+default-tmp-gdocsmith-count 6

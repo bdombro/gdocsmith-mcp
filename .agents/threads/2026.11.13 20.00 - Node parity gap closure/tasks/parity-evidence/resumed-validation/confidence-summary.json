@@ -1,0 +1,64 @@
+{
+  "schema": "6c-resumed-parity-confidence-v1",
+  "startedAt": "2026-11-13T22:39:40.646700+00:00",
+  "completedAt": "2026-11-13T22:39:46.443871+00:00",
+  "elapsedSeconds": 5.797,
+  "status": "completed",
+  "exitCode": 1,
+  "overallAllowanceSeconds": 120,
+  "command": [
+    "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+    "tests/parity/run-engine-differential.mjs",
+    "--original-root",
+    "../gdocsmith-node",
+    "--target-adapter",
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+    "--vectors",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+    "--case-ids",
+    "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+    "--owned-run-root",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-validation/runs",
+    "--results",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-validation/results.json"
+  ],
+  "scope": "existing adapter parity-only confidence probe, no builds/source edits, not full qualification",
+  "outputSha256": "792be2b3b48e3b416f33f0722cbfdbdac14ad787d89438798d32beab45453e3a",
+  "rawOutputRetained": false,
+  "ownedCommandsRunning": [],
+  "adapterSha256": "f09126d4f09050fde8e4f308229722d22328f88f73df38a62e4d751376e3cda5",
+  "summary": {
+    "cases": 10,
+    "variants": 1,
+    "originalAssertionFailures": 0,
+    "targetAssertionFailures": 1,
+    "launchFailures": 0,
+    "differingCases": 11,
+    "controlsDetected": 69,
+    "controlsTotal": 70,
+    "observationControls": 64,
+    "backendControls": 6,
+    "ownedRunDirectoriesRemaining": 0
+  },
+  "frozenInputs": true,
+  "compiledInputsCurrent": true,
+  "newerInputs": [],
+  "originalAssertions": 151,
+  "targetAssertions": 172,
+  "namedFailures": [
+    {
+      "caseId": "V008-reject-hidden-insertion",
+      "variant": null,
+      "side": "cpp",
+      "assertion": {
+        "id": "review:full-source-suggestion-grammar",
+        "pass": false,
+        "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '::suggestion{id=s1 kind=text tab=Overview}\\n' +\n- '::suggestion{id=s1 kind=text tab=Overview exportLine=13}\\n' +\n    '::before\\n' +\n    ':change[]\\n' +\n    '::after\\n' +\n    ':change[Hello world]\\n'\n"
+      }
+    }
+  ],
+  "rawLeafDifferences": 250,
+  "rawGroups": 206,
+  "changedDuringProbe": [],
+  "classification": "completed with named assertion failures"
+}

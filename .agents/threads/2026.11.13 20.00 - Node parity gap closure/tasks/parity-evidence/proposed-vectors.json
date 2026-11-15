@@ -1,0 +1,174 @@
+{
+  "schema": "proposed-engine-vectors-v1",
+  "state": "ten-vectors-and-known-id-variant-executed-named-checks-green-raw-differential-red",
+  "adapterWritten": true,
+  "executed": true,
+  "executedCaseIds": ["V001-noop", "V002-body-and-title", "V003-stale", "V004-landed-lost-response-replay", "V005-font-default", "V006-font-nondefault", "V007-cell-style-edit", "V008-reject-hidden-insertion", "V009-image-upload-lifecycle", "V010-cross-doc-image-copy"],
+  "executedVariants": ["V009-image-upload-lifecycle/known-upload-error"],
+  "featureCaseExecution": "ten-vector-final-results.json:141 original/162 target assertions,0 failures;48/48 controls;0 launch failures;stable/current during run;224 raw differences remain;not parent-frozen or parity-accepted",
+  "seedFixturesWritten": true,
+  "durableAdapters": [
+    "tests/parity/node-import-adapter.mjs",
+    "tests/parity/cpp-import-adapter.cpp",
+    "tests/parity/run-engine-differential.mjs"
+  ],
+  "seedDigests": {
+    "tests/parity/seeds/two-tab-text-v1.json": "747c25c9981320602c3d95cfc4a07e4a9a7fdd720e00e5a4977d1a2e7769a4b5",
+    "tests/parity/seeds/font-readback-v1.json": "b51d5376b6cc90951636b5059f378a5abf4430f7ac317d81358ff2aa4a0d0407",
+    "tests/parity/seeds/cell-style-v1.json": "42dff7bb7abff91cf76721519c8b5e64a927e77b6f4d7197657e44c1ae48aac7",
+    "tests/parity/seeds/suggestion-v1.json": "1a730a4e56cdbbb687df3074c410176ccd7d07372d2baf145534d4d3e0013e4a",
+    "tests/parity/seeds/image-upload-v1.json": "1ce86b082b13c2901874ba54edd33844ce84e82b058ae971c4ab7678cb2c4b83",
+    "tests/parity/seeds/cross-doc-image-v1.json": "2b0399f6db7b90d6d796d2cb87329d68fb1a821c56eb2516e0e983595e528317"
+  },
+  "normalizationApproval": "parent-NP-E002-5-approved-native-export-per-side-and-explicit-version-translation-for-logical-scenarios-only",
+  "boundary": {
+    "original": "engine/fileExport + fileImport(input, FileServices)",
+    "target": "engine/exportModel + fileImport(ImportInput, ImportServices)",
+    "externalSubstitute": "respective existing FakeGoogle backed by actual emulator",
+    "internalDependencies": "real parse, projection, edit, reconcile, transaction, artifact and verification paths",
+    "versionDifference": "Fresh C++ exports use exact source3.0.20; strict actual original Node parse passed all10 initial exports and present post-import exports. Exact combined comments/replies/quote/literal/suggestion proof persisted separately. Legacy numeric1 and broad interchange remain separate."
+  },
+  "commonObservations": [
+    "raw result and structured error fields",
+    "working-input digest and length before/after",
+    "export path same/distinct/absent and file existence",
+    "remote document title/body/revision and preserved second-tab content",
+    "ordered semantic mutation log and required revision chain",
+    "run-root and provider temporary-resource cleanup"
+  ],
+  "vectors": [
+    {
+      "id": "V001-noop",
+      "obligations": ["OB-001-noop"],
+      "seed": "tests/parity/seeds/two-tab-text-v1.json",
+      "scenario": "export-then-import-unchanged",
+      "expected": {
+        "status": "unchanged",
+        "writeState": "none",
+        "verification": "match",
+        "contentBatches": 0,
+        "renameCalls": 0,
+        "exportPathRole": "same-existing-working-file"
+      },
+      "controls": ["append-extra-batch-observation", "delete-working-export-after-import"]
+    },
+    {
+      "id": "V002-body-and-title",
+      "obligations": ["OB-002-edit-title-order"],
+      "seed": "tests/parity/seeds/two-tab-text-v1.json",
+      "scenario": "export-edit-body-and-title-import",
+      "edits": {"textFrom": "Hello world", "textTo": "Hello revised world", "titleFrom": "Example", "titleTo": "Renamed"},
+      "expected": {
+        "status": "applied",
+        "verification": "match",
+        "errorsAbsent": true,
+        "contentBatchesAtLeast": 1,
+        "lastMutation": "rename",
+        "remoteAndExportTitle": "Renamed",
+        "remoteAndExportBodyIncludes": "Hello revised world",
+        "secondTabUnchanged": true
+      },
+      "controls": ["reorder-rename-before-content-observation", "acknowledge-write-without-updating-remote-body"]
+    },
+    {
+      "id": "V003-stale",
+      "obligations": ["OB-006-stale"],
+      "seed": "tests/parity/seeds/two-tab-text-v1.json",
+      "scenario": "export-edit-body-advance-remote-revision-import",
+      "edits": {"textFrom": "Hello world", "textTo": "Hello revised world"},
+      "expected": {
+        "status": "refused",
+        "firstErrorCode": "staleBase",
+        "writeState": "none",
+        "workingBytesUnchanged": true,
+        "exportPathRole": "distinct-fresh-export",
+        "exportRevisionEqualsRemote": true,
+        "contentBatches": 0
+      },
+      "knownTargetMismatch": "initial target stale tests expected failed; actual first-tranche target now matches refused after engine repair",
+      "controls": ["change-refused-observation-to-failed", "controlled-pre-send-revision-race-with-reachability-check"]
+    },
+    {
+      "id": "V004-landed-lost-response-replay",
+      "obligations": ["OB-008-lost-response-replay"],
+      "seed": "tests/parity/seeds/two-tab-text-v1.json",
+      "scenario": "export-edit-body-import-with-apply-then-throw-and-replay",
+      "edits": {"textFrom": "Hello world", "textTo": "Hello revised world"},
+      "externalFault": "first batch mutates actual fake backend then throws transport error",
+      "expected": {
+        "firstStatus": "failed",
+        "firstWriteState": "unknown",
+        "firstVerification": "inconclusive",
+        "firstExportPathRole": "distinct-fresh-export",
+        "replayFirstErrorCode": "staleBase",
+        "totalContentBatches": 1
+      },
+      "controls": ["change-unknown-to-complete-observation", "record-second-replay-batch"]
+    },
+    {
+      "id": "V005-font-default",
+      "obligations": ["OB-009-font-readback.11"],
+      "seed": "tests/parity/seeds/font-readback-v1.json#variants/11",
+      "scenario": "export-edit-body-import-omit-explicit-font-on-postwrite-read",
+      "externalFault": "getDocument readback after confirmed batch omits fontSize and weightedFontFamily",
+      "expected": {"status": "applied", "verification": "match", "errorsAbsent": true},
+      "controls": ["force-mismatch-observation"]
+    },
+    {
+      "id": "V006-font-nondefault",
+      "obligations": ["OB-009-font-readback.22"],
+      "seed": "tests/parity/seeds/font-readback-v1.json#variants/22",
+      "scenario": "export-edit-body-import-omit-explicit-font-on-postwrite-read",
+      "externalFault": "same omission as V005; do not normalize 22pt to inherited 11pt",
+      "expected": {"status": "failed", "verification": "mismatch", "summaryClass": "landed-readback-mismatch"},
+      "controls": ["change-mismatch-to-match-observation"]
+    },
+    {
+      "id": "V007-cell-style-edit",
+      "obligations": ["OB-027-cell-style-edit"],
+      "seed": "tests/parity/seeds/cell-style-v1.json",
+      "scenario": "export-change-cell-style-declaration-import",
+      "edits": {"colorFrom": "#FF0000", "colorTo": "#00FF00"},
+      "expected": {"verification": "match", "errorsAbsent": true, "remoteFirstCellRgb": {"green": 1}},
+      "knownTargetMismatch": "historical table-only planning refusal repaired; final actual source and target both apply/match/green; raw file/read differences remain",
+      "controls": ["substitute-generic-refusal-for-source-success"]
+    },
+    {
+      "id": "V008-reject-hidden-insertion",
+      "obligations": ["OB-029-suggestion.hidden-insertion"],
+      "seed": "tests/parity/seeds/suggestion-v1.json",
+      "scenario": "export-edit-snippet-refuses-then-reject-original-block",
+      "expected": {
+        "initialTabOmitsInsertedText": true,
+        "initialSuggestionBlockContainsInsertedText": true,
+        "snippetEditStatus": "refused",
+        "rejectErrorsAbsent": true,
+        "rejectVerification": "match",
+        "remoteInsertedTextAbsentAfterReject": true,
+        "suggestionBlockAbsentAfterReject": true
+      },
+      "knownTargetMismatch": "current named source checks pass, including strict initial original-Node parse and snippet refused; raw payload/order/state differences remain unresolved",
+      "controls": ["substitute-generic-refusal-for-source-success"]
+    },
+    {
+      "id": "V009-image-upload-lifecycle",
+      "readyForExecution": true,
+      "obligations": ["OB-036-image-upload"],
+      "seed": "tests/parity/seeds/image-upload-v1.json",
+      "source": "src/core/engine/import.test.ts:1917-1947; import.ts:562-619",
+      "scenario": "aggregate-invalid-input-no-send; known-upload-error-id-cleanup; local-file-http-one-upload; exact-temp-delete; noop-provider-id-retention",
+      "implementation": "actual main+independent known-upload-error runs complete; all named source/target checks pass and controls detected. Target extra duplicate upload payload and known-error recovery/warning differences remain unresolved.",
+      "controls": ["bad-input-no-send", "leak-known-throwaway-document", "provider-id-retention-no-reinsert"]
+    },
+    {
+      "id": "V010-cross-doc-image-copy",
+      "readyForExecution": true,
+      "obligations": ["OB-034-cross-document-image"],
+      "seed": "tests/parity/seeds/cross-doc-image-v1.json",
+      "source": "src/core/engine/import.test.ts:1811-1844",
+      "scenario": "native-export-source-id; real-source-document-fetch-once; owning-uri-insert; missing-image-and-document-refusals; noop-provider-id-retention",
+      "implementation": "actual source/target owning URI,one-read,unknown-source errors,noop and ID-retention checks pass; all controls detected. Raw error metadata/wording and native read/file differences remain unresolved.",
+      "controls": ["repeat-source-fetch", "unknown-source-image-or-document-no-send", "provider-id-retention-no-reinsert"]
+    }
+  ]
+}

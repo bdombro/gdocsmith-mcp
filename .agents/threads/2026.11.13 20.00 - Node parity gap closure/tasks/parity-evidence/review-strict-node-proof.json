@@ -1,0 +1,47 @@
+{
+  "schema": "strict-original-review-proof-v1",
+  "sourceReceipt": "ten-vector-final-results.json",
+  "runtime": "v24.11.0",
+  "executedAt": "2026-11-13T20:57:16.428Z",
+  "results": [
+    {
+      "side": "node",
+      "stage": "initial",
+      "pass": true,
+      "version": "3.0.20",
+      "commentLine": 28,
+      "replyLine": 31,
+      "suggestionLine": 35,
+      "rawSha256": "d9ff0f0baca14dba8a60528ad4e403bfff896c32a122d754513589f8cb6963fa"
+    },
+    {
+      "side": "node",
+      "stage": "exported",
+      "pass": true,
+      "version": "3.0.20",
+      "commentLine": 27,
+      "replyLine": 30,
+      "rawSha256": "9e9ca4796bd7c6f88b1c6641c3279b6d08050c6ffeca7b3ccaa3adfc06c4c752"
+    },
+    {
+      "side": "cpp",
+      "stage": "initial",
+      "pass": true,
+      "version": "3.0.20",
+      "commentLine": 19,
+      "replyLine": 22,
+      "suggestionLine": 26,
+      "rawSha256": "a55fc06dd2d9e8834df995f5fdc52dc5df0fe4d3c1f16199544b60d58207a851"
+    },
+    {
+      "side": "cpp",
+      "stage": "exported",
+      "pass": true,
+      "version": "3.0.20",
+      "commentLine": 19,
+      "replyLine": 22,
+      "rawSha256": "37990c96571aa66223c891e12fa19a34068b124d5e1978e0b1707df2afade46b"
+    }
+  ],
+  "constraints": "Unmodified actual raw exports; exact synthetic comment/reply/quote/literal directive content and suggestion presence/removal. Native line locations retained, not normalized."
+}

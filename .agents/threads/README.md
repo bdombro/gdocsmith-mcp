@@ -1,0 +1,7 @@
+<!-- Generated from the swarm-mode skill template: templates/threads-README.md -->
+# Threads
+
+- [2026.11.13 20.00 - Node parity gap closure](2026.11.13%2020.00%20-%20Node%20parity%20gap%20closure/state.md) — user-resumed bounded qualification complete: Debug/Release398/398 cases,6521/6521 assertions,zero skips;shared151/151 original,172/172 target,70/70 controls pass. Parent accepted docs/root publication; all workers released. Broad parity unaccepted;250 raw leaves/206 groups and transfer/metadata/platform residuals. Earlier partial closure retained as history.
+- [2026.11.13 17.59 - Missing feature implementation](2026.11.13%2017.59%20-%20Missing%20feature%20implementation/README.md) — parent accepted all nine items, independent reviews, enabled runtime, bounded live validation and docs; Debug/Release each 308 cases/5302 assertions; live permission consumed, helpers released; bounded scope/history in state.md, not blanket parity.
+- 2026.11.12 08.37 - gdocsmith-mcp parity + swarm skill — Build the `swarm-mode` orchestration skill and finish the interrupted gdocsmith-mcp C++26 restructure to Node.js parity → ./2026.11.12 08.37 - gdocsmith-mcp parity + swarm skill/state.md
+- 2026.11.12 22.02 - Post-port behavioral parity — COMPLETE: bounded assessment and import/export safety corrections accepted; focused GREEN 16 cases/129 assertions, canonical app/HTTP and broad parity unverified; remaining queue not scheduled → ./2026.11.12 22.02 - Post-port behavioral parity/state.md

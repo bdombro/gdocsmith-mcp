@@ -1,0 +1,36 @@
+{
+  "task": "6-B",
+  "row": "R2-hier",
+  "file": "src/core/engine/import.test.ts",
+  "rootCause": "testEach util.format appends leftover row args (code, message) after the template, so titles end with e.g. \"without writes tabNotFound not a tab ID\"; original pattern anchored $ after \"writes\" selected 0. Row 6 title contains two literal newlines (TAP shows \\\\n).",
+  "probe": {
+    "argv": "--test-name-pattern=^refuses  src/core/engine/import.test.ts",
+    "artifact": "out/R2-hier-probe.tap",
+    "selected": 6
+  },
+  "argv": "--test-name-pattern=\\^refuses\\ \\[\\\\s\\\\S\\]\\*\\ without\\ writes\\ \\(tabNotFound\\|invalidPlacement\\)\\ \\[\\\\s\\\\S\\]+\\$ src/core/engine/import.test.ts",
+  "argvPrefix": "env -i -C ../gdocsmith-node <ENV> <NODE> --test --test-reporter=tap",
+  "selectedLeafTitles": [
+    "refuses title=B} -> title=B parent=t.missing} without writes tabNotFound not a tab ID",
+    "refuses title=B} -> title=B parent=New} without writes tabNotFound not a tab ID",
+    "refuses title=B} -> title=B parent=t.c} without writes invalidPlacement must come after its parent",
+    "refuses title=A} -> title=A parent=t.a} without writes invalidPlacement own ancestor",
+    "refuses title=A} -> title=A parent=t.a2} without writes invalidPlacement own ancestor",
+    "refuses title=C} -> title=C delete}\\\\n\\\\n::tab{id=t.zz title=Z parent=t.c} without writes tabNotFound not in this"
+  ],
+  "leafSelected": 6,
+  "leafPassed": 6,
+  "tapCounts": {
+    "tests": 6,
+    "suites": 2,
+    "pass": 6,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "exit": 0,
+  "stderrBytes": 0,
+  "pass": true,
+  "snapshot": "snapshot-post-r2.txt identical to snapshot-pre.txt",
+  "leadDecisions": "untracked 11-vs-9 non-blocking; R2-hier re-run authorized"
+}

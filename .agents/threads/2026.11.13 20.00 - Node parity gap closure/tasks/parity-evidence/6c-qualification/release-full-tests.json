@@ -1,0 +1,38 @@
+{
+  "name": "release-full-tests",
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/cmake/GapRelease",
+    "--output-on-failure",
+    "--no-tests=error"
+  ],
+  "startedAt": "2026-11-13T21:36:45.996263+00:00",
+  "pid": 63150,
+  "status": "completed",
+  "exitCode": 8,
+  "completedAt": "2026-11-13T21:36:48.614878+00:00",
+  "elapsedSeconds": 2.619,
+  "outputSha256": "ac6576dbf7c0f12d2235abad18f949168de5ce54611e5df878d925fd0a8a0adc",
+  "outputBytes": 21049,
+  "rawOutputRetained": false,
+  "summaries": [
+    "[doctest] test cases:  395 |  391 passed |  4 failed | 0 skipped",
+    "[doctest] assertions: 6440 | 6401 passed | 39 failed |",
+    "[doctest] Status: FAILURE!",
+    "Total Test time (real) =   2.59 sec"
+  ],
+  "failingCaseMetadata": [
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "public import defaults to injected Docs and Drive through revision-locked transaction",
+    "export - rich synthetic content does not claim editable segments are read-only",
+    "transaction Markdown uses typed putback and rejects atom changes atomically",
+    "review export keeps table cell and nonbody context and round-trips immutable snippets"
+  ],
+  "compilerDiagnosticLocations": []
+}

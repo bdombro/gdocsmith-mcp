@@ -1,0 +1,38 @@
+{
+  "command": "node --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
+  "additionalEnvironment": {
+    "NODE_OPTIONS": "--test-reporter=tap",
+    "TMPDIR": "<owned-evidence>/runtime"
+  },
+  "completedAt": "2026-11-13T21:15:53.362637+00:00",
+  "exitCode": 1,
+  "summary": [
+    "# tests 846",
+    "# suites 117",
+    "# pass 844",
+    "# fail 2",
+    "# cancelled 0",
+    "# skipped 0",
+    "# todo 0",
+    "# duration_ms 6688.7265"
+  ],
+  "boundedFailureDiagnostics": [
+    "not ok 2 - just release skips schema generation and leaves the fixture unchanged",
+    "failureType: 'testCodeFailure'",
+    "error: |-",
+    "code: 'ERR_ASSERTION'",
+    "not ok 11 - release dry run",
+    "failureType: 'subtestsFailed'",
+    "error: '1 subtest failed'",
+    "code: 'ERR_TEST_FAILURE'",
+    "not ok 1 - a local image (relative, file:// or http) uploads through one throwaway document, deleted afterwards",
+    "failureType: 'testCodeFailure'",
+    "error: |-",
+    "code: 'ERR_ASSERTION'",
+    "not ok 39 - image download and upload",
+    "failureType: 'subtestsFailed'",
+    "error: '1 subtest failed'",
+    "code: 'ERR_TEST_FAILURE'"
+  ],
+  "rawOutputRetained": false
+}

@@ -1,0 +1,23 @@
+TAP version 13
+# Subtest: fetchWithRetry
+    # Subtest: does not retry on 404 client errors
+    ok 1 - does not retry on 404 client errors
+      ---
+      duration_ms: 9.900125
+      type: 'test'
+      ...
+    1..1
+ok 1 - fetchWithRetry
+  ---
+  duration_ms: 10.343583
+  type: 'suite'
+  ...
+1..1
+# tests 1
+# suites 1
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 137.083833

@@ -1,0 +1,22 @@
+{
+  "name": "tidy-adapter",
+  "command": [
+    "/opt/homebrew/opt/llvm/bin/clang-tidy",
+    "-p",
+    "build/cmake/ParityChecks",
+    "tests/parity/cpp-import-adapter.cpp",
+    "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+  ],
+  "startedAt": "2026-11-13T22:52:31.512598+00:00",
+  "pid": 25806,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T22:52:42.527017+00:00",
+  "elapsedSeconds": 11.014,
+  "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outputBytes": 0,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

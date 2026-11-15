@@ -1,0 +1,1 @@
+--test-name-pattern=\^refuses\ \[\\s\\S\]\*\ without\ writes\$ src/core/engine/import.test.ts 

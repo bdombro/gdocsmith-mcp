@@ -1,0 +1,29 @@
+{
+  "name": "release-full-tests",
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/cmake/GapRelease",
+    "--output-on-failure",
+    "--no-tests=error"
+  ],
+  "startedAt": "2026-11-13T21:56:44.794647+00:00",
+  "pid": 14644,
+  "status": "completed",
+  "exitCode": 8,
+  "completedAt": "2026-11-13T21:56:47.561245+00:00",
+  "elapsedSeconds": 2.767,
+  "outputSha256": "4b9cbae760b383706b726486ffb5ab307f20200082d332860cd932df9716be84",
+  "outputBytes": 1103,
+  "rawOutputRetained": false,
+  "summaries": [
+    "[doctest] test cases:  397 |  396 passed | 1 failed | 0 skipped",
+    "[doctest] assertions: 6476 | 6475 passed | 1 failed |",
+    "[doctest] Status: FAILURE!",
+    "Total Test time (real) =   2.75 sec"
+  ],
+  "failingCaseMetadata": [
+    "export - rich synthetic content does not claim editable segments are read-only"
+  ],
+  "compilerDiagnosticLocations": []
+}

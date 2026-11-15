@@ -1,0 +1,24 @@
+{
+  "name": "debug-build",
+  "command": [
+    "cmake",
+    "--build",
+    "build/cmake/GapChecks",
+    "--target",
+    "gdocsmith_mcp_test",
+    "--parallel",
+    "2"
+  ],
+  "startedAt": "2026-11-13T22:56:33.915733+00:00",
+  "pid": 32359,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T22:57:08.718402+00:00",
+  "elapsedSeconds": 34.803,
+  "outputSha256": "d6fe240f282cbec1c158b07b61f99ff89e36a3d3ef862add3ad7fac86b22d87e",
+  "outputBytes": 130,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

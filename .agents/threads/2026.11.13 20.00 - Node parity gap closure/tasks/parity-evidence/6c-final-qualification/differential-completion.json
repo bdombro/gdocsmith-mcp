@@ -1,0 +1,8 @@
+{
+  "startedAt": "2026-11-13T21:58:13.298605+00:00",
+  "completedAt": "2026-11-13T21:58:13.404961+00:00",
+  "status": "hard-stop-stopped",
+  "exitCode": -9,
+  "scope": "Same final differential gate resumed after earlier internal buffer timeout; no source changes or deadline extension.",
+  "rawOutputRetained": false
+}

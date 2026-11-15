@@ -1,0 +1,23 @@
+{
+  "name": "mcp-isolated",
+  "command": [
+    "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+    "scripts/test-mcp.mjs",
+    "build/bin/gdocsmith-mcp",
+    "export,import,file,status"
+  ],
+  "startedAt": "2026-11-13T21:57:38.629673+00:00",
+  "pid": 16347,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T21:57:39.114646+00:00",
+  "elapsedSeconds": 0.485,
+  "outputSha256": "3139da88703f0605476ccee59c77bc5bafca3d6f0c5575c932032b4dba0ab2b9",
+  "outputBytes": 69,
+  "rawOutputRetained": false,
+  "summaries": [
+    "MCP 2026-07-28 stdio+http conformance passed: gdocsmith-mcp, 5 tools"
+  ],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-11-13T21:54:24.224050+00:00",
+  "command": [
+    "build/cmake/GapChecks/gdocsmith_mcp_test",
+    "--test-case=Node suggestion export hints match complete ids rather than s1 s10 prefixes"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.074,
+  "summaries": [
+    "[doctest] test cases: 1 | 1 passed | 0 failed | 396 skipped",
+    "[doctest] assertions: 2 | 2 passed | 0 failed |",
+    "[doctest] Status: SUCCESS!"
+  ],
+  "outputSha256": "7a2217ccc3edff32abc997f84715aa93ebde9955c4b1236899d184abe91030b0",
+  "rawOutputRetained": false,
+  "scope": "Exact new s1/s10 delimiter regression, fresh Debug binary; unselected cases are selector skips, not full-suite skips."
+}

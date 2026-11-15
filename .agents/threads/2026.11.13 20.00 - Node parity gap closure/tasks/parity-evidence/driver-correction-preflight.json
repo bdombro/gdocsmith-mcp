@@ -1,0 +1,167 @@
+{
+  "schema": "isolated-safety-assertions-v3",
+  "executedAt": "2026-11-13T21:24:16.937Z",
+  "newEngineExecution": false,
+  "cppBuilt": false,
+  "historicalControls": {
+    "observation": 42,
+    "backend": 6
+  },
+  "cases": [
+    {
+      "caseId": "V003-stale",
+      "constructedFreshOriginalFixture": false,
+      "checks": [
+        {
+          "id": "recovery:authoritative-body",
+          "pass": true
+        }
+      ],
+      "controls": [
+        {
+          "name": "wrong-fresh-recovery-body",
+          "id": "recovery:authoritative-body",
+          "type": "observation-corruption",
+          "detected": true
+        }
+      ]
+    },
+    {
+      "caseId": "V004-landed-lost-response-replay",
+      "constructedFreshOriginalFixture": false,
+      "checks": [
+        {
+          "id": "recovery:authoritative-body",
+          "pass": true
+        }
+      ],
+      "controls": [
+        {
+          "name": "wrong-fresh-recovery-body",
+          "id": "recovery:authoritative-body",
+          "type": "observation-corruption",
+          "detected": true
+        }
+      ]
+    },
+    {
+      "caseId": "V007-cell-style-edit",
+      "constructedFreshOriginalFixture": false,
+      "checks": [
+        {
+          "id": "cell-style:only-intended-write",
+          "pass": true
+        }
+      ],
+      "controls": [
+        {
+          "name": "unrelated-text-write",
+          "id": "cell-style:only-intended-write",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "unrelated-cell-field",
+          "id": "cell-style:only-intended-write",
+          "type": "observation-corruption",
+          "detected": true
+        }
+      ]
+    },
+    {
+      "caseId": "V008-reject-hidden-insertion",
+      "constructedFreshOriginalFixture": false,
+      "checks": [
+        {
+          "id": "review:initial:full-comment-payload",
+          "pass": true
+        },
+        {
+          "id": "review:exported:full-comment-payload",
+          "pass": true
+        },
+        {
+          "id": "review:full-source-suggestion-grammar",
+          "pass": true
+        }
+      ],
+      "controls": [
+        {
+          "name": "corrupt-comment",
+          "id": "review:initial:full-comment-payload",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "corrupt-reply",
+          "id": "review:exported:full-comment-payload",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "corrupt-suggestion-grammar",
+          "id": "review:full-source-suggestion-grammar",
+          "type": "observation-corruption",
+          "detected": true
+        }
+      ]
+    },
+    {
+      "caseId": "V009-image-upload-lifecycle",
+      "variant": "known-upload-error",
+      "constructedFreshOriginalFixture": true,
+      "checks": [
+        {
+          "id": "known-id:canonical-existing-path",
+          "pass": true
+        },
+        {
+          "id": "known-id:kept-local-warning",
+          "pass": true
+        },
+        {
+          "id": "known-id:edited-bytes-preserved",
+          "pass": true
+        },
+        {
+          "id": "known-id:authoritative-fresh-original",
+          "pass": true
+        }
+      ],
+      "controls": [
+        {
+          "name": "wrong-known-id-path",
+          "id": "known-id:canonical-existing-path",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "missing-kept-warning",
+          "id": "known-id:kept-local-warning",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "clobbered-edited-bytes",
+          "id": "known-id:edited-bytes-preserved",
+          "type": "observation-corruption",
+          "detected": true
+        },
+        {
+          "name": "wrong-known-id-fresh-body",
+          "id": "known-id:authoritative-fresh-original",
+          "type": "observation-corruption",
+          "detected": true
+        }
+      ]
+    }
+  ],
+  "targetHistoricalCounterexample": [
+    {
+      "id": "review:full-source-suggestion-grammar",
+      "pass": false,
+      "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '::suggestion{id=s1 kind=text}\\n' +\n- '::suggestion{id=s1 kind=text tab=Overview exportLine=13}\\n' +\n    '::before\\n' +\n    ':change[]\\n' +\n    '::after\\n' +\n+   ':change[Hello world]\\n' +\n+   '\\n'\n-   ':change[Hello world]\\n'\n"
+    }
+  ],
+  "note": "Known-error orig fields and working.path are CONSTRUCTED positive assertion fixtures from original initial raw export/result, NOT recovered application data or relabeled receipt. Fresh adapters now capture actual export.orig.md/working path. Fresh frozen execution required."
+}

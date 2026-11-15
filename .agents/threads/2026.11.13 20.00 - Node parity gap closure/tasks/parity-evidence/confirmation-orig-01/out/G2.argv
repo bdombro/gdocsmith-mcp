@@ -1,0 +1,1 @@
+--test-name-pattern=\^does\ not\ retry\ on\ 404\ client\ errors\$ src/core/fetchWithRetry.test.ts 

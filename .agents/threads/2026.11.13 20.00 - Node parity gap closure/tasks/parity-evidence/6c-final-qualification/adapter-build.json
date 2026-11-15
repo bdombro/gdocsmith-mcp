@@ -1,0 +1,24 @@
+{
+  "name": "adapter-build",
+  "command": [
+    "cmake",
+    "--build",
+    "build/cmake/ParityChecks",
+    "--target",
+    "gdocsmith_parity_adapter",
+    "--parallel",
+    "2"
+  ],
+  "startedAt": "2026-11-13T21:56:47.561792+00:00",
+  "pid": 14717,
+  "status": "completed",
+  "exitCode": 0,
+  "completedAt": "2026-11-13T21:57:10.316828+00:00",
+  "elapsedSeconds": 22.755,
+  "outputSha256": "1525d9bc83a7c790639907f1ddf96f495730dceedd561cebcd38b89ac6a344cb",
+  "outputBytes": 205,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

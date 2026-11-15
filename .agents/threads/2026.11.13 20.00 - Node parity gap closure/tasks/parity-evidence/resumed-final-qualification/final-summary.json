@@ -1,0 +1,228 @@
+{
+  "recordedAt": "2026-11-13T22:52:59.796414+00:00",
+  "classification": "qualification RED: one full-suite failure and unaccepted raw differences; all named shared checks/controls pass",
+  "startedAt": "2026-11-13T22:48:14.641102+00:00",
+  "completedAt": "2026-11-13T22:52:43.091518+00:00",
+  "qualificationElapsedSeconds": 268.49,
+  "gates": [
+    {
+      "name": "adapter-build",
+      "exitCode": 0,
+      "elapsedSeconds": 22.961,
+      "status": "completed"
+    },
+    {
+      "name": "ten-vectors-known-id-controls",
+      "exitCode": 1,
+      "elapsedSeconds": 6.624,
+      "status": "completed"
+    },
+    {
+      "name": "debug-build",
+      "exitCode": 0,
+      "elapsedSeconds": 35.706,
+      "status": "completed"
+    },
+    {
+      "name": "debug-full-tests",
+      "exitCode": 8,
+      "elapsedSeconds": 61.579,
+      "status": "completed"
+    },
+    {
+      "name": "release-build",
+      "exitCode": 0,
+      "elapsedSeconds": 112.158,
+      "status": "completed"
+    },
+    {
+      "name": "release-full-tests",
+      "exitCode": 8,
+      "elapsedSeconds": 2.651,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-app",
+      "exitCode": 0,
+      "elapsedSeconds": 7.325,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-tests",
+      "exitCode": 0,
+      "elapsedSeconds": 7.865,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-adapter",
+      "exitCode": 0,
+      "elapsedSeconds": 11.014,
+      "status": "completed"
+    },
+    {
+      "name": "mcp-isolated",
+      "exitCode": 0,
+      "elapsedSeconds": 0.534,
+      "status": "completed"
+    }
+  ],
+  "fullSuites": {
+    "debug-full-tests": {
+      "exitCode": 8,
+      "summaries": [
+        "[doctest] test cases:  398 |  397 passed | 1 failed | 0 skipped",
+        "[doctest] assertions: 6520 | 6519 passed | 1 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =  61.25 sec"
+      ],
+      "failingCaseMetadata": [
+        "export - pure file projection exposes pending review context without mutating review payloads"
+      ]
+    },
+    "release-full-tests": {
+      "exitCode": 8,
+      "summaries": [
+        "[doctest] test cases:  398 |  397 passed | 1 failed | 0 skipped",
+        "[doctest] assertions: 6520 | 6519 passed | 1 failed |",
+        "[doctest] Status: FAILURE!",
+        "Total Test time (real) =   2.64 sec"
+      ],
+      "failingCaseMetadata": [
+        "export - pure file projection exposes pending review context without mutating review payloads"
+      ]
+    }
+  },
+  "parity": {
+    "elapsedSeconds": 6.624,
+    "originalAssertions": 151,
+    "targetAssertions": 172,
+    "summary": {
+      "cases": 10,
+      "variants": 1,
+      "originalAssertionFailures": 0,
+      "targetAssertionFailures": 0,
+      "launchFailures": 0,
+      "differingCases": 11,
+      "controlsDetected": 70,
+      "controlsTotal": 70,
+      "observationControls": 64,
+      "backendControls": 6,
+      "ownedRunDirectoriesRemaining": 0
+    },
+    "controlTypes": {
+      "observation-corruption": 64,
+      "backend-behavior": 6
+    },
+    "rawLeafDifferences": 250,
+    "rawExactGroups": 206,
+    "rawClassificationCounts": {
+      "external-call-schedule-or-payload-difference-unresolved; ordered calls retained": 101,
+      "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix": 27,
+      "observable-contract-difference-unresolved": 35,
+      "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required": 3,
+      "write-request-payload-or-order-difference-potential-defect": 9,
+      "provider-state-difference-potential-defect": 26,
+      "wording-variance-proposal-unaccepted; retain exact instructions and semantics": 5
+    },
+    "allNativeVersionValues": [
+      {
+        "caseId": "V001-noop",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V002-body-and-title",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V003-stale",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V004-landed-lost-response-replay",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V005-font-default",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V006-font-nondefault",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V007-cell-style-edit",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V008-reject-hidden-insertion",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V009-image-upload-lifecycle",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V010-cross-doc-image-copy",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V009-image-upload-lifecycle",
+        "variant": "known-upload-error",
+        "original": "3.0.20",
+        "target": "3.0.20"
+      }
+    ],
+    "frozenInputs": true,
+    "compiledInputsCurrent": true
+  },
+  "permittedSourceInputsUnchanged": true,
+  "inputEntries": 311,
+  "sourceManifestSha256": "ebef7af822ed5cac8b0bb58cb80cc6bb9efc81f393517239367851de6da12e67",
+  "originalBaselineStillCurrent": true,
+  "cppDependencyChanges": [],
+  "originalInstalledDependencyChanges": [],
+  "binaries": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "d5380255433a528b15457e4ebe150e1182af42af6b8ad42952e93ba63be4fa0c",
+      "bytes": 11629904
+    },
+    "build/cmake/GapChecks/gdocsmith_mcp_test": {
+      "sha256": "64059c419ff008b85b57eb97b118d10686bc9bbd68818e592d71b3720d2db537",
+      "bytes": 83374688
+    },
+    "build/cmake/GapRelease/gdocsmith_mcp_test": {
+      "sha256": "8519cd6f2189c8d714cdcb439d2f34782c17d3a48899df23ff95e8919d302d50",
+      "bytes": 17805312
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "cb10ff614af627265cde78f00dc65370cb23b5b60d76e729c744e86a8ea282fc",
+      "bytes": 51757160
+    },
+    "build/cmake/GapChecks/gdocsmith-mcp": {
+      "sha256": "fc3fda75b64a1beaa5471e5d4740151376652fbbcab3f1da065b2cd9d54aa0e0",
+      "bytes": 61365136
+    }
+  },
+  "ownedCommandsRunning": [],
+  "restrictedSources": "test_export source remains not read/hashed/reconstructed; messages.md not accessed"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "ten-vectors-known-id-controls",
+  "command": [
+    "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+    "tests/parity/run-engine-differential.mjs",
+    "--original-root",
+    "../gdocsmith-node",
+    "--target-adapter",
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+    "--vectors",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+    "--case-ids",
+    "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+    "--owned-run-root",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-final-recheck/runs",
+    "--results",
+    ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-final-recheck/differential-results.json"
+  ],
+  "startedAt": "2026-11-13T22:56:28.086981+00:00",
+  "pid": 32221,
+  "status": "completed",
+  "exitCode": 1,
+  "completedAt": "2026-11-13T22:56:33.915130+00:00",
+  "elapsedSeconds": 5.828,
+  "outputSha256": "eb981fed6e1433188d2dfba36cdbf688b2f7f7fe735c417e18394268d582e21f",
+  "outputBytes": 988,
+  "rawOutputRetained": false,
+  "summaries": [],
+  "failingCaseMetadata": [],
+  "compilerDiagnosticLocations": []
+}

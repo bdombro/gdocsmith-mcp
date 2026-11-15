@@ -1,0 +1,187 @@
+{
+  "recordedAt": "2026-11-13T21:39:20.103309+00:00",
+  "classification": "qualification RED; not release acceptance",
+  "gates": [
+    {
+      "name": "debug-build",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "debug-full-tests",
+      "exitCode": 8,
+      "status": "completed"
+    },
+    {
+      "name": "release-build",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "release-full-tests",
+      "exitCode": 8,
+      "status": "completed"
+    },
+    {
+      "name": "adapter-build",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-app",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-tests",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "tidy-adapter",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "mcp-isolated",
+      "exitCode": 0,
+      "status": "completed"
+    },
+    {
+      "name": "ten-vectors-known-id-controls",
+      "exitCode": 1,
+      "status": "completed"
+    }
+  ],
+  "originalAssertions": 151,
+  "targetAssertions": 172,
+  "namedFailures": [
+    {
+      "caseId": "V008-reject-hidden-insertion",
+      "variant": null,
+      "side": "cpp",
+      "assertion": "review:full-source-suggestion-grammar"
+    }
+  ],
+  "controls": {
+    "historical": {
+      "observation": 42,
+      "backend": 6,
+      "detected": 48,
+      "total": 48,
+      "fresh": false
+    },
+    "fresh": {
+      "observation": 64,
+      "backend": 6,
+      "observationDetected": 63,
+      "backendDetected": 6,
+      "detected": 69,
+      "total": 70
+    }
+  },
+  "rawLeafDifferences": 250,
+  "rawExactGroups": 206,
+  "classificationsByExactGroup": {
+    "external-call-schedule-or-payload-difference-unresolved; ordered calls retained": 101,
+    "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix": 27,
+    "observable-contract-difference-unresolved": 35,
+    "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required": 3,
+    "write-request-payload-or-order-difference-potential-defect": 9,
+    "provider-state-difference-potential-defect": 26,
+    "wording-variance-proposal-unaccepted; retain exact instructions and semantics": 5
+  },
+  "allNativeVersionValues": [
+    {
+      "caseId": "V001-noop",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V002-body-and-title",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V003-stale",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V004-landed-lost-response-replay",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V005-font-default",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V006-font-nondefault",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V007-cell-style-edit",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V008-reject-hidden-insertion",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V009-image-upload-lifecycle",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V010-cross-doc-image-copy",
+      "variant": null,
+      "original": "3.0.20",
+      "target": "3.0.20"
+    },
+    {
+      "caseId": "V009-image-upload-lifecycle",
+      "variant": "known-upload-error",
+      "original": "3.0.20",
+      "target": "3.0.20"
+    }
+  ],
+  "sourceInputsUnchanged": true,
+  "compiledInputsCurrent": true,
+  "originalBaselineStillCurrent": true,
+  "dependencyInputsStillCurrent": true,
+  "binaries": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "4cb9df48a10fd4a0b627185b1a410268ed0797a60c3bea7a4b61fcae7ea7f04c",
+      "bytes": 11612544
+    },
+    "build/cmake/GapChecks/gdocsmith_mcp_test": {
+      "sha256": "5bf9de5c16db6e430b2a3cdb5a06b5f407e07d2ffee999552edc6cfb4dbcc5e8",
+      "bytes": 83121328
+    },
+    "build/cmake/GapRelease/gdocsmith_mcp_test": {
+      "sha256": "0d593f477f3d772bf08dbd6ee93481623ec8638950396ff50d72ad1adcb2fe1e",
+      "bytes": 17736864
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "505fe77e0abbaccdf0148735cad8622bbeb01937660beb5f1a4572bdb63241d1",
+      "bytes": 51681864
+    }
+  },
+  "ownedCommandsRunning": [],
+  "excludedSourceEvidence": "not read, not hashed, not reconstructed",
+  "oneBoundedTargetedRerun": "targeted-rerun.json"
+}

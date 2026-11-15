@@ -1,0 +1,320 @@
+{
+  "recordedAt": "2026-11-13T23:00:29.513676+00:00",
+  "classification": "Full unit/build/tidy checks pass; all shared named assertions and controls pass; raw differential remains RED/unaccepted, not blanket parity or release acceptance",
+  "startedAt": "2026-11-13T22:56:28.086761+00:00",
+  "completedAt": "2026-11-13T23:00:07.075570+00:00",
+  "elapsedSeconds": 219.022,
+  "freshGates": [
+    {
+      "name": "ten-vectors-known-id-controls",
+      "command": [
+        "/Users/briandombrowski/.copilot/session-state/1b166e26-5961-4b5d-989b-4468a20c047e/files/node-v24.11.0-darwin-arm64/bin/node",
+        "tests/parity/run-engine-differential.mjs",
+        "--original-root",
+        "../gdocsmith-node",
+        "--target-adapter",
+        "build/cmake/ParityChecks/gdocsmith_parity_adapter",
+        "--vectors",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json",
+        "--case-ids",
+        "V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy",
+        "--owned-run-root",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-final-recheck/runs",
+        "--results",
+        ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/resumed-final-recheck/differential-results.json"
+      ],
+      "startedAt": "2026-11-13T22:56:28.086981+00:00",
+      "pid": 32221,
+      "status": "completed",
+      "exitCode": 1,
+      "completedAt": "2026-11-13T22:56:33.915130+00:00",
+      "elapsedSeconds": 5.828,
+      "outputSha256": "eb981fed6e1433188d2dfba36cdbf688b2f7f7fe735c417e18394268d582e21f",
+      "outputBytes": 988,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "debug-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapChecks",
+        "--target",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T22:56:33.915733+00:00",
+      "pid": 32359,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T22:57:08.718402+00:00",
+      "elapsedSeconds": 34.803,
+      "outputSha256": "d6fe240f282cbec1c158b07b61f99ff89e36a3d3ef862add3ad7fac86b22d87e",
+      "outputBytes": 130,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "debug-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapChecks",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T22:57:08.718951+00:00",
+      "pid": 33727,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T22:58:10.240781+00:00",
+      "elapsedSeconds": 61.522,
+      "outputSha256": "2ac7e33928f06710fc980fe5364f4f3740766142b6b0bf954c8a6804b95914ca",
+      "outputBytes": 245,
+      "rawOutputRetained": false,
+      "summaries": [
+        "100% tests passed out of 1",
+        "Total Test time (real) =  61.49 sec"
+      ],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cmake",
+        "--build",
+        "build/cmake/GapRelease",
+        "--target",
+        "gdocsmith_mcp_test",
+        "--parallel",
+        "2"
+      ],
+      "startedAt": "2026-11-13T22:58:10.241202+00:00",
+      "pid": 35739,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T22:59:56.503979+00:00",
+      "elapsedSeconds": 106.262,
+      "outputSha256": "d6fe240f282cbec1c158b07b61f99ff89e36a3d3ef862add3ad7fac86b22d87e",
+      "outputBytes": 130,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "release-full-tests",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "build/cmake/GapRelease",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "startedAt": "2026-11-13T22:59:56.504451+00:00",
+      "pid": 37916,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T22:59:59.093735+00:00",
+      "elapsedSeconds": 2.589,
+      "outputSha256": "99996ff7989b0804c92f6b7ed7022e673ab30c5f11930b38943bc854634fffb9",
+      "outputBytes": 246,
+      "rawOutputRetained": false,
+      "summaries": [
+        "100% tests passed out of 1",
+        "Total Test time (real) =   2.58 sec"
+      ],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    },
+    {
+      "name": "tidy-tests",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang-tidy",
+        "-p",
+        "build/cmake/GapChecks",
+        "tests/test_main.cpp",
+        "--extra-arg=-DDOCTEST_COUNTER=__COUNTER__"
+      ],
+      "startedAt": "2026-11-13T22:59:59.094154+00:00",
+      "pid": 37953,
+      "status": "completed",
+      "exitCode": 0,
+      "completedAt": "2026-11-13T23:00:07.033742+00:00",
+      "elapsedSeconds": 7.94,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputBytes": 0,
+      "rawOutputRetained": false,
+      "summaries": [],
+      "failingCaseMetadata": [],
+      "compilerDiagnosticLocations": []
+    }
+  ],
+  "actualFullSuiteCounts": {
+    "GapChecks": [
+      "[doctest] test cases:  398 |  398 passed | 0 failed | 0 skipped",
+      "[doctest] assertions: 6521 | 6521 passed | 0 failed |",
+      "[doctest] Status: SUCCESS!"
+    ],
+    "GapRelease": [
+      "[doctest] test cases:  398 |  398 passed | 0 failed | 0 skipped",
+      "[doctest] assertions: 6521 | 6521 passed | 0 failed |",
+      "[doctest] Status: SUCCESS!"
+    ]
+  },
+  "retainedGates": [
+    "Debug app build",
+    "Release app build",
+    "ParityChecks adapter build",
+    "app clang-tidy",
+    "adapter clang-tidy",
+    "isolated MCP stdio/HTTP"
+  ],
+  "retainedSourceAndBinaryIdentitiesMatch": true,
+  "retainedCacheIdentities": {
+    "GapChecks": {
+      "cacheUnchanged": true,
+      "compilationDatabaseUnchanged": true
+    },
+    "GapRelease": {
+      "cacheUnchanged": true,
+      "compilationDatabaseUnchanged": true
+    },
+    "ParityChecks": {
+      "cacheUnchanged": true,
+      "compilationDatabaseUnchanged": true
+    }
+  },
+  "sourceInputsUnchanged": true,
+  "inputEntries": 311,
+  "sourceManifestSha256": "7f8a200f7eb9da93f91a2350b127eae67d64da4bae48bd582185d72a1ceb7fd5",
+  "actualExportTestSha256": "c7d04d2718f193f5fc74388604e9fa1c94d5ee634b9ce843842712317bb6e863",
+  "policyProbe": "Original view test_export.hpp1-12 succeeded before hashing; no unavailable marker in current manifest. Historical markers unchanged. messages.md not accessed.",
+  "original846BaselineStillCurrent": true,
+  "dependenciesUnchanged": true,
+  "parity": {
+    "completedInSeconds": 5.828,
+    "summary": {
+      "cases": 10,
+      "variants": 1,
+      "originalAssertionFailures": 0,
+      "targetAssertionFailures": 0,
+      "launchFailures": 0,
+      "differingCases": 11,
+      "controlsDetected": 70,
+      "controlsTotal": 70,
+      "observationControls": 64,
+      "backendControls": 6,
+      "ownedRunDirectoriesRemaining": 0
+    },
+    "originalAssertions": 151,
+    "targetAssertions": 172,
+    "rawLeaves": 250,
+    "rawExactGroups": 206,
+    "classifications": {
+      "external-call-schedule-or-payload-difference-unresolved; ordered calls retained": 101,
+      "native-file-format-difference-unresolved; no trim/drop/paragraph normalization; lens owner must prove source-linked equivalence or fix": 27,
+      "observable-contract-difference-unresolved": 35,
+      "intentional-equivalent-recovery-directory-layout-parent-approved; raw path retained; fresh/distinct/contained/no-clobber checks remain required": 3,
+      "write-request-payload-or-order-difference-potential-defect": 9,
+      "provider-state-difference-potential-defect": 26,
+      "wording-variance-proposal-unaccepted; retain exact instructions and semantics": 5
+    },
+    "allNativeVersionValues": [
+      {
+        "caseId": "V001-noop",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V002-body-and-title",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V003-stale",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V004-landed-lost-response-replay",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V005-font-default",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V006-font-nondefault",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V007-cell-style-edit",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V008-reject-hidden-insertion",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V009-image-upload-lifecycle",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V010-cross-doc-image-copy",
+        "variant": null,
+        "original": "3.0.20",
+        "target": "3.0.20"
+      },
+      {
+        "caseId": "V009-image-upload-lifecycle",
+        "variant": "known-upload-error",
+        "original": "3.0.20",
+        "target": "3.0.20"
+      }
+    ],
+    "frozenInputs": true,
+    "compiledInputsCurrent": true
+  },
+  "binaries": {
+    "build/bin/gdocsmith-mcp": {
+      "sha256": "d5380255433a528b15457e4ebe150e1182af42af6b8ad42952e93ba63be4fa0c",
+      "bytes": 11629904
+    },
+    "build/cmake/GapChecks/gdocsmith_mcp_test": {
+      "sha256": "6b632416f1a6be6122121c3ca4ac14eb92eec6b6f52a1a1e4b353107620f2abb",
+      "bytes": 83374848
+    },
+    "build/cmake/GapRelease/gdocsmith_mcp_test": {
+      "sha256": "b054175eff2aef7682981385f7c79a8088e9dda81b28d2f5b2b23fdb2928dc9a",
+      "bytes": 17805312
+    },
+    "build/cmake/ParityChecks/gdocsmith_parity_adapter": {
+      "sha256": "cb10ff614af627265cde78f00dc65370cb23b5b60d76e729c744e86a8ea282fc",
+      "bytes": 51757160
+    }
+  },
+  "ownedCommandsRunning": []
+}
