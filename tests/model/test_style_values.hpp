@@ -49,6 +49,9 @@ TEST_CASE("styleValues - styleEqual ignores key order") {
 
     JsonObject c = slimr::Json::object_t{{"a", static_cast<int64_t>(2)}};
     CHECK(!styleEqual(a, c));
+    CHECK_FALSE(styleEqual(
+        JsonObject(slimr::Json::object_t{{"a", 1}}),
+        JsonObject(slimr::Json::object_t{{"a", 2}})));
 
     JsonObject fs1 = slimr::Json::object_t{{"fontSize", slimr::Json::object_t{{"magnitude", static_cast<int64_t>(12)}, {"unit", "PT"}}}};
     JsonObject fs2 = slimr::Json::object_t{{"fontSize", slimr::Json::object_t{{"unit", "PT"}, {"magnitude", static_cast<int64_t>(12)}}}};

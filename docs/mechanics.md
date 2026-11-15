@@ -1,5 +1,21 @@
 # Mechanics
 
+> **C++ applicability:** Public remote import is enabled by default; scoped
+> earlier bounded reviews/runtime passed. A historical synthetic live workflow
+> passed; see [architecture](architecture.md#agent-guidance-and-evidence) for
+> exact coverage. The [agent guide](agent-guide.md) defines the current
+> supported/refused subset and recovery rules. Remaining sections retain
+> Node-era mechanics reference, not current C++ or live Google verification.
+> Reviewed rich lens/atom intent is distinct from pending engine workflows;
+> see [features](features.md) for platform/raw-envelope/unsupported boundaries.
+> Canonical files are `export.md` / `export.orig.md`; edited working copies are
+> never authoritative recovery readback. Never blindly replay unknown comments,
+> creates or copies. Core recovery/receipt review and final runtime
+> acceptance describe the earlier bounded implementation, not current parity
+> changes. Document/settings/styles/merge topology
+> and actual suggestion context are now encoded and preserved unchanged, with
+> temporary URLs stripped; this does not certify every mutation/recreation.
+
 Export reads fresh cloud state into a v3 markdown file. Import reads that file once, checks its document/revision, builds a final model, emulates the minimal request plan, applies guards, and sends revision-locked phases. No public dry-run or snapshot-freshness control exists.
 
 ## Identity

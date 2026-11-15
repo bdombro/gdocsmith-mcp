@@ -1,0 +1,24 @@
+{
+  "document": {
+  "documentId": "synthetic-doc", "revisionId": "rev-1", "title": "Example",
+  "tabs": [{
+    "tabProperties": {"tabId": "t.0", "title": "Overview"},
+    "documentTab": {
+      "body": {"content": [
+        {"startIndex": 0, "endIndex": 1, "sectionBreak": {"sectionStyle": {}}},
+        {"startIndex": 1, "endIndex": 13, "paragraph": {"paragraphStyle": {}, "elements": [
+          {"startIndex": 1, "endIndex": 12, "textRun": {"content": "Hello world", "textStyle": {}, "suggestedInsertionIds": ["s1"]}},
+          {"startIndex": 12, "endIndex": 13, "textRun": {"content": "\n", "textStyle": {}}}
+        ]}}
+      ]},
+      "lists": {},
+      "namedStyles": {"styles": [{"namedStyleType": "NORMAL_TEXT", "textStyle": {"fontSize": {"magnitude": 11, "unit": "PT"}, "weightedFontFamily": {"fontFamily": "Arial", "weight": 400}}, "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"}}]}
+    }
+  }]
+  },
+  "comments": [{
+    "id": "c1", "content": "Synthetic review\n::literal",
+    "quotedFileContent": {"value": "Synthetic quote"},
+    "replies": [{"id": "r1", "content": "Synthetic reply\n::literal reply"}]
+  }]
+}

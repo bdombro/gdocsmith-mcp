@@ -36,7 +36,41 @@ struct CommentBlock {
     bool operator==(const CommentBlock& other) const = default;
 };
 
-inline std::string commentBlockRender(const CommentBlock& cb) {
+inline std::string commentTextEscape(std::string_view text) {
+    std::istringstream input{std::string(text)};
+    std::string out, line;
+    while (std::getline(input, line)) {
+        const auto first = line.find_first_not_of('\\');
+        if (first != std::string::npos && line.substr(first).starts_with("::")) out += '\\';
+        out += line + "\n";
+    }
+    return out;
+}
+
+inline std::string commentBlockRender(const CommentBlock& cb, bool legacy = true) {
+    if (!legacy) {
+        DirectiveAttrs attrs;
+        if (!cb.id.empty()) attrs.values.emplace_back("id", cb.id);
+        if (cb.quote) attrs.values.emplace_back("quote", *cb.quote);
+        if (cb.author) attrs.values.emplace_back("author", *cb.author);
+        if (cb.resolved) attrs.flags.push_back("resolved");
+        if (cb.orphaned) attrs.flags.push_back("orphaned");
+        if (cb.ambiguous) attrs.flags.push_back("ambiguous");
+        if (cb.mine) attrs.flags.push_back("mine");
+        if (cb.isDelete) attrs.flags.push_back("delete");
+        auto out = "::comment" + directiveAttrsRender(attrs) + "\n" + commentTextEscape(cb.text);
+        if (cb.text.empty()) out += "\n";
+        for (const auto& reply : cb.replies) {
+            DirectiveAttrs replyAttrs;
+            if (reply.id) replyAttrs.values.emplace_back("id", *reply.id);
+            if (reply.author) replyAttrs.values.emplace_back("author", *reply.author);
+            if (reply.mine) replyAttrs.flags.push_back("mine");
+            if (reply.isDelete) replyAttrs.flags.push_back("delete");
+            out += "::reply" + directiveAttrsRender(replyAttrs) + "\n" + commentTextEscape(reply.text);
+            if (reply.text.empty()) out += "\n";
+        }
+        return out;
+    }
     std::string out = ":::comment{id=" + directiveValueRender(cb.id);
     if (cb.author) out += " author=" + directiveValueRender(*cb.author);
     if (cb.resolved) out += " resolved";

@@ -1,0 +1,34 @@
+{
+  "documentId": "synthetic-doc", "revisionId": "rev-1", "title": "Example",
+  "tabs": [{
+    "tabProperties": {"tabId": "t.0", "title": "Overview"},
+    "documentTab": {
+      "body": {"content": [
+        {"startIndex": 0, "endIndex": 1, "sectionBreak": {"sectionStyle": {}}},
+        {"startIndex": 1, "endIndex": 10, "table": {
+          "columns": 2, "rows": 1, "tableStyle": {},
+          "tableRows": [{"startIndex": 2, "endIndex": 9, "tableRowStyle": {}, "tableCells": [
+            {"startIndex": 3, "endIndex": 6, "tableCellStyle": {"backgroundColor": {"color": {"rgbColor": {"red": 1}}}}, "content": [
+              {"startIndex": 4, "endIndex": 6, "paragraph": {"paragraphStyle": {}, "elements": [
+                {"startIndex": 4, "endIndex": 5, "textRun": {"content": "A", "textStyle": {}}},
+                {"startIndex": 5, "endIndex": 6, "textRun": {"content": "\n", "textStyle": {}}}
+              ]}}
+            ]},
+            {"startIndex": 6, "endIndex": 9, "tableCellStyle": {}, "content": [
+              {"startIndex": 7, "endIndex": 9, "paragraph": {"paragraphStyle": {}, "elements": [
+                {"startIndex": 7, "endIndex": 8, "textRun": {"content": "B", "textStyle": {}}},
+                {"startIndex": 8, "endIndex": 9, "textRun": {"content": "\n", "textStyle": {}}}
+              ]}}
+            ]}
+          ]}]
+        }},
+        {"startIndex": 10, "endIndex": 15, "paragraph": {"paragraphStyle": {}, "elements": [
+          {"startIndex": 10, "endIndex": 14, "textRun": {"content": "Tail", "textStyle": {}}},
+          {"startIndex": 14, "endIndex": 15, "textRun": {"content": "\n", "textStyle": {}}}
+        ]}}
+      ]},
+      "lists": {},
+      "namedStyles": {"styles": [{"namedStyleType": "NORMAL_TEXT", "textStyle": {"fontSize": {"magnitude": 11, "unit": "PT"}, "weightedFontFamily": {"fontFamily": "Arial", "weight": 400}}, "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"}}]}
+    }
+  }]
+}

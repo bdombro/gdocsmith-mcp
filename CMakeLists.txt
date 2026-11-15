@@ -20,6 +20,10 @@ find_package(slimr-yaml CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED COMPONENTS Crypto)
 
 add_library(app_options INTERFACE)
+if(APPLE)
+    find_library(COREFOUNDATION_FRAMEWORK CoreFoundation REQUIRED)
+    target_link_libraries(app_options INTERFACE "${COREFOUNDATION_FRAMEWORK}")
+endif()
 target_compile_options(app_options INTERFACE -ftrivial-auto-var-init=zero)
 check_cxx_source_compiles("
 #include <version>
@@ -53,6 +57,10 @@ set_target_properties(gdocsmith-mcp PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/build/bin")
 
 if(BUILD_TESTING)
+    add_executable(gdocsmith_parity_adapter EXCLUDE_FROM_ALL tests/parity/cpp-import-adapter.cpp)
+    target_include_directories(gdocsmith_parity_adapter PRIVATE src)
+    target_link_libraries(gdocsmith_parity_adapter PRIVATE
+        slimr::mcp_http slimr::yaml OpenSSL::Crypto app_options)
     find_package(slimr-test CONFIG REQUIRED)
     add_executable(gdocsmith_mcp_test tests/test_main.cpp)
     target_include_directories(gdocsmith_mcp_test PRIVATE src tests tests/emulator tests/lens tests/model tests/diff tests/reconcile tests/engine tests/api)

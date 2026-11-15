@@ -1,10 +1,30 @@
 # Markdown Files
 
+> **C++ applicability:** The [agent guide](agent-guide.md) is the current
+> capability contract. Public import is default-enabled. Rich declarations,
+> resets, table geometry/directional merges and supported atom intent now have
+> scoped independent lens/helper review; this is not acceptance of every backend
+> workflow described below. Scoped dropdown acceptance is now recorded; broader
+> segments/review/image lifecycle remain qualified. Fresh Debug/Release passed
+> 398/398 cases and 6,521/6,521 assertions each, zero failures/skips; shared
+> 151/151 original, 172/172 target and 70/70 controls passed, including V008.
+> Earlier red qualifications/access blocker/timeout are historical.
+> See [features](features.md): 250 raw leaves/206 groups, foreign-error metadata,
+> full assertion transfer/platform/raw interchange remain open. Bounded
+> qualification is not broader Node parity or release acceptance.
+> The earlier bounded live
+> smoke did not exercise those workflows. Use exported syntax and identities;
+> unsupported content must not silently disappear.
+>
+> Native export uses `4.0.0`; lens recognition also covers exact source `3.0.20`
+> and legacy integer `1`. Selected strict-parser proofs are not a guarantee of
+> arbitrary raw-envelope interchange or complete source-test transfer.
+
 The editable file is a view of a Google Doc, not a lossless backup of every object. Unchanged content stays in place; changed paragraphs receive character-level edits.
 
 ```markdown
 ---
-gdocsmith: 3.0.12 # exact gdocsmith release; import refuses others
+gdocsmith: "4.0.0" # preserve the actual exported envelope version
 doc: document-id
 revision: revision-id
 title: Document Title
@@ -20,7 +40,9 @@ Keep identity/revision unchanged. Null doc creates a document. Existing document
 
 ## Grammar
 
-The file is GFM plus CommonMark generic directives for everything GFM can't express. gdocsmith parses them with its own marked extensions (`directives.ts`, `markedLens.ts`).
+The reference format is GFM plus directives for content GFM cannot express.
+The C++ implementation uses `src/lens/parse.hpp` and related headers; historical
+Node marked extensions are reference behavior, not a runtime dependency.
 
 | Form | Use | Example |
 | --- | --- | --- |
@@ -54,6 +76,10 @@ File order: frontmatter, tabs, comment blocks, suggestion blocks. Frontmatter ke
 
 ## Dropdowns
 
+The lens declaration roundtrip and supplied-ID alias path are independently
+reviewed. A scoped backend gate is independently accepted (3 cases/75 assertions);
+the following reference sequence is not universal C++ workflow certification.
+
 Frontmatter `dropdowns` maps tab ids to option lists by title; an option is a name or `Name: {color, background}`. Import applies the lists before the body (so new chips can name them): titles keep their definition ids; options match by name, and an unmatched option at the same position is renamed in place (chips selecting it relabel, as Google does). New definitions and options get client-chosen ids, so creation needs no reply. Requests run in order: create lists and widen changed ones (keeping dropped options at the end), content (new `:dropdown{list=… option=…}` chips), reselections (`option=` on an existing chip, `updateDropdownProperties`), then the final option lists and deletions. A list must keep 2–50 distinct options; removing a list or option a chip still uses refuses. Google stores an unset color of a styled option as `{}`.
 
 ## Named Ranges
@@ -62,6 +88,9 @@ Named ranges export as zero-width marker pairs, `:namedrange{name=X start}` and 
 
 ## Footnotes
 
+Engine lifecycle acceptance remains pending. New references are body-only;
+existing-reference preservation does not authorize creation inside a segment.
+
 Footnotes are GFM footnotes. Export writes `[^n]` at each reference, numbered in document order per tab, and `[^n]: body` definitions at the end of the tab body (after everything else, before header and footer lines; later lines indented four spaces). A blank body (Google's `" "`) is `[^n]:`. `[^n]` with an exported number names that footnote; any other label creates one (`createFootnote`, whose body starts as `" \n"`; the body is written in a later batch once the reply names the new footnote). Editing a definition rewrites the body through the footnote segment. Moving a reference recreates the footnote there, with its definition as the body. Removing a reference deletes the footnote, and its definition must go too. Every reference needs one definition and every definition a reference. Footnotes can't be referenced from headers, footers or footnotes. New footnote text takes the default size, not the 10pt Google's UI uses.
 
 ## Sections
@@ -69,6 +98,9 @@ Footnotes are GFM footnotes. Export writes `[^n]` at each reference, numbered in
 A section break line carries its type and layout: `::section{id=sN columns=N columnGap=<pt> margins=<top>,<right>,<bottom>,<left> pageNumberStart=N nextPage|continuous columnSeparator firstPage landscape rtl}`. A new break omits id; `rtl` sets `contentDirection: RIGHT_TO_LEFT`. Export shows what's set and omits defaults (one column, 36pt gap, no separator, inherited margins and numbering). The type is fixed at creation, so changing it refuses. Google can't clear a section field once set: removing a flag sets it false, removing columns sets one column, and removing set margins or pageNumberStart refuses. Section style requests target the character after the break, because a range on a break inserted earlier in the same batch also restyles the previous section. Every tab body starts with its opening section's line, `::section{id=sN columns=… columnGap=… columnSeparator rtl}` with no type; the tab line holds the rest of its layout. Content above it, or dropping it from an existing tab, refuses; a new tab may omit it. Adding columns shrinks wider inline images and drawings to fit, permanently.
 
 ## Headers And Footers
+
+The following describes reference grammar; current public segment lifecycle
+remains under independent engine review.
 
 After a tab's body, `::header{kind=default|firstPage|evenPage}` or `::footer{kind=…}` starts that segment's complete content (body syntax). `section=N` names a later section's own header or footer (section 2 starts at the tab's first `::section` break); export writes the tab's own first, then each section's. Every existing header and footer needs its line; `delete` on the line removes one; a new line creates a default one (Google can't create first-page or even-page ones). The tab line's `firstPage` and `oddEven` flags switch those pages' separate headers on or off.
 
@@ -88,6 +120,9 @@ Any other cell (several paragraphs, a heading, list, line break or nested table)
 
 ## Objects
 
+Supported helper intent is not provider/upload/readback certification.
+Apple date/timezone and Unicode evidence does not establish non-Apple parity.
+
 Exported objects are `:kind[label]{id=… attributes}` inline, or a `::kind{id=…}` line for page breaks, section breaks (`::section`) and tables of contents (`::toc`). Import matches each token to the exported object of its kind with that id in its tab; a token without an id is new, and a repeated id copies. Ids come from one index of the document (`objectIdsAssign`):
 - **Objects with a Google id** (chips, images, drawings, charts, positioned objects) take its tail: 4 characters, lengthened until unique across the document.
 - **Others** take a kind counter across the document: `s` (sections, the opening one included), `pb`, `hr`, `toc`, `cb`, `at`, `eq`.
@@ -105,6 +140,6 @@ Use `#heading-slug` within the tab, `#tab-slug__heading-slug` across tabs, or `#
 
 ## Comment And Suggestion Blocks
 
-The first `::comment` line ends the last tab's body; comment blocks hold a `::comment{…}` header, literal text and `::reply{…}` blocks, and are editable (see [comments](comments.md)). The first `::suggestion{…}` line starts the suggestion blocks, which run to the end of the file; each has `::before` and `::after` snippets with the suggested span in `:change[…]`. They must come back exactly as exported except for `reject` flags added to headers (see [suggestions](suggestions.md)).
+The first `::comment` line ends the last tab's body; comment blocks hold a `::comment{…}` header, literal text and `::reply{…}` blocks (see [comments](comments.md)). The first `::suggestion{…}` line starts the suggestion blocks, which run to the end of the file; each has `::before` and `::after` snippets with the suggested span in `:change[…]`. Preserve snippets/markers. Explicit `reject` lifecycle remains under engine review (see [suggestions](suggestions.md)).
 
 Table styling, equations, drawings, charts, TOCs and positioned objects are not freely editable/recreatable. Their unchanged model data is preserved.

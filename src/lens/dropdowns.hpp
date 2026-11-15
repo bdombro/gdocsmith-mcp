@@ -6,11 +6,13 @@
 #include <unordered_map>
 #include <optional>
 #include <unordered_set>
+#include <map>
 #include "json.hpp"
 #include "lens/json_helper.hpp"
 #include "lens/cell_styles.hpp"
 #include "lens/directives.hpp"
 #include "model/style_values.hpp"
+#include "model/types.hpp"
 
 namespace gdocsmith::lens {
 
@@ -117,6 +119,32 @@ inline std::optional<std::string> optionIdOf(const slimr::Json& definition, std:
         }
     }
     return std::nullopt;
+}
+
+struct DropdownSelection {
+    std::string definitionId;
+    std::string optionId;
+};
+
+inline DropdownSelection dropdownResolve(const model::TabModel& tab, const std::string& list,
+                                         const std::string& option,
+                                         const std::map<std::string, std::string>& createdIds = {}) {
+    auto definitionId = list;
+    auto definition = tab.dropdownDefinitions.find(definitionId);
+    if (definition == tab.dropdownDefinitions.end()) {
+        const auto created = createdIds.find(list);
+        if (created != createdIds.end()) {
+            definitionId = created->second;
+            definition = tab.dropdownDefinitions.find(definitionId);
+        }
+    }
+    if (definition == tab.dropdownDefinitions.end()) {
+        throw CoreError("unsupportedSyntax", "there's no dropdown list \"" + list +
+            "\" in this tab's dropdowns; name a list by its key there");
+    }
+    const auto optionId = optionIdOf(definition->second, option);
+    if (!optionId) throw CoreError("unsupportedSyntax", "dropdown list \"" + list + "\" has no option \"" + option + "\"");
+    return {.definitionId = definitionId, .optionId = *optionId};
 }
 
 } // namespace gdocsmith::lens

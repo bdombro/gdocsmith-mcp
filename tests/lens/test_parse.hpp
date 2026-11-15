@@ -5,6 +5,57 @@
 
 namespace gdocsmith::lens::test {
 
+TEST_CASE("Node parse282 directional merge chains move the sole content to the rectangular head") {
+    const auto parsed = markdownParse(
+        "| A | :merge{left} | C |\n| --- | --- | --- |\n"
+        "| :merge{down} | :merge{left} | x |\n| B | :merge{up} | y |");
+    const auto& table = *parsed.blocks[0].table;
+    CHECK(table.merges == std::vector<TableMerge>{
+        {.column=0,.columnSpan=2,.row=0,.rowSpan=1},
+        {.column=0,.columnSpan=2,.row=1,.rowSpan=2}});
+    CHECK(table.rows[1][0][0].text == "B");
+    CHECK(table.rows[2][0].empty());
+    const auto chain = markdownParse("| :merge{down} |\n| --- |\n| :merge{down} |\n| content |");
+    CHECK(chain.blocks[0].table->merges[0].rowSpan == 3);
+    CHECK(chain.blocks[0].table->rows[0][0][0].text == "content");
+    const auto escaped = markdownParse("| \\:merge{up} | b |\n| --- | --- |");
+    CHECK(escaped.blocks[0].table->merges.empty());
+    CHECK(escaped.blocks[0].table->rows[0][0][0].text == ":merge{up}");
+    for (const auto* bad : {
+        "| :merge{up} | b |\n| --- | --- |",
+        "| :merge{down} |\n| --- |\n| :merge{up} |",
+        "| a | :merge{left} |\n| --- | --- |\n| :merge{up} | b |",
+        "| mixed :merge{down} |\n| --- |\n| content |",
+        "| content |\n| --- |\n| :merge{down} |"})
+        CHECK_THROWS_AS(markdownParse(bad), model::CoreError);
+}
+
+TEST_CASE("parseInlines extracts image URLs without consuming trailing Markdown") {
+    for (const auto& text : {"![alt](https://example.com/image.png)",
+                             "![alt](https://example.com/image.png) tail",
+                             "![alt](https://example.com/image.png){width=20} tail"}) {
+        const auto spans = parseInlines(text);
+        REQUIRE(!spans.empty());
+        REQUIRE(spans[0].token.has_value());
+        CHECK(spans[0].token->attrs.get_value("src") ==
+              std::optional<std::string>("https://example.com/image.png"));
+        CHECK(spans[0].token->label == std::optional<std::string>("alt"));
+        if (std::string_view(text).ends_with(" tail")) {
+            REQUIRE(spans.size() == 2u);
+            CHECK(spans[1].text == " tail");
+        }
+    }
+}
+
+TEST_CASE("parseInlines keeps malformed images as text") {
+    for (const auto& text : {"![alt](missing tail", "![alt] tail"}) {
+        const auto spans = parseInlines(text);
+        REQUIRE(spans.size() == 1u);
+        CHECK(spans[0].kind == "text");
+        CHECK(spans[0].text == text);
+    }
+}
+
 TEST_CASE("markdownParse parses headings, lists, and formatted inlines") {
     std::string md =
         "# Main Title\n\n"

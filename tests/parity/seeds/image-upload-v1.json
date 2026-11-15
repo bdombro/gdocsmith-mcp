@@ -1,0 +1,23 @@
+{
+  "documentId": "synthetic-doc",
+  "revisionId": "rev-1",
+  "title": "Example",
+  "tabs": [{
+    "tabProperties": {"tabId": "t.0", "title": "Overview"},
+    "documentTab": {
+      "body": {"content": [
+        {"startIndex": 0, "endIndex": 1, "sectionBreak": {"sectionStyle": {}}},
+        {"startIndex": 1, "endIndex": 13, "paragraph": {
+          "elements": [
+            {"startIndex": 1, "endIndex": 12, "textRun": {"content": "Hello world", "textStyle": {}}},
+            {"startIndex": 12, "endIndex": 13, "textRun": {"content": "\n", "textStyle": {}}}
+          ], "paragraphStyle": {}
+        }}
+      ]},
+      "lists": {},
+      "namedStyles": {"styles": [
+        {"namedStyleType": "NORMAL_TEXT", "textStyle": {"fontSize": {"magnitude": 11, "unit": "PT"}, "weightedFontFamily": {"fontFamily": "Arial", "weight": 400}}, "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"}}
+      ]}
+    }
+  }]
+}

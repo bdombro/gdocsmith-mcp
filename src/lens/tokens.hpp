@@ -7,6 +7,8 @@
 #include <map>
 #include "directives.hpp"
 #include "tables.hpp"
+#include "paragraph_styles.hpp"
+#include "review_markers.hpp"
 
 namespace gdocsmith::lens {
 
@@ -38,6 +40,7 @@ struct ProjSpan {
     std::string kind{"text"}; // "text" or "token"
     std::string text;
     Marks marks;
+    DirectiveAttrs formatting;
     std::optional<std::string> directive; // Style class
     std::optional<TokenRef> token;
 
@@ -56,6 +59,7 @@ struct ProjCell {
 };
 
 struct ProjTable {
+    DirectiveAttrs settings;
     std::vector<std::vector<std::vector<ProjSpan>>> rows;
     std::vector<std::string> alignments; // "LEFT", "CENTER", "RIGHT"
     std::vector<std::vector<std::optional<std::string>>> cellStyles;
@@ -86,11 +90,20 @@ struct ProjBlock {
     bool operator==(const ProjBlock& other) const = default;
 };
 
+// 1-based source line of each top-level block; never part of projection equality
+struct SourceLines {
+    std::vector<int> lines;
+    bool operator==(const SourceLines&) const { return true; }
+};
+
 struct Projection {
     std::vector<ProjBlock> blocks;
     std::map<std::string, DirectiveAttrs> styles;
     std::map<std::string, ParagraphDeclaration> paragraphStyles;
     std::map<std::string, CellDeclaration> cellStyles;
+    bool unsupportedReview{false};
+    std::vector<ReviewMarker> reviewMarkers;
+    SourceLines blockLines;
 
     bool operator==(const Projection& other) const = default;
 };

@@ -33,6 +33,7 @@ struct ParagraphBorder {
 };
 
 struct ParagraphDeclaration {
+    std::set<std::string> resets;
     std::optional<std::string> alignment;
     std::optional<bool> avoidWidowAndOrphan;
     std::optional<ParagraphBorder> borderBetween;
@@ -56,7 +57,7 @@ struct ParagraphDeclaration {
 
     bool operator==(const ParagraphDeclaration& other) const = default;
     bool empty() const {
-        return !alignment && !avoidWidowAndOrphan && !borderBetween && !borderBottom &&
+        return resets.empty() && !alignment && !avoidWidowAndOrphan && !borderBetween && !borderBottom &&
                !borderLeft && !borderRight && !borderTop && !direction && !indentEnd &&
                !indentFirstLine && !indentStart && !keepLinesTogether && !keepWithNext &&
                !lineSpacing && !namedStyle && !pageBreakBefore && !shading && !spaceAbove &&
@@ -80,6 +81,7 @@ inline slimr::Json paragraphBorderPatch(const ParagraphBorder& b) {
 
 inline slimr::Json paragraphDeclarationPatch(const ParagraphDeclaration& decl) {
     slimr::Json::object_t patch;
+    for (const auto& field : decl.resets) patch[field] = nullptr;
     if (decl.alignment) patch["alignment"] = *decl.alignment;
     if (decl.avoidWidowAndOrphan) patch["avoidWidowAndOrphan"] = *decl.avoidWidowAndOrphan;
     if (decl.borderBetween) patch["borderBetween"] = paragraphBorderPatch(*decl.borderBetween);

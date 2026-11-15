@@ -57,6 +57,11 @@ TEST_CASE("docModelParse - richLink title adds no text") {
     CHECK(pBlock.inlines[0].is_atom());
     CHECK(pBlock.inlines[0].length == 1);
     CHECK(pBlock.inlines[0].type == "richLink");
+    CHECK_FALSE(pBlock.inlines[0].key.empty());
+    REQUIRE(pBlock.inlines[0].raw.has_value());
+    CHECK(pBlock.inlines[0].raw->is_object());
+    // Inline stores a non-optional native style object; absent JS style maps to empty.
+    CHECK(pBlock.inlines[0].style == make_json_object());
 }
 
 TEST_CASE("docModelParse - nestingLevel defaults 0") {
@@ -66,11 +71,18 @@ TEST_CASE("docModelParse - nestingLevel defaults 0") {
     p.bullet = ParagraphSpec::Bullet{.listId = "kix.list1", .nestingLevel = 0};
     DocSpec spec;
     spec.tabs.push_back(TabSpec{.blocks = {BlockSpec::make_paragraph(std::move(p))}});
-    auto doc = parseDoc(docJsonBuild(spec));
+    auto json = docJsonBuild(spec);
+    auto& bullet = json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
+        .get<slimr::Json::array_t>()[1]["paragraph"]["bullet"];
+    REQUIRE(bullet.is_object());
+    bullet.get<slimr::Json::object_t>().erase("nestingLevel");
+    REQUIRE_FALSE(bullet.contains("nestingLevel"));
+    auto doc = parseDoc(json);
     const auto& pBlock = doc.tabs[0].blocks[0].as_paragraph();
     REQUIRE(pBlock.bullet.has_value());
     CHECK(pBlock.bullet->listId == "kix.list1");
     CHECK(pBlock.bullet->nestingLevel == 0);
+    CHECK_FALSE(pBlock.bullet->textStyle.has_value());
 }
 
 TEST_CASE("docModelParse - headingId lifted out of style") {
@@ -158,6 +170,7 @@ TEST_CASE("docModelParse - leading section break is not a block; a mid-body one 
     CHECK(doc.tabs[0].blocks.size() == 2);
     CHECK(doc.tabs[0].blocks[1].is_section_break());
     CHECK(doc.tabs[0].leadingSectionStyle.data.index() != 0); // valid object
+    CHECK(doc.tabs[0].leadingSectionStyle == make_json_object());
 }
 
 TEST_CASE("docModelParse - tabs DFS with parentTabId") {
@@ -252,6 +265,84 @@ TEST_CASE("docModelParse - throws on non-newline tail") {
         }}
     };
     CHECK_THROWS_AS(parseDoc(json), ParseError);
+}
+
+TEST_CASE("docModelParse - owning section and footnote segments reuse nested suggestion parsing") {
+    auto json = docJsonBuild(DocSpec{.tabs = {TabSpec{.tabId = "t.0", .blocks = {
+        BlockSpec::make_paragraph(ParagraphSpec{.content = {"body"}}),
+        BlockSpec::make_section_break()
+    }}}});
+    auto& dt = json["tabs"][0]["documentTab"];
+    dt["documentStyle"]["defaultHeaderId"] = "h.default";
+    dt["documentStyle"]["evenPageFooterId"] = "f.even";
+    dt["body"]["content"][2]["sectionBreak"]["sectionStyle"]["firstPageHeaderId"] = "h.section";
+    auto header = paragraphJsonBuild(ParagraphSpec{.content = {"header"}}, 0).element;
+    header.get<slimr::Json::object_t>().erase("startIndex");
+    header["paragraph"]["elements"][0].get<slimr::Json::object_t>().erase("startIndex");
+    auto nested = tableJsonBuild(TableBlockSpec{.cells = {{{
+        BlockSpec::make_paragraph(ParagraphSpec{.content = {
+            ParagraphTextSpec{.text = "pending", .sugIns = std::vector<std::string>{"s.1"}}
+        }})
+    }}}}, 0).element;
+    auto footnote = paragraphJsonBuild(ParagraphSpec{.content = {"note"}}, 0).element;
+    dt["headers"] = slimr::Json::object_t{
+        {"h.default", slimr::Json::object_t{{"content", slimr::Json::array_t{header}}}},
+        {"h.section", slimr::Json::object_t{{"content", slimr::Json::array_t{nested}}}},
+        {"h.unused", slimr::Json::object_t{{"content", slimr::Json::array_t{header}}}}
+    };
+    dt["footers"] = slimr::Json::object_t{
+        {"f.even", slimr::Json::object_t{{"content", slimr::Json::array_t{header}}}}
+    };
+    dt["footnotes"] = slimr::Json::object_t{
+        {"fn.1", slimr::Json::object_t{{"content", slimr::Json::array_t{footnote}}}}
+    };
+    const auto unchanged = json;
+    auto doc = parseDoc(json);
+    CHECK(json == unchanged);
+    REQUIRE(doc.tabs[0].segments.size() == 4);
+    const auto& segments = doc.tabs[0].segments;
+    CHECK(segments[0].id == "h.default");
+    CHECK(segments[0].kind == "header");
+    CHECK(segments[0].type == "default");
+    CHECK(!segments[0].section);
+    REQUIRE(segments[0].tab);
+    CHECK(segments[0].tab->tabId == "t.0::h.default");
+    CHECK(segments[0].tab->blocks[0].origin->start == 1);
+    CHECK(segments[0].tab->blocks[0].as_paragraph().inlines[0].text == "header");
+    CHECK(segments[1].kind == "footer");
+    CHECK(segments[1].type == "even");
+    CHECK(segments[2].id == "h.section");
+    CHECK(segments[2].type == "first");
+    CHECK(segments[2].section == 2);
+    REQUIRE(segments[2].tab);
+    const auto& table = segments[2].tab->blocks[0].as_table();
+    CHECK(table.origin->start == 1);
+    CHECK(table.is_protected);
+    CHECK(table.rows[0].cells[0].blocks[0].as_paragraph().inlines[0].suggestedInsertionIds ==
+          std::optional<std::vector<std::string>>{{"s.1"}});
+    CHECK(segments[3].kind == "footnote");
+    CHECK(segments[3].id == "fn.1");
+    CHECK(doc.tabs[0].headersFooters["headers"].contains("h.unused"));
+    CHECK(doc.tabs[0].footnotes.contains("fn.1"));
+    std::set<std::string> keys{doc.tabs[0].blocks[0].key};
+    for (const auto& segment : segments) {
+        REQUIRE(segment.tab);
+        CHECK(keys.insert(segment.tab->blocks[0].key).second);
+    }
+    json = slimr::Json::object_t{};
+    CHECK(segments[0].tab->blocks[0].as_paragraph().inlines[0].text == "header");
+}
+
+TEST_CASE("docModelParse - segment index shifting refuses invalid and overflowing coordinates") {
+    for (const auto index : {-1LL, 2147483647LL}) {
+        auto json = docJsonBuild(DocSpec{.tabs = {TabSpec{.tabId = "t.0"}}});
+        auto element = paragraphJsonBuild(ParagraphSpec{.content = {"note"}}, 0).element;
+        element["endIndex"] = static_cast<int64_t>(index);
+        json["tabs"][0]["documentTab"]["footnotes"] = slimr::Json::object_t{
+            {"fn.1", slimr::Json::object_t{{"content", slimr::Json::array_t{element}}}}
+        };
+        CHECK_THROWS_AS(parseDoc(json), ParseError);
+    }
 }
 
 } // namespace gdocsmith::model::test

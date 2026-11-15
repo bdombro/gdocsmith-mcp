@@ -9,6 +9,13 @@
 
 namespace gdocsmith::lens {
 
+inline std::string suggestionSnippetTrim(std::string text) {
+    const auto first = text.find_first_not_of("\r\n");
+    if (first == std::string::npos) return {};
+    const auto last = text.find_last_not_of("\r\n");
+    return text.substr(first, last - first + 1);
+}
+
 struct SuggestionBlock {
     std::string id;
     std::string kind; // "cellStyle", "list", "namedStyle", "object", "pageLayout", "paragraphStyle", "table", "text", "textStyle"
@@ -23,8 +30,13 @@ struct SuggestionBlock {
     bool operator==(const SuggestionBlock& other) const = default;
 };
 
-inline std::string suggestionBlockRender(const SuggestionBlock& block) {
-    std::string out = ":::suggestion{id=" + directiveValueRender(block.id) + " kind=" + block.kind;
+inline std::string suggestionBlockRender(const SuggestionBlock& block, bool legacy = true,
+                                         const std::string& tab = {}, std::optional<int> exportLine = {},
+                                         const std::optional<std::string>& exportLines = {}) {
+    std::string out = (legacy ? ":::suggestion{id=" : "::suggestion{id=") + directiveValueRender(block.id) + " kind=" + block.kind;
+    if (!legacy && !tab.empty()) out += " tab=" + directiveValueRender(tab);
+    if (!legacy && exportLines) out += " exportLines=" + *exportLines;
+    else if (!legacy && exportLine) out += " exportLine=" + std::to_string(*exportLine);
     if (block.segment) {
         out += " segment=" + directiveValueRender(*block.segment);
     }
@@ -44,7 +56,7 @@ inline std::string suggestionBlockRender(const SuggestionBlock& block) {
             if (!block.after->ends_with('\n')) out += "\n";
         }
     }
-    out += ":::\n";
+    if (legacy) out += ":::\n";
     return out;
 }
 

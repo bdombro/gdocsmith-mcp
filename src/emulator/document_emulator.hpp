@@ -1328,7 +1328,27 @@ inline slimr::Json dropdown_definition_update_apply(EmulatorState& state, const 
     if (std::find(fields.begin(), fields.end(), "title") != fields.end() && patch.contains("title")) {
         props["title"] = patch["title"];
     }
-    if (std::find(fields.begin(), fields.end(), "options") != fields.end() && patch.contains("options")) {
+    if (std::find(fields.begin(), fields.end(), "options") != fields.end()) {
+        if (!patch.contains("options") || !patch["options"].is_array() ||
+            patch["options"].size() < 2 || patch["options"].size() > 50) {
+            throw EmulatorError(EmulatorErrorCode::INVALID_FIELD, ctx.request_index,
+                                "A dropdown definition must have between 2 and 50 options.");
+        }
+        const auto& options = patch["options"].get<slimr::Json::array_t>();
+        for (auto* chip : dropdown_chips(tab)) {
+            if (!chip->contains("dropdownProperties") || !(*chip)["dropdownProperties"].is_object()) continue;
+            auto& chip_props = (*chip)["dropdownProperties"];
+            if (!chip_props.contains("dropdownDefinitionId") || chip_props["dropdownDefinitionId"] != slimr::Json(id)) continue;
+            const auto option = std::find_if(options.begin(), options.end(), [&](const slimr::Json& candidate) {
+                return candidate.is_object() && candidate.contains("optionId") &&
+                       chip_props.contains("selectedOptionId") && candidate["optionId"] == chip_props["selectedOptionId"];
+            });
+            if (option == options.end()) {
+                throw EmulatorError(EmulatorErrorCode::INVALID_FIELD, ctx.request_index,
+                                    "A replacement is required for a selected option.");
+            }
+            if (option->contains("displayValue")) chip_props["displayValue"] = (*option)["displayValue"];
+        }
         props["options"] = patch["options"];
     }
     return slimr::Json::object_t{};
@@ -2317,27 +2337,43 @@ inline slimr::Json request_apply(EmulatorState& state, const slimr::Json& req, E
         return segment_request_apply(state, req, segment_id->get<std::string>(), ctx);
     }
 
-    auto tab_id = field_find(req, "tabId");
-    TabState* tab = nullptr;
-    if (tab_id && tab_id->is_string() && !tab_id->get<std::string>().empty()) {
-        for (auto& t : state.tabs) {
-            if (t.tab_id == tab_id->get<std::string>()) {
-                tab = &t;
-                break;
+    std::optional<std::string> tracked_tab_id;
+    size_t before = 0;
+    {
+        auto tab_id = field_find(req, "tabId");
+        const TabState* tab = nullptr;
+        if (tab_id && tab_id->is_string() && !tab_id->get<std::string>().empty()) {
+            for (const auto& t : state.tabs) {
+                if (t.tab_id == tab_id->get<std::string>()) {
+                    tab = &t;
+                    break;
+                }
             }
+        } else if (!state.tabs.empty()) {
+            tab = &state.tabs[0];
         }
-    } else if (!state.tabs.empty()) {
-        tab = &state.tabs[0];
+        if (tab) {
+            tracked_tab_id = tab->tab_id;
+            before = tab->tape.size();
+        }
     }
 
-    size_t before = tab ? tab->tape.size() : 0;
     slimr::Json reply = request_dispatch(state, req, ctx);
 
     auto at_val = field_find(req, "index");
     if (!at_val) at_val = field_find(req, "startIndex");
-    if (tab && at_val && (at_val->is_int64() || at_val->is_number()) && tab->tape.size() != before) {
-        int at = at_val->as<int>();
-        named_ranges_shift(*tab, at, static_cast<int>(tab->tape.size()) - static_cast<int>(before));
+    if (tracked_tab_id && at_val && (at_val->is_int64() || at_val->is_number())) {
+        // Tab insertion, deletion and reordering can invalidate both addresses and
+        // indices. Reacquire the original tab by identity after dispatch.
+        for (auto& tab : state.tabs) {
+            if (tab.tab_id == *tracked_tab_id) {
+                if (tab.tape.size() != before) {
+                    named_ranges_shift(tab, at_val->as<int>(),
+                                       static_cast<int>(tab.tape.size()) - static_cast<int>(before));
+                }
+                break;
+            }
+        }
     }
     return reply;
 }

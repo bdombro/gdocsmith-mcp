@@ -1,4 +1,4 @@
-set shell := ["zsh", "-f", "-eu", "-o", "pipefail", "-c"]
+set shell := ["zsh", "-eu", "-o", "pipefail", "-c"]
 set positional-arguments
 
 architecture := replace(replace(arch(), "aarch64", "arm64"), "x86_64", "x64")
@@ -37,6 +37,15 @@ lint: (configure "Debug")
 
 test-mcp: build
     node scripts/test-mcp.mjs build/bin/gdocsmith-mcp export,import,file,status
+
+parity run_id node:
+    "$2" tests/parity/run-engine-differential.mjs \
+        --original-root ../gdocsmith-node \
+        --target-adapter build/cmake/ParityChecks/gdocsmith_parity_adapter \
+        --vectors '.agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/proposed-vectors.json' \
+        --case-ids V001-noop,V002-body-and-title,V003-stale,V004-landed-lost-response-replay,V005-font-default,V006-font-nondefault,V007-cell-style-edit,V008-reject-hidden-insertion,V009-image-upload-lifecycle,V010-cross-doc-image-copy \
+        --owned-run-root ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/$1/runs" \
+        --results ".agents/threads/2026.11.13 20.00 - Node parity gap closure/tasks/parity-evidence/$1/differential-results.json"
 
 check-formula:
     ruby -c Formula/{{formula}}.rb

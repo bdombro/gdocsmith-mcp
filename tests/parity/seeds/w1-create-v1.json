@@ -1,0 +1,10 @@
+{
+  "title": "New Created Doc",
+  "replayTitle": "Retried Created Doc",
+  "tabs": [
+    { "title": "Main", "body": "First body" },
+    { "title": "Second", "body": "Second body" }
+  ],
+  "singleBody": "Body",
+  "invalidBody": "> Unsupported quote"
+}

@@ -7,6 +7,7 @@
 #include <optional>
 #include <sstream>
 #include <cmath>
+#include <limits>
 #include "json.hpp"
 #include "lens/json_helper.hpp"
 #include "lens/cell_styles.hpp"
@@ -161,7 +162,8 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
         try {
             size_t idx = 0;
             double v = std::stod(*s, &idx);
-            if (idx != s->size() || v < 0 || (integer && v != std::floor(v))) {
+            if (idx != s->size() || !std::isfinite(v) || v < 0 ||
+                (integer && (v != std::floor(v) || v > std::numeric_limits<int>::max()))) {
                 fail(std::string(name) + " must be a nonnegative " + (integer ? "whole number" : "number of points"));
             }
             return v;
@@ -190,7 +192,7 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
             try {
                 size_t idx = 0;
                 double v = std::stod(item, &idx);
-                if (idx != item.size() || v < 0) {
+                if (idx != item.size() || !std::isfinite(v) || v < 0) {
                     fail("margins must be four nonnegative point values: margins=top,right,bottom,left");
                 }
                 sides.push_back(v);
@@ -216,6 +218,61 @@ inline SectionSettings sectionSettingsParse(const std::vector<std::string>& flag
         fail("columnSeparator needs columns=2 or 3");
     }
     return settings;
+}
+
+inline slimr::Json sectionStyleWith(const slimr::Json& style, const SectionSettings& settings) {
+    auto out = style.is_object() ? style : slimr::json_obj();
+    const auto set = [&](const std::string& field, const std::optional<slimr::Json>& value) {
+        if (value) out[field] = *value;
+        else if (out.contains(field)) {
+            if (out[field].is_boolean()) out[field] = false;
+            else throw CoreError("unsupportedSyntax", "Google can't clear a section's " + field + " once set.");
+        }
+    };
+    if (settings.columns || out.contains("columnProperties")) {
+        slimr::Json columns = slimr::json_arr();
+        const int count = settings.columns.value_or(1);
+        for (int i = 0; i < count; ++i) {
+            columns.get<slimr::Json::array_t>().emplace_back(slimr::Json::object_t{
+                {"paddingEnd", dimensionFromPt(i + 1 < count ? settings.columnGap.value_or(36) : 0)}});
+        }
+        out["columnProperties"] = std::move(columns);
+    }
+    out["columnSeparatorStyle"] = settings.columnSeparator ? "BETWEEN_EACH_COLUMN" : "NONE";
+    set("useFirstPageHeaderFooter", settings.firstPage ? std::optional<slimr::Json>{true} : std::nullopt);
+    set("flipPageOrientation", settings.landscape ? std::optional<slimr::Json>{true} : std::nullopt);
+    constexpr std::array<const char*, 4> sides = {"marginTop", "marginRight", "marginBottom", "marginLeft"};
+    for (size_t i = 0; i < sides.size(); ++i) {
+        set(sides[i], settings.margins
+            ? std::optional<slimr::Json>{dimensionFromPt((*settings.margins)[i])} : std::nullopt);
+    }
+    set("pageNumberStart", settings.pageNumberStart
+        ? std::optional<slimr::Json>{*settings.pageNumberStart} : std::nullopt);
+    if (settings.rtl) out["contentDirection"] = "RIGHT_TO_LEFT";
+    else if (out.contains("contentDirection") && out["contentDirection"] == slimr::Json("RIGHT_TO_LEFT")) {
+        out["contentDirection"] = "LEFT_TO_RIGHT";
+    }
+    return out;
+}
+
+inline SectionSettings sectionDirectiveSettings(const DirectiveAttrs& attrs) {
+    if (!attrs.classes.empty()) throw CoreError("unsupportedSyntax", "Invalid section class.");
+    for (const auto& flag : attrs.flags) {
+        if (flag != "continuous" && flag != "nextPage" &&
+            std::find(SECTION_FLAGS.begin(), SECTION_FLAGS.end(), flag) == SECTION_FLAGS.end()) {
+            throw CoreError("unsupportedSyntax", "Unknown section flag.");
+        }
+    }
+    for (const auto& [key, value] : attrs.values) {
+        (void)value;
+        if (key != "id" && std::find(SECTION_VALUES.begin(), SECTION_VALUES.end(), key) == SECTION_VALUES.end()) {
+            throw CoreError("unsupportedSyntax", "Unknown section attribute.");
+        }
+    }
+    if (attrs.has_flag("continuous") && attrs.has_flag("nextPage")) {
+        throw CoreError("unsupportedSyntax", "A section can have only one break type.");
+    }
+    return sectionSettingsParse(attrs.flags, attrs.values);
 }
 
 } // namespace gdocsmith::lens

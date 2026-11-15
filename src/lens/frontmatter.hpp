@@ -20,6 +20,7 @@ namespace gdocsmith::lens {
 using gdocsmith::model::CoreError;
 
 constexpr int GDOCSMITH_VERSION = 1;
+inline constexpr std::string_view GDOCSMITH_NODE_VERSION = "3.0.20";
 
 static const std::unordered_map<std::string, std::string> STYLE_ATTRIBUTES = {
     {"backgroundColor", "color"},
@@ -41,6 +42,7 @@ static const std::vector<std::string> NAMED_STYLE_TYPES = {
 };
 
 struct StyleDeclaration {
+    std::set<std::string> resets;
     std::optional<std::string> backgroundColor;
     std::optional<std::string> baselineOffset;
     std::optional<bool> bold;
@@ -56,18 +58,45 @@ struct StyleDeclaration {
     bool operator==(const StyleDeclaration& other) const = default;
 };
 
+inline DirectiveAttrs styleDeclarationAttrs(const StyleDeclaration& declaration) {
+    DirectiveAttrs attrs;
+    for (const auto& field : declaration.resets) attrs.values.emplace_back(field, "null");
+    const auto text = [&](const char* name, const auto& value) {
+        if (value) attrs.values.emplace_back(name, *value);
+    };
+    text("backgroundColor", declaration.backgroundColor);
+    text("baselineOffset", declaration.baselineOffset);
+    text("fontFamily", declaration.fontFamily);
+    text("foregroundColor", declaration.foregroundColor);
+    for (const auto& [name, value] : {
+             std::pair{"fontSize", declaration.fontSize}, {"fontWeight", declaration.fontWeight}}) {
+        if (value) attrs.values.emplace_back(name, std::to_string(*value));
+    }
+    for (const auto& [name, value] : {
+             std::pair{"bold", declaration.bold}, {"italic", declaration.italic},
+             {"smallCaps", declaration.smallCaps}, {"strikethrough", declaration.strikethrough},
+             {"underline", declaration.underline}}) {
+        if (value) attrs.values.emplace_back(name, *value ? "true" : "false");
+    }
+    return attrs;
+}
+
 
 
 struct DocumentFrontmatter {
     int gdocsmith = GDOCSMITH_VERSION;
+    std::optional<std::string> sourceVersion{std::string(GDOCSMITH_NODE_VERSION)};
     std::optional<std::string> doc;
     std::optional<std::string> revision;
     std::string title;
+    std::optional<std::string> apiUser;
     std::unordered_map<std::string, StyleDeclaration> textStyles;
     std::unordered_map<std::string, ParagraphDeclaration> paragraphStyles;
     std::unordered_map<std::string, CellDeclaration> cellStyles;
     std::optional<slimr::Json> guards;
     std::optional<slimr::Json> styleBaseline;
+    slimr::Json namedStyleSets = slimr::json_obj();
+    slimr::Json dropdowns = slimr::json_obj();
     std::unordered_map<std::string, std::string> variables;
     std::optional<int> commentsLine;
     std::optional<int> suggestionsLine;
@@ -136,7 +165,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     };
 
     static const std::unordered_set<std::string> tab_allowed_keys = {
-        "cellStyles", "doc", "gdocsmith", "paragraphStyles", "revision", "styles", "tab", "title", "variables"
+        "cellStyles", "doc", "gdocsmith", "paragraphStyles", "revision", "styles", "textStyles", "tab", "title", "variables"
     };
 
     const auto& allowed = (kind == "document") ? doc_allowed_keys : tab_allowed_keys;
@@ -159,7 +188,10 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 problems.push_back("frontmatter gdocsmith must be " + std::to_string(GDOCSMITH_VERSION));
             } else {
                 df.gdocsmith = GDOCSMITH_VERSION;
+                df.sourceVersion.reset();
             }
+        } else if (g_val->is_string() && g_val->get<std::string>() == GDOCSMITH_NODE_VERSION) {
+            df.sourceVersion = g_val->get<std::string>();
         } else if (kind == "document") {
             problems.push_back("frontmatter gdocsmith must be " + std::to_string(GDOCSMITH_VERSION));
         }
@@ -202,6 +234,53 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
     } else if (kind == "document") {
         problems.push_back("title must be a nonempty string");
     }
+    if (auto* api_val = json::get(root, "apiUser"); api_val && api_val->is_string() && !api_val->get<std::string>().empty()) {
+        df.apiUser = api_val->get<std::string>();
+    }
+    if (root.contains("styleBaseline")) df.styleBaseline = root["styleBaseline"];
+    if (root.contains("namedStyleSets")) {
+        if (!root["namedStyleSets"].is_object()) throw CoreError("unsupportedSyntax", "namedStyleSets must be a mapping");
+        df.namedStyleSets = root["namedStyleSets"];
+    }
+    if (root.contains("dropdowns")) {
+        df.dropdowns = root["dropdowns"];
+        auto invalid = [] { throw CoreError("unsupportedSyntax", "Invalid dropdowns declaration."); };
+        if (!df.dropdowns.is_object()) invalid();
+        for (auto& [tab, lists] : df.dropdowns.get<slimr::Json::object_t>()) {
+            (void)tab;
+            if (!lists.is_object()) invalid();
+            for (auto& [key, list] : lists.get<slimr::Json::object_t>()) {
+                if (key.empty() || !list.is_object() || !list.contains("options") || !list["options"].is_array()) invalid();
+                for (const auto& [field, value] : list.get<slimr::Json::object_t>()) {
+                    if (field == "options") continue;
+                    if (field != "title" || !value.is_string() || value.get<std::string>().empty()) invalid();
+                }
+                for (auto& option : list["options"].get<slimr::Json::array_t>()) {
+                    if (option.is_string()) {
+                        if (option.get<std::string>().empty()) invalid();
+                        continue;
+                    }
+                    if (!option.is_object() || option.get<slimr::Json::object_t>().size() != 1) invalid();
+                    auto& [name, colors] = *option.get<slimr::Json::object_t>().begin();
+                    if (name.empty() || !colors.is_object()) invalid();
+                    for (auto& [field, color] : colors.get<slimr::Json::object_t>()) {
+                        if ((field != "color" && field != "background") || !color.is_string() ||
+                            !isValidHexColor(color.get<std::string>())) invalid();
+                        color = uppercaseHex(color.get<std::string>());
+                    }
+                }
+            }
+        }
+    }
+
+    if (root.contains("guards")) df.guards = root["guards"];
+    if (root.contains("variables")) {
+        if (!root["variables"].is_object()) throw CoreError("unsupportedSyntax", "variables must be a mapping");
+        for (const auto& [key, value] : root["variables"].get<slimr::Json::object_t>()) {
+            if (!value.is_string()) throw CoreError("unsupportedSyntax", "variables must contain strings");
+            df.variables[key] = value.get<std::string>();
+        }
+    }
 
     // textStyles / styles
     auto parse_styles = [&](const std::string& sec_name, const slimr::Json& styles_obj) {
@@ -227,6 +306,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                     continue;
                 }
                 const std::string& type = it->second;
+                if (attr_val.is_null()) sd.resets.insert(attr_name);
                 if (type == "color") {
                     if (attr_val.is_string() && isValidHexColor(attr_val.get<std::string>())) {
                         std::string up = uppercaseHex(attr_val.get<std::string>());
@@ -294,6 +374,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 }
                 ParagraphDeclaration pd;
                 for (const auto& [prop, val] : decl_obj.get<slimr::Json::object_t>()) {
+                    if (val.is_null() && prop != "namedStyle") pd.resets.insert(prop);
                     if (prop == "namedStyle") {
                         if (val.is_null()) {
                             problems.push_back("namedStyle cannot be null; use NORMAL_TEXT");
@@ -410,6 +491,7 @@ inline DocumentFrontmatter frontmatterValidate(const slimr::Json& root, std::str
                 }
                 CellDeclaration cd;
                 for (const auto& [prop, val] : decl_obj.get<slimr::Json::object_t>()) {
+                    if (val.is_null()) cd.resets.insert(prop);
                     if (prop == "backgroundColor") {
                         if (val.is_string() && isValidHexColor(val.get<std::string>())) {
                             cd.backgroundColor = uppercaseHex(val.get<std::string>());

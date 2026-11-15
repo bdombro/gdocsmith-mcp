@@ -1,5 +1,18 @@
 # Guards
 
+> **Current C++ boundary:** Public remote import is default-enabled and scoped
+> earlier bounded implementation accepted; current bounded qualification passed,
+> with broader parity/raw-difference obligations still open.
+> A historical synthetic live stale-revision refusal and guarded deletion passed,
+> not every loss/review guard. `allow` waives classified findings only, never
+> unsupported operations or protected review conflicts. Reviewed lens/atom intent
+> and pending backend workflows are distinguished in [features](features.md). Unknown/touching/
+> destructive named-range structural effects are unwaivable; proven-safe
+> later-table operations are distinguished. The [agent guide](agent-guide.md)
+> overrides the inherited Node design examples below. Deletion is not a blanket
+> permission, version history is not guaranteed comment recovery, and unsupported
+> objects must not silently disappear during recreation.
+
 Guards evaluate the complete planned model before sending, not one low-level request at a time. Fresh cloud review state is authoritative.
 
 A refusal lists one error per `allow` kind, with the affected ids and the next step (ask the user, then retry with that kind). A kind waives only its own findings in that import.
@@ -29,6 +42,9 @@ The `file` tool has its own `allow` kinds, checked before any Drive call. A refu
 
 Refused even with `allow`: grants to `anyone` or `domain`, and ownership transfers (role `owner` or `transferOwnership`). The message says to ask the document owner to do it in Drive. Trash, revoke, copy and permissions need no `allow`.
 
-Deletions need no approval: removing content from export.md is the intent, and version history can restore it. Deleting every tab clears the original tab and renames it "Tab 1" instead. Unsupported objects copied through markdown into a new tab or document are omitted with warnings.
+Removing supported content from export.md expresses deletion intent, subject to
+guards; version history is not guaranteed comment recovery. Deleting every tab
+clears the original tab and renames it "Tab 1" instead. Do not silently omit
+unsupported objects during recreation; use lossless Drive copy when needed.
 
 Comment coverage is the union of original-character deletions. Link checks use surviving references in the final model, including untouched tabs; removing a heading and repairing its references in one import is fine.

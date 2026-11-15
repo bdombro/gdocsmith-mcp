@@ -1,12 +1,17 @@
 #pragma once
 
 #include "engine/load.hpp"
+#include "lens/images.hpp"
+#include "lens/named_ranges.hpp"
+#include "model/layout.hpp"
+#include "model/object_ids.hpp"
 #include "model/raw_json.hpp"
 #include "model/types.hpp"
 #include "model/walk.hpp"
 #include "reconcile/reconcile.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <optional>
 #include <regex>
 #include <set>
@@ -59,6 +64,10 @@ struct GuardDoc {
     model::DocModel original;
     DocPlan plan;
     std::vector<model::Tombstone> tombstones;
+    // Original shown IDs returned only after successful marker application.
+    // Empty by default: callers without marker provenance retain conservative guards.
+    std::set<std::string> managedNamedRangeIds;
+    std::vector<lens::ImageSource> imageRecreations;
 };
 
 struct GuardInput {
@@ -230,6 +239,99 @@ inline std::vector<InsertionEntry> insertionsOf(const GuardDoc& doc) {
     return res;
 }
 
+/** Text requests have dedicated overlap/edge checks. Everything else must be
+ * explicitly index-preserving, provably scoped to another tab, or a table
+ * row/column edit strictly after every current range edge. In particular,
+ * table row/column deletion need not appear in DocPlan::deletedRanges.
+ */
+inline bool namedRangeRequestEffectsUnknown(
+    const model::JsonObject& request, std::string_view tabId, std::string_view namedRangeId,
+    std::optional<int> currentRangeEnd
+) {
+    if (!request.is_object() || request.get<slimr::Json::object_t>().size() != 1) return true;
+    const auto& [kind, operation] = *request.get<slimr::Json::object_t>().begin();
+    static const std::set<std::string> indexPreserving{
+        "updateTextStyle", "updateParagraphStyle", "updateTableCellStyle",
+        "updateTableRowStyle", "updateTableColumnProperties", "updateSectionStyle",
+        "updateDocumentStyle", "updateNamedStyle", "updateDocumentTabProperties",
+        "pinTableHeaderRows", "replaceImage", "createNamedRange"
+    };
+    if (indexPreserving.contains(kind)) return false;
+    if (!operation.is_object()) return true;
+    // Only known request coordinate fields establish scope; do not recursively
+    // interpret tab IDs in arbitrary payloads (for example text-style links).
+    std::vector<const model::JsonObject*> locations{&operation};
+    for (const char* field : {"location", "range", "tableStartLocation"}) {
+        if (operation.contains(field) && operation[field].is_object())
+            locations.push_back(&operation[field]);
+    }
+    if (operation.contains("tableCellLocation") && operation["tableCellLocation"].is_object()) {
+        const auto& cell = operation["tableCellLocation"];
+        if (cell.contains("tableStartLocation") && cell["tableStartLocation"].is_object())
+            locations.push_back(&cell["tableStartLocation"]);
+    }
+    bool explicitlyThisTab = false, explicitlyOtherTab = false;
+    for (const auto* location : locations) {
+        if (!location->contains("tabId")) continue;
+        if (!(*location)["tabId"].is_string()) return true;
+        if ((*location)["tabId"].get<std::string>() == tabId) explicitlyThisTab = true;
+        else explicitlyOtherTab = true;
+    }
+    if (explicitlyThisTab && explicitlyOtherTab) return true;
+    static const std::set<std::string> tabScoped{
+        "deleteTableRow", "deleteTableColumn", "insertTableRow", "insertTableColumn",
+        "insertTable", "mergeTableCells", "unmergeTableCells",
+        "insertText", "deleteContentRange", "deleteNamedRange"
+    };
+    if (explicitlyOtherTab && tabScoped.contains(kind)) return false;
+    if (explicitlyThisTab && currentRangeEnd &&
+        (kind == "deleteTableRow" || kind == "deleteTableColumn" ||
+         kind == "insertTableRow" || kind == "insertTableColumn") &&
+        operation.contains("tableCellLocation") && operation["tableCellLocation"].is_object()) {
+        const auto& cell = operation["tableCellLocation"];
+        if (cell.contains("tableStartLocation") && cell["tableStartLocation"].is_object()) {
+            const auto& start = cell["tableStartLocation"];
+            // Strictly later table starts cannot affect any earlier edge. Equality
+            // is not assumed safe: whole-table deletion can involve its boundary.
+            if (!start.contains("segmentId") && start.contains("index") && start["index"].is_number() &&
+                start["index"].get<int64_t>() > *currentRangeEnd &&
+                start["index"].get<int64_t>() <= std::numeric_limits<int>::max()) return false;
+        }
+    }
+    if (kind == "insertText" || kind == "deleteContentRange") return !explicitlyThisTab;
+    if (kind == "deleteNamedRange" && operation.contains("namedRangeId") &&
+        operation["namedRangeId"].is_string() &&
+        operation["namedRangeId"].get<std::string>() != namedRangeId) return false;
+    return true;
+}
+
+inline bool namedRangeEffectsUnknown(
+    const std::vector<model::JsonObject>& requests, std::string_view tabId,
+    const model::NamedRangeDef& range,
+    std::vector<std::optional<model::Range>>* predicted = nullptr
+) {
+    std::vector<std::optional<model::Range>> current;
+    for (const auto& part : range.ranges) {
+        current.push_back(part.segmentId ? std::nullopt :
+            std::optional<model::Range>(model::Range{.end=part.end, .start=part.start}));
+    }
+    for (const auto& request : requests) {
+        std::optional<int> latestEnd;
+        for (const auto& part : current) {
+            if (!part) { latestEnd.reset(); break; }
+            latestEnd = std::max(latestEnd.value_or(part->end), part->end);
+        }
+        if (namedRangeRequestEffectsUnknown(request, tabId, range.namedRangeId, latestEnd)) return true;
+        if (request.contains("insertText") || request.contains("deleteContentRange")) {
+            for (auto& part : current) {
+                if (part) part = lens::namedRangePredict(*part, tabId, {request});
+            }
+        }
+    }
+    if (predicted) *predicted = std::move(current);
+    return false;
+}
+
 inline std::string snippet(std::string_view text) {
     std::string res;
     bool inWs = false;
@@ -252,10 +354,7 @@ inline std::string snippet(std::string_view text) {
 }
 
 inline const model::Block* blockDeep(const model::TabModel& tab, const std::string& key) {
-    for (const auto& b : model::blocksDeep(tab.blocks)) {
-        if (b.key == key) return &b;
-    }
-    return nullptr;
+    return reconcile::blockFindConst(tab, key);
 }
 
 template <typename AddFn>
@@ -468,30 +567,135 @@ inline std::vector<GuardFinding> guardEvaluate(const GuardInput& input) {
                 });
             }
 
-            std::set<std::string> keptNamedRanges;
-            if (finalTab) {
-                for (const auto& range : finalTab->namedRanges) {
-                    keptNamedRanges.insert(range.namedRangeId);
+            const auto layout = model::layoutCompute(tab);
+            for (const auto& paragraph : model::paragraphsDeep(tab.blocks)) {
+                auto location = layout.blockRanges.find(paragraph.key);
+                if (location == layout.blockRanges.end()) continue;
+                int position = location->second.start;
+                for (const auto& item : paragraph.inlines) {
+                    if (item.is_atom() && item.type == "image") {
+                        const auto id = model::googleIdOf(item.to_atom());
+                        const bool deleted = !finalTab || std::any_of(deletions.begin(), deletions.end(), [&](const auto& deletion) {
+                            return deletion.tabId == tab.tabId &&
+                                   deletion.range.start < position + item.length && deletion.range.end > position;
+                        });
+                        bool kept = false;
+                        for (const auto& target : doc.final.tabs) {
+                            for (const auto& atom : model::atomsDeep(target.blocks)) {
+                                if (atom.type == "image" &&
+                                    (atom.key == item.key || (id && model::googleIdOf(atom) == id))) kept = true;
+                            }
+                            for (const auto& source : doc.imageRecreations) {
+                                if (source.source.docId != docId || source.source.tabId != tab.tabId || source.source.key != item.key) continue;
+                                const auto authoritative = lens::imageRecreationSourceOf(doc.original, tab, item.to_atom());
+                                if (!authoritative || authoritative->create != source.create ||
+                                    authoritative->sourceUriFallback != source.sourceUriFallback) continue;
+                                for (const auto& target : doc.final.tabs) for (const auto& atom : model::atomsDeep(target.blocks)) {
+                                    if (atom.type == "image" && atom.create && *atom.create == source.create) kept = true;
+                                }
+                            }
+                        }
+                        const bool inserted = std::any_of(doc.plan.contentRequests.begin(), doc.plan.contentRequests.end(),
+                            [](const auto& request) { return request.contains("insertInlineImage"); });
+                        if (deleted && (kept || inserted)) {
+                            const model::JsonObject* embedded = nullptr;
+                            if (id) {
+                                const auto object = tab.inlineObjects.find(*id);
+                                if (object != tab.inlineObjects.end() &&
+                                    object->second.contains("inlineObjectProperties") &&
+                                    object->second["inlineObjectProperties"].contains("embeddedObject")) {
+                                    embedded = &object->second["inlineObjectProperties"]["embeddedObject"];
+                                }
+                            }
+                            auto lost = embedded ? lens::imageRecreationLosses(*embedded) : std::vector<std::string>{};
+                            if (!kept || !embedded || !embedded->contains("imageProperties")) {
+                                add(GuardFinding{
+                                    .anchor = item.key, .docId = docId, .kind = "imageMove",
+                                    .message = "cannot establish the source or fidelity of this image move; it was not approved",
+                                    .tabId = tab.tabId,
+                                });
+                            } else if (!lost.empty()) {
+                                std::string fields;
+                                for (const auto& field : lost) fields += (fields.empty() ? "" : ", ") + field;
+                                add(GuardFinding{
+                                    .anchor = item.key, .docId = docId, .kind = "imageMove",
+                                    .message = "recreating this image loses: " + fields,
+                                    .allowKind = "lossyImageMove", .tabId = tab.tabId,
+                                });
+                            }
+                        }
+                    }
+                    position += item.is_text() ? model::utf16CodeUnitLength(item.text) : item.length;
                 }
             }
 
             for (const auto& range : tab.namedRanges) {
-                if (!keptNamedRanges.contains(range.namedRangeId)) continue;
+                const bool retained = finalTab && std::any_of(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
+                    [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; });
+                if (!retained && doc.managedNamedRangeIds.contains(range.namedRangeId)) continue;
+                std::vector<std::optional<model::Range>> predictedRanges;
+                if (detail::namedRangeEffectsUnknown(doc.plan.contentRequests, tab.tabId, range, &predictedRanges)) {
+                    add(GuardFinding{
+                        .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                        .message = "cannot establish named range effects of a structural or unclassified operation",
+                        .tabId = tab.tabId,
+                    });
+                }
                 for (const auto& r : range.ranges) {
-                    if (r.segmentId.has_value()) continue;
-                    for (const auto& d : deletions) {
-                        if (d.tabId == tab.tabId && d.range.start <= r.start && d.range.end >= r.end) {
+                    bool damaged = !finalTab;
+                    std::optional<int> tabIndex;
+                    if (r.segmentId) {
+                        if (!doc.plan.contentRequests.empty()) {
                             add(GuardFinding{
-                                .anchor = range.namedRangeId,
-                                .docId = docId,
-                                .kind = "namedRange",
-                                .message = "deleting all of named range \"" + range.name + "\"'s text deletes the range; remove its markers too, or keep some text",
-                                .allowKind = "namedRangeDamage",
-                                .severity = "block",
+                                .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                                .message = "cannot establish the effect of this edit on a named range in a non-body segment",
                                 .tabId = tab.tabId,
-                                .tabIndex = d.tabIndex,
                             });
                         }
+                        continue;
+                    }
+                    // A marker-aware put supplies explicit final edges only for ranges
+                    // whose two markers stayed attached to kept symbols. Verify those
+                    // edges against actual requests before relaxing conservative guards.
+                    bool tracked = false;
+                    if (finalTab && range.ranges.size() == 1) {
+                        const auto retained = std::find_if(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
+                            [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; });
+                        if (retained != finalTab->namedRanges.end() && retained->expect && !retained->create) {
+                            try {
+                                const auto expected = lens::namedRangeExpected(*finalTab, *retained);
+                                const auto predicted = predictedRanges.size() == 1 ?
+                                    predictedRanges[0] : std::nullopt;
+                                tracked = expected && predicted && expected->start == predicted->start &&
+                                    expected->end == predicted->end;
+                            } catch (const model::CoreError&) {
+                                add(GuardFinding{
+                                    .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                                    .message = "cannot establish named range edges in unsupported or hidden content",
+                                    .tabId = tab.tabId,
+                                });
+                            }
+                        }
+                    }
+                    for (const auto& d : deletions) {
+                        if (d.tabId == tab.tabId && d.range.start < r.end && d.range.end > r.start) {
+                            if (!tracked || (d.range.start <= r.start && d.range.end >= r.end)) damaged = true;
+                            tabIndex = d.tabIndex;
+                        }
+                    }
+                    for (const auto& insertion : inserts) {
+                        if (!tracked && insertion.tabId == tab.tabId && insertion.index >= r.start && insertion.index <= r.end) {
+                            damaged = true;
+                        }
+                    }
+                    if (finalTab && std::none_of(finalTab->namedRanges.begin(), finalTab->namedRanges.end(),
+                            [&](const auto& kept) { return kept.namedRangeId == range.namedRangeId; })) damaged = true;
+                    if (damaged) {
+                        add(GuardFinding{
+                            .anchor = range.namedRangeId, .docId = docId, .kind = "namedRange",
+                            .message = "this edit may change or remove named range \"" + range.name + "\"; exact edge tracking is unavailable",
+                            .allowKind = "namedRangeDamage", .tabId = tab.tabId, .tabIndex = tabIndex,
+                        });
                     }
                 }
             }

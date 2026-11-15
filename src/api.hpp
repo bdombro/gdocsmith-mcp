@@ -12,11 +12,14 @@
 #include <algorithm>
 #include <cerrno>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <functional>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <regex>
@@ -245,6 +248,14 @@ inline std::mutex g_auth_mutex;
 inline std::optional<GwsCredentials> g_cached_credentials;
 inline std::optional<CachedToken> g_cached_token;
 
+struct TokenRefresh {
+    std::condition_variable ready;
+    bool complete = false;
+    std::optional<CachedToken> token;
+    std::exception_ptr failure;
+};
+inline std::shared_ptr<TokenRefresh> g_pending_refresh;
+
 inline std::string url_encode(std::string_view sv) {
     return slimr::url_encode(sv);
 }
@@ -255,6 +266,7 @@ inline void token_cache_reset() {
     std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
     detail::g_cached_credentials = std::nullopt;
     detail::g_cached_token = std::nullopt;
+    detail::g_pending_refresh.reset();
 }
 
 inline GwsCredentials gws_credentials_get(GwsRunner runner = nullptr) {
@@ -317,10 +329,16 @@ inline CachedToken access_token_refresh(
     };
 
     HttpCallResponse res;
-    if (transport) {
-        res = transport(req);
-    } else {
-        res = default_curl_transport(req);
+    try {
+        if (transport) {
+            res = transport(req);
+        } else {
+            res = default_curl_transport(req);
+        }
+    } catch (const std::exception& error) {
+        throw std::runtime_error("Google OAuth token refresh failed: " + std::string(error.what()));
+    } catch (...) {
+        throw std::runtime_error("Google OAuth token refresh failed: unknown transport error");
     }
 
     if (res.status != 200) {
@@ -368,14 +386,42 @@ inline std::string valid_access_token_get(
         std::chrono::system_clock::now().time_since_epoch()
     ).count();
 
+    std::shared_ptr<detail::TokenRefresh> refresh;
+    bool leading = false;
     {
         std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
         if (!forceRefresh && detail::g_cached_token.has_value() && detail::g_cached_token->expiresAtMs > nowMs) {
             return detail::g_cached_token->accessToken;
         }
+        if (detail::g_pending_refresh) {
+            refresh = detail::g_pending_refresh;
+        } else {
+            refresh = std::make_shared<detail::TokenRefresh>();
+            detail::g_pending_refresh = refresh;
+            leading = true;
+        }
     }
 
-    return access_token_refresh(std::nullopt, transport, runner).accessToken;
+    if (leading) {
+        try {
+            auto token = access_token_refresh(std::nullopt, transport, runner);
+            std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
+            refresh->token = std::move(token);
+            refresh->complete = true;
+            if (detail::g_pending_refresh == refresh) detail::g_pending_refresh.reset();
+        } catch (...) {
+            std::lock_guard<std::mutex> lock(detail::g_auth_mutex);
+            refresh->failure = std::current_exception();
+            refresh->complete = true;
+            if (detail::g_pending_refresh == refresh) detail::g_pending_refresh.reset();
+        }
+        refresh->ready.notify_all();
+    }
+
+    std::unique_lock<std::mutex> lock(detail::g_auth_mutex);
+    refresh->ready.wait(lock, [&refresh] { return refresh->complete; });
+    if (refresh->failure) std::rethrow_exception(refresh->failure);
+    return refresh->token->accessToken;
 }
 
 /// Parses and formats Google Workspace / HTTP errors into actionable messages
@@ -613,6 +659,14 @@ struct ImagesUploadResult {
     std::string documentId;
 };
 
+class ImagesUploadError : public std::runtime_error {
+public:
+    std::string documentId;
+
+    ImagesUploadError(std::string message, std::string id)
+        : std::runtime_error(std::move(message)), documentId(std::move(id)) {}
+};
+
 /// An image's type and pixel dimensions from its header bytes; returns nullopt when not PNG, GIF, or JPEG.
 inline std::optional<DocxImageInfo> image_info(std::string_view bytes) {
     auto u8 = [](char c) -> uint8_t { return static_cast<uint8_t>(c); };
@@ -817,7 +871,14 @@ inline std::string docx_build(const std::string& body, const std::vector<DocxIma
     return zip_store(files);
 }
 
-// Low-level authenticated fetch helper with 401 retry
+class GoogleApiError : public std::runtime_error {
+public:
+    long status;
+    GoogleApiError(long code, const std::string& message)
+        : std::runtime_error(message), status(code) {}
+};
+
+// Raw authenticated fetch with one 401 refresh; returns the final response for every status
 inline HttpCallResponse google_api_fetch(
     HttpTransport transport,
     GwsRunner runner,
@@ -849,10 +910,23 @@ inline HttpCallResponse google_api_fetch(
         res = fn(req);
     }
 
-    if (res.status >= 400) {
-        throw std::runtime_error(gws_error_format(res.body, targetId));
-    }
+    return res;
+}
 
+// Checked authenticated fetch: throws GoogleApiError for any status >= 400
+inline HttpCallResponse google_api_fetch_checked(
+    HttpTransport transport,
+    GwsRunner runner,
+    const std::string& url,
+    const std::string& method = "GET",
+    const std::string& body = "",
+    const std::map<std::string, std::string>& customHeaders = {},
+    const std::string& targetId = ""
+) {
+    auto res = google_api_fetch(transport, runner, url, method, body, customHeaders, targetId);
+    if (res.status >= 400) {
+        throw GoogleApiError(res.status, gws_error_format(res.body, targetId));
+    }
     return res;
 }
 
@@ -862,7 +936,7 @@ struct FetchRetryOptions {
     int retries = 3;
 };
 
-// HTTP fetch wrapper providing automatic retries and exponential backoff on transient errors (429, 5xx)
+// Raw read fetch with retries and exponential backoff on 429/5xx (except 501) and transient thrown errors; returns the final response for every status
 inline HttpCallResponse fetch_with_retry(
     HttpTransport transport,
     GwsRunner runner,
@@ -907,10 +981,6 @@ inline HttpCallResponse fetch_with_retry(
                 continue;
             }
 
-            if (res.status >= 400) {
-                throw std::runtime_error(gws_error_format(res.body, targetId));
-            }
-
             return res;
         } catch (const std::exception& e) {
             lastError = e.what();
@@ -945,6 +1015,28 @@ public:
     explicit DocsClient(HttpTransport t = nullptr, GwsRunner r = nullptr)
         : transport(t), runner(r) {}
 
+    std::string imageDownload(const std::string& contentUri) {
+        static const std::regex googleImage(
+            R"(^https://(?:[A-Za-z0-9-]+\.)*googleusercontent\.com/[^\s]*$)");
+        if (!std::regex_match(contentUri, googleImage)) {
+            throw model::CoreError("unsupportedSyntax", "Image downloads require a Google-hosted HTTPS content URI.");
+        }
+        HttpCall request;
+        request.url = contentUri;
+        HttpCallResponse response;
+        try {
+            response = transport ? transport(request) : default_curl_transport(request);
+        } catch (const std::exception&) {
+            // Transport diagnostics may contain the credential-bearing URL.
+            throw model::CoreError("operationFailed", "Image download transport failed.");
+        }
+        if (response.status < 200 || response.status >= 300) {
+            throw model::CoreError("operationFailed",
+                                  "Image download failed (HTTP " + std::to_string(response.status) + ").");
+        }
+        return response.body;
+    }
+
     /// Executes an arbitrary gws CLI command.
     std::string run(const std::vector<std::string>& args) {
         if (runner) return runner(args);
@@ -958,6 +1050,9 @@ public:
                           "?includeTabsContent=true&suggestionsViewMode=SUGGESTIONS_INLINE";
 
         auto res = fetch_with_retry(transport, runner, url, "GET", "", {}, cleanId, FetchRetryOptions{.retries = 3});
+        if (res.status >= 400) {
+            throw std::runtime_error(gws_error_format(res.body, cleanId));
+        }
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) {
             throw std::runtime_error("Invalid JSON response from Google Docs getDocument");
@@ -971,7 +1066,7 @@ public:
         slimr::Json body = slimr::Json::object_t{{"title", title}};
         std::string bodyStr = slimr::write_json(body);
 
-        auto res = google_api_fetch(transport, runner, url, "POST", bodyStr, {{"Content-Type", "application/json"}});
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", bodyStr, {{"Content-Type", "application/json"}});
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) {
             throw std::runtime_error("Invalid JSON response from Google Docs createDocument");
@@ -987,7 +1082,7 @@ public:
         if (folderId.has_value() && !folderId->empty() && !docId.empty()) {
             std::string driveUrl = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(docId) +
                                    "?addParents=" + detail::url_encode(*folderId) + "&supportsAllDrives=true";
-            google_api_fetch(transport, runner, driveUrl, "PATCH", "{}", {{"Content-Type", "application/json"}}, docId);
+            google_api_fetch_checked(transport, runner, driveUrl, "PATCH", "{}", {{"Content-Type", "application/json"}}, docId);
         }
         return docObj;
     }
@@ -1007,7 +1102,7 @@ public:
         }
         std::string bodyStr = slimr::write_json(body);
 
-        auto res = google_api_fetch(transport, runner, url, "POST", bodyStr, {{"Content-Type", "application/json"}}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", bodyStr, {{"Content-Type", "application/json"}}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) {
             throw std::runtime_error("Invalid JSON response from Google Docs batchUpdate");
@@ -1034,7 +1129,7 @@ public:
     /// userEmailGet: gets authenticated user's email
     std::string userEmailGet() {
         std::string url = "https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)";
-        auto res = google_api_fetch(transport, runner, url);
+        auto res = google_api_fetch_checked(transport, runner, url);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (parsed && parsed->contains("user") && (*parsed)["user"].contains("emailAddress") && (*parsed)["user"]["emailAddress"].is_string()) {
             return (*parsed)["user"]["emailAddress"].get<std::string>();
@@ -1047,7 +1142,7 @@ public:
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "?supportsAllDrives=true&fields=" + detail::url_encode(fields);
-        auto res = google_api_fetch(transport, runner, url, "GET", "", {}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) throw std::runtime_error("Invalid JSON from Drive getFile");
         return *parsed;
@@ -1093,7 +1188,7 @@ public:
                 q += "&pageToken=" + detail::url_encode(pageToken);
             }
             std::string url = "https://www.googleapis.com/drive/v3/files?" + q;
-            auto res = google_api_fetch(transport, runner, url, "GET");
+            auto res = google_api_fetch_checked(transport, runner, url, "GET");
             auto parsed = slimr::parse_json<slimr::Json>(res.body);
             if (!parsed) throw std::runtime_error("Invalid JSON from Drive listFiles");
 
@@ -1137,7 +1232,7 @@ public:
         if (folderId.has_value() && !folderId->empty()) {
             body["parents"] = slimr::Json::array_t{*folderId};
         }
-        auto res = google_api_fetch(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}});
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}});
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) throw std::runtime_error("Invalid JSON from Drive createFile");
         return *parsed;
@@ -1156,7 +1251,7 @@ public:
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/copy?supportsAllDrives=true";
         slimr::Json body = slimr::Json::object_t{{"name", name}};
-        auto res = google_api_fetch(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) throw std::runtime_error("Invalid JSON from Drive copyFile");
         return *parsed;
@@ -1166,7 +1261,7 @@ public:
     slimr::Json updateFile(const std::string& fileId, const slimr::Json& body) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "?supportsAllDrives=true";
-        auto res = google_api_fetch(transport, runner, url, "PATCH", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "PATCH", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) throw std::runtime_error("Invalid JSON from Drive updateFile");
         return *parsed;
@@ -1176,7 +1271,7 @@ public:
     void deleteFile(const std::string& fileId) {
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "?supportsAllDrives=true";
-        google_api_fetch(transport, runner, url, "DELETE", "", {}, cleanId);
+        google_api_fetch_checked(transport, runner, url, "DELETE", "", {}, cleanId);
     }
 
     /// listPermissions: lists permissions on a file
@@ -1184,7 +1279,7 @@ public:
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "/permissions?supportsAllDrives=true&pageSize=100&fields=" + detail::url_encode(fields);
-        auto res = google_api_fetch(transport, runner, url, "GET", "", {}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         std::vector<DrivePermission> result;
         if (parsed && parsed->contains("permissions") && (*parsed)["permissions"].is_array()) {
@@ -1226,8 +1321,7 @@ public:
         if (permission.emailAddress.has_value()) body["emailAddress"] = *permission.emailAddress;
         if (permission.domain.has_value()) body["domain"] = *permission.domain;
 
-        auto res = google_api_fetch(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);
-        auto parsed = slimr::parse_json<slimr::Json>(res.body);
+        auto res = google_api_fetch_checked(transport, runner, url, "POST", slimr::write_json(body), {{"Content-Type", "application/json"}}, cleanId);        auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed) throw std::runtime_error("Invalid JSON from Drive createPermission");
         const auto& item = *parsed;
         return DrivePermission{
@@ -1245,7 +1339,7 @@ public:
         std::string cleanId = document_id(fileId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) +
                           "/permissions/" + detail::url_encode(permissionId) + "?supportsAllDrives=true";
-        google_api_fetch(transport, runner, url, "DELETE", "", {}, cleanId);
+        google_api_fetch_checked(transport, runner, url, "DELETE", "", {}, cleanId);
     }
 
     /// commentsList: paginates and decodes HTML entities in quoted content
@@ -1260,7 +1354,7 @@ public:
                 q += "&pageToken=" + detail::url_encode(pageToken);
             }
             std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/comments?" + q;
-            auto res = google_api_fetch(transport, runner, url, "GET", "", {}, cleanId);
+            auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
             auto parsed = slimr::parse_json<slimr::Json>(res.body);
             if (!parsed) throw std::runtime_error("Invalid JSON from commentsList");
 
@@ -1354,7 +1448,7 @@ public:
         if (body) {
             headers["Content-Type"] = "application/json";
         }
-        auto res = google_api_fetch(transport, runner, url, method, bodyStr, headers, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, method, bodyStr, headers, cleanId);
         if (method == "DELETE" || res.body.empty()) {
             return slimr::Json::object_t{};
         }
@@ -1480,18 +1574,19 @@ public:
             {"Content-Type", "multipart/related; boundary=" + boundary}
         };
 
-        auto res = google_api_fetch(transport, runner, uploadUrl, "POST", body, headers);
+        auto res = google_api_fetch_checked(transport, runner, uploadUrl, "POST", body, headers);
         auto parsed = slimr::parse_json<slimr::Json>(res.body);
         if (!parsed || !parsed->contains("id") || !(*parsed)["id"].is_string()) {
             throw std::runtime_error("Invalid response from Drive imagesUpload");
         }
         std::string documentId = (*parsed)["id"].get<std::string>();
+        try {
 
         // Read back document
         std::string readUrl = "https://docs.googleapis.com/v1/documents/" + detail::url_encode(documentId) + "?includeTabsContent=true";
         HttpCallResponse readRes;
         try {
-            readRes = google_api_fetch(transport, runner, readUrl, "GET", "", {}, documentId);
+            readRes = google_api_fetch_checked(transport, runner, readUrl, "GET", "", {}, documentId);
         } catch (...) {
             throw;
         }
@@ -1568,13 +1663,18 @@ public:
             .contentUris = std::move(contentUris),
             .documentId = std::move(documentId)
         };
+        } catch (const std::exception& error) {
+            throw ImagesUploadError(error.what(), documentId);
+        } catch (...) {
+            throw ImagesUploadError("The uploaded image document could not be read.", documentId);
+        }
     }
 
     /// textExport: plain text export stripped of BOM and \r\n normalized to \n
     std::string textExport(const std::string& documentId) {
         std::string cleanId = document_id(documentId);
         std::string url = "https://www.googleapis.com/drive/v3/files/" + detail::url_encode(cleanId) + "/export?mimeType=text%2Fplain";
-        auto res = google_api_fetch(transport, runner, url, "GET", "", {}, cleanId);
+        auto res = google_api_fetch_checked(transport, runner, url, "GET", "", {}, cleanId);
         std::string text = std::move(res.body);
 
         // Strip UTF-8 BOM if present

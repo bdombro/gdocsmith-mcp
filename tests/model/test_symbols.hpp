@@ -57,6 +57,7 @@ TEST_CASE("symbols - set merges equal-style characters into canonical runs") {
     CHECK(p.inlines[0].text == "ab");
     CHECK(styleEqual(p.inlines[0].style, boldStyle));
     CHECK(p.inlines[1].text == "c");
+    CHECK(p.inlines[1].style == make_json_object());
 }
 
 TEST_CASE("symbols - suggestion metadata splits runs") {

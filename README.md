@@ -7,7 +7,35 @@
  ▀▀                                        
 ```
 
-An MCP server and CLI for Google Docs editing through local, extended Markdown + YAML files. Agents edit content; gdocsmith calculates minimal paragraph- and character-level changes, guards protected content, revision-locks writes, and verifies the result.
+An MCP server and CLI for Google Docs workflows through local, extended Markdown + YAML files.
+
+> **Remote import enabled:** The public factory defaults to
+> `remoteImportEnabled = true`. Import loads live state, validates revisions,
+> applies guarded transactions, verifies readback and returns a fresh export.
+> The earlier bounded safe-editing implementation passed scoped review,
+> Debug/Release (308 tests / 5,302 assertions each), lint/MCP and a synthetic
+> live create/body-edit/export/no-op/stale-refusal/delete workflow with cleanup.
+> Those are historical receipts, not validation of the current parity changes.
+> **Bounded qualification completed:** fresh Debug/Release each passed 398/398
+> cases and 6,521/6,521 assertions, zero failures/skips. Shared checks passed
+> 151/151 original and 172/172 target assertions, with 70/70 controls detected.
+> App/adapter builds, their lint and isolated MCP passes were retained only after
+> exact input/binary identity verification. Broader Node parity and release
+> acceptance are not implied: 250 raw differing leaves remain unaccepted.
+> `just parity <run_id> <node>` runs the offline Node-vs-C++ engine comparison
+> against a prebuilt ParityChecks adapter with an unused run ID and an explicit
+> Node binary; any raw difference, missing case or control exits 1.
+
+> **Export and editing boundary:** Export includes rich body text, tables and
+> object identities, settings, styles, merge topology and actual suggestion
+> before/after context. Independently reviewed lens/atom changes now cover rich
+> declarations, directional merges, supported atom intent and native internal
+> links. Auth, dropdown, new-tab and rollback-boundary scopes also have independent
+> acceptance; this is not universal backend certification. Fresh runtime,
+> raw differences, foreign-error metadata and full source-test assertion transfer
+> remain open. See [features and limits](docs/features.md) for precise residuals.
+> Temporary URLs are stripped; export is not a standalone restorable backup.
+> The earlier live smoke did not cover rich non-body, image or review mutations.
 
 Compared with generic Google connectors and raw API wrappers, the file-based workflow gives agents room to do complex edits while keeping changes focused: less context bloat, fewer round trips, and fewer accidental overwrites.
 
@@ -21,12 +49,12 @@ Compared with generic Google connectors and raw API wrappers, the file-based wor
 
 After setup, ask your agent:
 
-> Export this Google Doc, tighten the introduction, then import the focused edit after my approval.
+> Export this Google Doc, make the requested supported edits, then import the file and report verification and warnings.
 
 ## Features
 
-- Export documents into readable, editable Markdown, including tabs, comments, and suggestions.
-- Import focused edits with revision checks, explicit safety guards, and post-write verification.
+- Export rich Markdown with identities and review context; edit supported rich intent with explicit guards and unsupported-operation refusals.
+- Import supported changes through revision-locked, guarded transactions and authoritative readback; preserve intended edits during failure recovery.
 - Copy complex documents losslessly when unsupported objects must be preserved.
 - Small footprint: a standalone ARM64/x64 binary exposing CLI, stdio MCP, and Streamable HTTP (`127.0.0.1:8087`); no Node/V8 runtime.
 
@@ -107,7 +135,7 @@ applies to every transport.
 1. **Lossless copy (when needed):** Call `file` with `action: "copy"` when duplicating a document that contains opaque/unsupported objects that must be preserved verbatim.
 2. **Export:** Call `export` with a document ID or Google Docs URL. Read or search the returned Markdown file (`exportPath`).
 3. **Edit locally:** Modify the Markdown file using your standard file-editing tools.
-4. **Import:** Call `import` with the absolute file path. Check `status`, `writeState`, `verification`, `warnings`, and `errors`, and use the newly returned `exportPath` as the base for any subsequent edits. Unchanged imports are verified no-ops (`0` API write requests).
+4. **Import:** Pass the absolute edited path to `import`; inspect `status`, `writeState`, `verification` and warnings. Use the returned working file after verified success. The supported subset is bounded, not arbitrary Markdown recreation; see the [agent guide](docs/agent-guide.md).
 
 ## Tools & CLI Commands
 
@@ -115,8 +143,8 @@ Every tool is exposed over MCP (`gdocsmith-mcp mcp` or `gdocsmith-mcp http`) and
 
 | Tool | Mutating | Description |
 | --- | --- | --- |
-| `export` | No | Export a Google Doc by ID or URL into `<workDir>/exports/<docId>/<revisionId>/` (`base.md`, `next.md`, `comments.yaml`, `suggestions.yaml`), preserving any unimported local edits in `next.md`. |
-| `import` | Yes | Reconcile an edited Markdown file against its revision-locked `base.md`, enforce safety guards (`allow` flags), apply minimal `batchUpdate` + Drive comment operations, and write a fresh post-import export. |
+| `export` | No | Export a Google Doc by ID or URL into `<workDir>/exports/<docId>/<revisionId>/` (`export.md`, `export.orig.md`); review blocks are in Markdown. Preserve unimported local edits in `export.md`. |
+| `import` | Yes | Validate local/live revision and supported intent, plan/guard, apply transactions, verify readback and re-export; report partial/unknown outcomes honestly. |
 | `file` | Yes | Manage Drive files: `copy`, `trash`, `delete` (requires `allow: ["delete"]`), or manage sharing permissions (`grant` requires `allow: ["share"]`; public `anyone`, `domain`, and ownership transfers are unconditionally refused). |
 | `status` | No | Returns plugin version (`4.0.0`) and active workspace storage directory without calling Google APIs. |
 
@@ -126,8 +154,8 @@ Every tool is exposed over MCP (`gdocsmith-mcp mcp` or `gdocsmith-mcp http`) and
 # Export a Google Doc to local Markdown
 ./build/bin/gdocsmith-mcp export '{"doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"}'
 
-# Import an edited Markdown file back into Google Docs
-./build/bin/gdocsmith-mcp import '{"file":"/absolute/path/to/workspace/.gdocsmith/exports/example-doc/rev1/next.md"}'
+# Import supported local edits with revision locking and readback
+./build/bin/gdocsmith-mcp import '{"file":"/absolute/path/to/workspace/.gdocsmith/exports/example-doc/rev1/export.md"}'
 
 # Copy a Google Doc losslessly in Drive
 ./build/bin/gdocsmith-mcp file '{"action":"copy","doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms","title":"Copy of RFC"}'
@@ -160,10 +188,12 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 | Native C++26 | 1.5 ms |
 ```
 
-- **Document creation:** Set `doc: null` and `revision: null` in the YAML frontmatter to create a new Google Doc on `import`.
+- **Document creation:** `doc: null` / `revision: null` requests a new document; pass `newDocStyleBaseline: "generic"` for recreation/copy/split intent or `"account"` for new content. Unsupported recreation still refuses.
+- **Format versus capability:** Syntax recognition does not enable unsupported mutations.
 - **Tabs (`::tab{...}`):** Existing tabs are addressed by `id` (`t.0`, `t.1`, …), not title. Editing `title="..."` renames the tab; `id=""` creates a new tab at that position; adding `delete` to the directive deletes the tab (when `allow` permits).
-- **Rich inline atoms:** Supports inline images (`![alt](url)`), person chips (`:person{email="..." name="..."}`), date chips (`:date{...}`), rich link chips (`:richLink{...}`), horizontal rules (`---`), and page breaks.
-- **Review artifacts:** Open Drive comments and pending Docs suggestions are exported alongside the Markdown into `comments.yaml` and `suggestions.yaml` via `yaml.hpp`.
+- **Rich inline atoms:** Reviewed helpers support person/date/rich-link/dropdown and safe image recreation intent; opaque objects and new/moved hidden chips remain restricted. Public provider/upload/readback acceptance is separate; see [images](docs/images.md).
+- **Review artifacts:** Comment and suggestion blocks follow tabs. Nonconflicting edits beside retained deletion/style suggestions are lens-reviewed; protected spans remain guarded. Explicit suggestion-rejection lifecycle is still under engine review.
+- **File compatibility:** The lens recognizes native `4.0.0`, source `3.0.20` and legacy integer `1` envelopes. Version recognition and selected strict-parser checks do not certify arbitrary raw Node-file interchange.
 
 ## Safety Guards, Storage & Concurrency
 
@@ -171,7 +201,8 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
   - `commentChanges` — resolving/deleting/editing comments or removing text anchored by an open comment
   - `brokenLink`, `namedRangeDamage`, `lossyImageMove`, `lossyListRebuild`
   - `delete` (on `file` permanent deletion) and `share` (on `file` permission grants; `anyone`/`domain`/`owner` grants are always blocked)
-- **Revision locking (`staleBase`):** If the remote Google Doc revision has advanced since `base.md` was exported, `import` refuses to overwrite concurrent changes and exports the latest remote revision so edits can be cleanly reapplied.
+- **Import safety:** The default-enabled pipeline checks live revisions, guards and readback through transactions, with partial/unknown accounting. `allow` waives only classified findings, never unsupported operations, ambiguous identities, missing safe image sources or protected review conflicts.
+- **Recovery:** Never retry creates, copies or comments blindly after an unknown outcome. Inspect authoritative cloud state and reapply only outstanding intent to a fresh export; do not overwrite a revision to bypass a conflict. An edited working copy is not authoritative readback.
 - **Work directory precedence (`src/engine/artifacts.hpp`):**
   1. `$GDOCSMITH_WORK_DIR` if set
   2. `<workspace>/.gdocsmith` (created `0700` with a `0600` `.gitignore` containing `*\n`)
@@ -206,7 +237,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
   plugin's supported private configuration file; inspect
   `/opt/homebrew/var/log/` for errors.
 - **Google authentication fails:** verify gws and its selected profile in the server environment.
-- **Import reports staleBase:** reapply edits to the fresh export; do not remove revision metadata or bypass the guard.
+- **Import fails / reports staleBase:** keep local edits. Import refuses stale revisions and can return a fresh recovery export. Read `status`, `writeState` and `verification` separately; failure does not prove that no writes landed.
 - **Agent cannot open exportPath:** this workflow requires filesystem access to the server's work directory.
 - **Source build cannot find vcpkg or slimr ports:** load the development
   environment, bootstrap vcpkg, and register both slimr links and the pinned

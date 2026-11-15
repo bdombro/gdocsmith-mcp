@@ -1,19 +1,40 @@
 # Images
 
-Images (`:image[label]{id=…}`, the id from the tail of Google's inline object id) are identities, not locations. Another document's image is `src="gdoc:<doc id>/<image id>"`.
+`imagesDownload: true` downloads all available inline images; an array selects
+full Google inline-object IDs as emitted in exported tokens. `images` maps IDs
+to local PNG/JPEG/GIF files; `imagesDir` is present when files were downloaded.
+Unknown IDs, unsupported bytes and download failures are errors, not successful
+empty results. An empty selection returns an empty map.
 
-| Token placement | Result |
-| --- | --- |
-| Untouched | Kept as is |
-| Moved within its tab or to another tab, copied to another tab, or copied from another document's export | Recreated from a fresh `contentUri` at its exact size; a move then deletes the original |
-| Same, but not faithfully recreatable | A copy lands with a warning naming the lost properties; a move refuses without `allow: ["lossyImageMove"]` |
-| Removed | Deleted, with no approval or warning |
-| `![](https://…)` | Public-URL insert (Google fetches it) |
-| `![](path)`, `file://`, `~`, or `http://` | Uploaded: import reads (or downloads) the image, uploads every one through one throwaway converted .docx titled `[gdocsmith upload]`, inserts each from its `contentUri`, then deletes the throwaway. Only after planning and guards pass, so a refused import uploads nothing |
+Directories are private and files are `0600`; filenames use a SHA-256 ID digest.
+Downloads use Google-hosted HTTPS content URLs without forwarding OAuth headers.
+Bearer content URLs are not written into Markdown, filenames or error messages.
+No live Google download smoke test is claimed.
 
-- One resolver (`src/core/lens/images.ts`) decides every image write and holds the fidelity check. Import reads each source document once per import, since `contentUri` expires after about 30 minutes.
-- Faithful means no crop, rotation, rendered border, alt title or description, or brightness, contrast or transparency adjustment. `insertInlineImage` can't set any of them. The natural aspect ratio isn't checked: the API doesn't expose it.
-- Rejecting a suggested image deletion inserts a plain copy and deletes the original, under the same fidelity rule. Rejecting a suggested image insertion just deletes it.
-- Uploads accept PNG, JPEG and GIF (checked by their bytes) up to 50 MB and 25 megapixels. Google re-encodes them and stores at most 2048 px per side (import warns). Alt text can't be set.
-- `export` with `imagesDownload: true` saves each Drive-hosted image to `images/<tab id>/<key>.<ext>` in the export folder (`imagesDir`). `contentUri`s are bearer URLs and never written anywhere.
-- Drawings, charts, equations and positioned objects can't be recreated; leave their tokens in place. Resizing and layout belong to the Google Docs UI.
+## Editing boundary
+
+Public import is enabled by default. Independently reviewed atom helpers support
+safe image recreation intent, preserve identity distinctions and refuse
+uncreatable sources. Public upload, replacement, cross-document copy/move,
+provider-created IDs, cleanup and authoritative readback remain engine/integration
+acceptance gates. The historical synthetic live smoke did not exercise images;
+current bounded qualification passed, not broader parity/release acceptance.
+Editing a downloaded file alone
+changes nothing remotely.
+
+The internal image resolver/guard classifies crop, adjustments, rotation,
+rendered border and alt metadata recreation losses. Classified moves need
+`allow: ["lossyImageMove"]`; unknown/ambiguous moves refuse without a waiver.
+That guard is not certification of every public move/provider workflow.
+An authoritative source-only HTTPS fallback is local to recreation, not a
+general copy resolver. A present invalid fresh URI must not be bypassed using
+another source. Unknown/missing safe sources remain unwaivable.
+
+Drawings, charts, equations and positioned objects cannot be recreated through
+this workflow. Use Drive `file` action `copy` when existing opaque content must
+be preserved; do not recreate it from Markdown. Reviewed layout intent does not
+imply editable crop/rotation/border/alt metadata. Export carries document/review context but does not
+support recreating it as a standalone restorable backup.
+
+See the [agent guide](agent-guide.md) for guards, outcome fields and unknown-write
+recovery. Offline tests do not establish live Google behavior.

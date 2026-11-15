@@ -59,32 +59,38 @@ struct TransactionResult {
     std::vector<PhaseReport> phases;
     bool refused = false;
     std::vector<DocVerification> verification;
+    std::map<std::string, slimr::Json> documents;
 };
 
 template <typename ClientType>
 inline std::string clientCreateDocument(ClientType* client, const std::string& title) {
+    if (!client) throw model::CoreError("operationFailed", "A Docs client is required before creating a document.");
     if constexpr (requires { client->createDocument(title); }) {
         auto res = client->createDocument(title);
         if constexpr (std::is_same_v<std::decay_t<decltype(res)>, std::string>) {
+            if (res.empty()) throw model::CoreError("operationFailed", "Document creation returned an empty ID; its outcome is unknown.");
             return res;
         } else {
-            if (res.contains("documentId") && res["documentId"].is_string()) {
+            if (res.contains("documentId") && res["documentId"].is_string() &&
+                !res["documentId"].template get<std::string>().empty()) {
                 return res["documentId"].template get<std::string>();
             }
-            if (res.contains("id") && res["id"].is_string()) {
+            if (res.contains("id") && res["id"].is_string() && !res["id"].template get<std::string>().empty()) {
                 return res["id"].template get<std::string>();
             }
-            return "";
+            throw model::CoreError("operationFailed", "Document creation returned no document ID; its outcome is unknown.");
         }
     } else if constexpr (requires { client->create_document(title); }) {
         auto res = client->create_document(title);
         if constexpr (std::is_same_v<std::decay_t<decltype(res)>, std::string>) {
+            if (res.empty()) throw model::CoreError("operationFailed", "Document creation returned an empty ID; its outcome is unknown.");
             return res;
         } else {
-            if (res.contains("documentId") && res["documentId"].is_string()) {
+            if (res.contains("documentId") && res["documentId"].is_string() &&
+                !res["documentId"].template get<std::string>().empty()) {
                 return res["documentId"].template get<std::string>();
             }
-            return "";
+            throw model::CoreError("operationFailed", "Document creation returned no document ID; its outcome is unknown.");
         }
     } else {
         throw std::runtime_error("this client can't create documents");
@@ -97,16 +103,24 @@ inline slimr::Json clientGetDocument(ClientType* client, const std::string& docI
         auto res = client->getDocument(docId);
         if constexpr (std::is_same_v<std::decay_t<decltype(res)>, std::string>) {
             auto parsed = slimr::parse_json<slimr::Json>(res);
-            return parsed ? *parsed : slimr::Json{};
+            if (!parsed || !parsed->is_object()) {
+                throw model::CoreError("operationFailed", "Invalid document read response.");
+            }
+            return *parsed;
         } else {
+            if (!res.is_object()) throw model::CoreError("operationFailed", "Invalid document read response.");
             return res;
         }
     } else if constexpr (requires { client->get_document(docId); }) {
         auto res = client->get_document(docId);
         if constexpr (std::is_same_v<std::decay_t<decltype(res)>, std::string>) {
             auto parsed = slimr::parse_json<slimr::Json>(res);
-            return parsed ? *parsed : slimr::Json{};
+            if (!parsed || !parsed->is_object()) {
+                throw model::CoreError("operationFailed", "Invalid document read response.");
+            }
+            return *parsed;
         } else {
+            if (!res.is_object()) throw model::CoreError("operationFailed", "Invalid document read response.");
             return res;
         }
     } else if constexpr (requires { client->get_doc(docId); }) {
@@ -128,17 +142,36 @@ inline slimr::Json clientBatchUpdate(
     const std::vector<slimr::Json>& requests,
     const std::optional<std::string>& revision = std::nullopt
 ) {
-    std::string respStr;
-    if constexpr (requires { client->batchUpdate(docId, requests, revision); }) {
-        auto r = client->batchUpdate(docId, requests, revision);
-        respStr = r.is_string() ? r.template get<std::string>() : slimr::write_json(r);
-    } else if constexpr (requires { client->batch_update(docId, requests, revision); }) {
-        respStr = client->batch_update(docId, requests, revision);
-    } else {
-        throw std::runtime_error("this client can't batchUpdate");
+    revisionRequired(revision);
+    if (!client) throw model::CoreError("operationFailed", "A Docs client is required before sending edits.");
+    if constexpr (!(requires { client->batchUpdate(docId, requests, revision); }) &&
+                  !(requires { client->batch_update(docId, requests, revision); })) {
+        throw model::CoreError("operationFailed", "This client cannot batchUpdate.");
     }
-    auto parsed = slimr::parse_json<slimr::Json>(respStr);
-    return parsed ? *parsed : slimr::Json{};
+    std::string respStr;
+    try {
+        if constexpr (requires { client->batchUpdate(docId, requests, revision); }) {
+            auto r = client->batchUpdate(docId, requests, revision);
+            respStr = r.is_string() ? r.template get<std::string>() : slimr::write_json(r);
+        } else if constexpr (requires { client->batch_update(docId, requests, revision); }) {
+            respStr = client->batch_update(docId, requests, revision);
+        } else {
+            throw std::runtime_error("this client can't batchUpdate");
+        }
+        auto parsed = slimr::parse_json<slimr::Json>(respStr);
+        if (!parsed || !parsed->is_object()) {
+            throw model::CoreError("operationFailed", "Invalid batchUpdate response; the write outcome is unknown.");
+        }
+        responseRevision(*parsed);
+        return *parsed;
+    } catch (const std::exception& error) {
+        TransactionError failure("create", error.what());
+        if (!revisionConflictIs(error.what()) && !requestIndexOfError(error.what())) {
+            failure.partial.unknown.push_back(docId);
+            failure.unknownRequestCount = static_cast<int>(requests.size());
+        }
+        throw failure;
+    }
 }
 
 inline std::map<std::string, std::string> tabIdMap(const Ledger& ledger, const std::string& docId) {
@@ -160,7 +193,7 @@ inline std::vector<std::string> footnoteOrder(const model::TabModel& tab) {
                 if (inlineItem.kind == "atom" && inlineItem.type == "footnoteRef") {
                     std::string id;
                     if (inlineItem.create) {
-                        id = "new_fn_" + inlineItem.key;
+                        id = "new:fn:" + inlineItem.key;
                     } else if (inlineItem.raw.has_value() && inlineItem.raw->is_object() &&
                                inlineItem.raw->contains("footnoteReference") &&
                                (*inlineItem.raw)["footnoteReference"].is_object() &&
@@ -248,7 +281,72 @@ inline VerificationResult verify(
     const std::optional<std::string>& revision,
     const VerifyResolvedOptions& resolved
 ) {
-    return verifyDoc(doc.docId, doc.input.final, json, revision, resolved.tabIds);
+    auto expected = doc.input.final;
+    auto resolveTab = [&](auto& self, model::TabModel& tab) -> void {
+        auto blocks = [&](auto& visit, std::vector<model::Block>& container) -> void {
+            for (auto& block : container) {
+                if (block.is_table()) {
+                    for (auto& row : block.table->rows)
+                        for (auto& cell : row.cells) visit(visit, cell.blocks);
+                } else if (block.is_paragraph()) {
+                    for (auto& item : block.paragraph->inlines) {
+                        if (item.style.contains("link") && item.style["link"].is_object()) {
+                            auto& link = item.style["link"];
+                            if (link.contains("heading") && link["heading"].is_object() &&
+                                link["heading"].contains("key") && link["heading"]["key"].is_string()) {
+                                const auto key = link["heading"]["key"].template get<std::string>();
+                                auto found = resolved.headingIds.find(key);
+                                if (found == resolved.headingIds.end()) {
+                                    throw model::CoreError("internal", "A pending heading link was not resolved before verification.");
+                                }
+                                const auto heading = link["heading"];
+                                const auto targetDoc = heading.contains("docId") && heading["docId"].is_string()
+                                    ? heading["docId"].template get<std::string>() : doc.docId;
+                                const auto targetTab = heading.contains("tabId") && heading["tabId"].is_string()
+                                    ? heading["tabId"].template get<std::string>() : tab.tabId;
+                                const auto realTab = resolved.tabIds.contains(targetTab)
+                                    ? resolved.tabIds.at(targetTab) : targetTab;
+                                if (targetDoc == doc.docId) {
+                                    link = slimr::Json::object_t{{"heading", slimr::Json::object_t{
+                                        {"id", found->second}, {"tabId", realTab}}}};
+                                } else {
+                                    link = slimr::Json::object_t{{"url", "https://docs.google.com/document/d/" +
+                                        targetDoc + "/edit?tab=" + realTab + "#heading=" + found->second}};
+                                }
+                            }
+                        }
+                        if (item.raw && item.raw->contains("footnoteReference") &&
+                            (*item.raw)["footnoteReference"].is_object()) {
+                            auto& ref = (*item.raw)["footnoteReference"];
+                            if (ref.contains("footnoteId") && ref["footnoteId"].is_string()) {
+                                auto found = resolved.footnoteIds.find(ref["footnoteId"].template get<std::string>());
+                                if (found != resolved.footnoteIds.end()) ref["footnoteId"] = found->second;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        blocks(blocks, tab.blocks);
+        for (auto& segment : tab.segments) {
+            if (resolved.footnoteIds.contains(segment.id)) segment.id = resolved.footnoteIds.at(segment.id);
+            if (segment.tab) {
+                segment.tab = std::make_shared<model::TabModel>(*segment.tab);
+                self(self, *segment.tab);
+            }
+        }
+    };
+    for (auto& tab : expected.tabs) resolveTab(resolveTab, tab);
+    std::set<std::string> rebuilt;
+    for (const auto& list : doc.plan.listRebuilds) rebuilt.insert(list.listId);
+    auto result = verifyDoc(doc.docId, expected, json, revision, resolved.tabIds, doc.plan.identityTransfers, rebuilt);
+    if (result.status == "skipped") return result;
+    const auto preservation = verifyNamedRanges(doc.docId, expected, json, doc.plan.contentRequests,
+        resolved.tabIds, doc.approvedNamedRangeLosses.value_or(std::vector<std::string>{}));
+    result.diffs.insert(result.diffs.end(), preservation.diffs.begin(), preservation.diffs.end());
+    if (preservation.status == "mismatch") result.status = "mismatch";
+    else if (result.status == "match" && preservation.status == "inconclusive") result.status = "inconclusive";
+    return result;
 }
 
 /** Requests generated by the links phase. */
@@ -273,7 +371,9 @@ inline LinkRequestsResult linkRequests(
 
     auto finIt = finals.find(doc.docId);
     auto relIt = reloaded.find(doc.docId);
-    if (finIt == finals.end() || relIt == reloaded.end()) return out;
+    if (finIt == finals.end() || relIt == reloaded.end()) {
+        throw model::CoreError("linkTargetNotFound", "A linked document has no authoritative readback.");
+    }
     const model::DocModel& finalDoc = finIt->second;
     const model::DocModel& relDoc = relIt->second;
 
@@ -293,40 +393,90 @@ inline LinkRequestsResult linkRequests(
         }
         return Loc{};
     };
-    auto headingIdAt = [](const model::DocModel& m, const std::string& tabId, int start) -> std::string {
+    auto paragraphAt = [](const model::DocModel& m, const std::string& tabId, int start)
+        -> std::optional<model::ParagraphBlock> {
         for (const auto& tab : m.tabs) {
             if (!tabId.empty() && tab.tabId != tabId) continue;
             for (const auto& block : model::blocksDeep(tab.blocks)) {
                 if (block.is_paragraph() && block.paragraph->origin.has_value() &&
-                    block.paragraph->origin->start == start && block.paragraph->headingId.has_value()) {
-                    return *block.paragraph->headingId;
+                    block.paragraph->origin->start == start) {
+                    return *block.paragraph;
                 }
             }
         }
-        return "";
+        return std::nullopt;
+    };
+    auto plain = [](const model::ParagraphBlock& paragraph) {
+        std::string text;
+        for (const auto& item : paragraph.inlines) if (item.is_text()) text += item.text;
+        return text;
     };
 
     for (const auto& pl : doc.plan.pendingLinks) {
-        auto headingLoc = locate(finalDoc, pl.headingKey);
-        if (headingLoc.start < 0) continue;
-        std::string headingId = headingIdAt(relDoc, headingLoc.tabId, headingLoc.start);
-        if (headingId.empty()) continue;
+        const auto targetDocId = pl.docId.value_or(doc.docId);
+        auto targetFinal = finals.find(targetDocId);
+        auto targetNow = reloaded.find(targetDocId);
+        if (targetFinal == finals.end() || targetNow == reloaded.end()) {
+            throw model::CoreError("linkTargetNotFound", "A linked heading's document is missing.");
+        }
+        auto headingLoc = locate(targetFinal->second, pl.headingKey);
+        auto targetTabIds = getTabIds(targetDocId);
+        auto realHeadingTab = targetTabIds.contains(headingLoc.tabId)
+            ? targetTabIds.at(headingLoc.tabId) : headingLoc.tabId;
+        auto heading = paragraphAt(targetNow->second, realHeadingTab, headingLoc.start);
+        std::optional<model::ParagraphBlock> finalHeading;
+        for (const auto& tab : targetFinal->second.tabs)
+            for (const auto& paragraph : model::paragraphsDeep(tab.blocks))
+                if (paragraph.key == pl.headingKey) finalHeading = paragraph;
+        if (!heading || !heading->headingId || !finalHeading || plain(*heading) != plain(*finalHeading)) {
+            throw model::CoreError("linkTargetNotFound", "The linked heading did not match the authoritative readback.");
+        }
+        std::string headingId = *heading->headingId;
         out.headingIds[pl.headingKey] = headingId;
 
         auto paraLoc = locate(finalDoc, pl.paragraphKey);
-        if (paraLoc.start < 0) continue;
+        if (paraLoc.start < 0) {
+            throw model::CoreError("linkTargetNotFound", "The source paragraph for a heading link is missing.");
+        }
         int linkStart = paraLoc.start + pl.offset;
         int linkEnd = linkStart + pl.length;
 
-        std::string realTabId = pl.tabId;
-        auto tIt = tabIds.find(pl.tabId);
+        std::string realTabId = paraLoc.tabId;
+        auto tIt = tabIds.find(paraLoc.tabId);
         if (tIt != tabIds.end()) realTabId = tIt->second;
 
-        slimr::Json linkStyle = slimr::Json::object_t{
-            {"link", slimr::Json::object_t{{"headingId", headingId}}}
-        };
+        auto source = paragraphAt(relDoc, realTabId, paraLoc.start);
+        std::optional<model::ParagraphBlock> plannedSource;
+        for (const auto& tab : finalDoc.tabs)
+            for (const auto& paragraph : model::paragraphsDeep(tab.blocks))
+                if (paragraph.key == pl.paragraphKey) plannedSource = paragraph;
+        if (!source || !plannedSource || plain(*source) != plain(*plannedSource)) {
+            throw model::CoreError("linkTargetNotFound", "The heading link's source did not match the authoritative readback.");
+        }
+        slimr::Json target = targetDocId == doc.docId
+            ? slimr::Json(slimr::Json::object_t{{"heading", slimr::Json::object_t{
+                {"id", headingId}, {"tabId", realHeadingTab}}}})
+            : slimr::Json(slimr::Json::object_t{{"url", "https://docs.google.com/document/d/" +
+                targetDocId + "/edit?tab=" + realHeadingTab + "#heading=" + headingId}});
+        slimr::Json linkStyle = slimr::Json::object_t{{"link", target}};
+        int units = 0;
+        for (const auto& item : plannedSource->inlines) {
+            const int length = item.is_text() ? model::utf16CodeUnitLength(item.text) : item.length;
+            if (pl.offset >= units && pl.offset < units + length) {
+                for (const auto& name : {"foregroundColor", "underline"})
+                    if (item.style.contains(name)) linkStyle[name] = item.style[name];
+            }
+            units += length;
+        }
         out.requests.push_back(reconcile::RequestBuilder::textStyleUpdate(
-            linkStart, linkEnd, linkStyle, {"link"}, realTabId));
+            linkStart, linkEnd, linkStyle, {"foregroundColor", "link", "underline"}, realTabId));
+        if (pl.offset + pl.length == units) {
+            slimr::Json newline = slimr::Json::object_t{};
+            for (const auto& name : {"foregroundColor", "underline"})
+                if (plannedSource->newline.style.contains(name)) newline[name] = plannedSource->newline.style[name];
+            out.requests.push_back(reconcile::RequestBuilder::textStyleUpdate(
+                linkEnd, linkEnd + 1, newline, {"foregroundColor", "underline"}, realTabId));
+        }
     }
 
     return out;
@@ -338,24 +488,76 @@ inline std::optional<PhaseReport> createPhase(
     TransactionOptions<ClientType, DriveType>& opts,
     Ledger& ledger,
     std::vector<std::string>& created,
-    std::vector<PhaseReport>& phases
+    std::vector<PhaseReport>& phases,
+    std::vector<std::string>& landed
 ) {
-    PhaseReport report{.docs = {}, .phase = "create"};
+    if (!opts.client) throw model::CoreError("operationFailed", "A Docs client is required before creating documents.");
+    phases.push_back(PhaseReport{.docs = {}, .phase = "create"});
+    auto& report = phases.back();
+    auto recordLanded = [&](const std::string& id) {
+        if (std::find(landed.begin(), landed.end(), id) == landed.end()) landed.push_back(id);
+    };
+    auto confirmedCount = [&](const std::string& id) {
+        int count = 0;
+        for (const auto& receipt : report.docs) {
+            if (receipt.docId == id) count += receipt.requestCount;
+        }
+        return count;
+    };
+    auto send = [&](const PlannedDoc& doc, const slimr::Json& request,
+                    std::optional<std::string>& revision) {
+        try {
+            auto response = clientBatchUpdate(opts.client, doc.docId, {request}, revision);
+            revision = responseRevision(response);
+            ledger.revisions[doc.docId] = *revision;
+            recordLanded(doc.docId);
+            report.docs.push_back(PhaseDocReport{
+                .docId = doc.docId, .landed = true, .requestCount = 1,
+                .revisionAfter = revision, .outcome = "confirmed",
+            });
+            return response;
+        } catch (const TransactionError& error) {
+            report.docs.push_back(PhaseDocReport{
+                .docId = doc.docId, .error = error.causeMessage,
+                .revisionAfter = revision,
+                .outcome = error.partial.unknown.empty() ? "notSent" : "unknown",
+                .unknownRequestCount = error.unknownRequestCount,
+            });
+            TransactionError failure("create", error.causeMessage,
+                {.created = created, .landed = landed, .unknown = error.partial.unknown},
+                std::nullopt, confirmedCount(doc.docId));
+            failure.unknownRequestCount = error.unknownRequestCount;
+            failure.revisionAfter = revision;
+            throw failure;
+        }
+    };
     for (const auto& doc : plan.docs) {
         if (doc.isNew && doc.create) {
+            if constexpr (!(requires { opts.client->createDocument(doc.create->title); }) &&
+                          !(requires { opts.client->create_document(doc.create->title); })) {
+                throw model::CoreError("operationFailed", "This client cannot create documents; nothing was sent.");
+            }
             std::string alias = doc.docId;
             if (alias.starts_with("new_")) alias = alias.substr(4);
             try {
                 std::string id = clientCreateDocument(opts.client, doc.create->title);
                 ledger.docs[alias] = id;
                 created.push_back(id);
+                recordLanded(id);
                 report.docs.push_back(PhaseDocReport{
                     .docId = id,
                     .landed = true,
                     .requestCount = 1,
+                    .outcome = "confirmed",
                 });
             } catch (const std::exception& err) {
-                throw TransactionError("create", err.what(), TransactionError::Partial{.created = created, .landed = {}});
+                report.docs.push_back(PhaseDocReport{
+                    .docId = doc.docId, .error = err.what(), .outcome = "unknown", .unknownRequestCount = 1,
+                });
+                TransactionError failure("create", err.what(),
+                    {.created = created, .landed = landed, .unknown = {doc.docId}});
+                failure.unknownRequestCount = 1;
+                throw failure;
             }
         } else if (!doc.isNew && doc.plan.tabsToAdd.empty() && !doc.plan.segmentsToAdd.empty()) {
             std::optional<std::string> revision;
@@ -366,20 +568,11 @@ inline std::optional<PhaseReport> createPhase(
                 try {
                     int breakIdx = segment.breakIndex.value_or(0);
                     auto req = reconcile::RequestBuilder::segmentCreate(segment.kind, segment.tabId, breakIdx);
-                    auto response = clientBatchUpdate(opts.client, doc.docId, {req}, revision);
-                    if (response.contains("writeControl") && response["writeControl"].is_object() &&
-                        response["writeControl"].contains("requiredRevisionId") &&
-                        response["writeControl"]["requiredRevisionId"].is_string()) {
-                        revision = response["writeControl"]["requiredRevisionId"].template get<std::string>();
-                    }
-                    report.docs.push_back(PhaseDocReport{
-                        .docId = doc.docId,
-                        .landed = true,
-                        .requestCount = 1,
-                        .revisionAfter = revision,
-                    });
+                    send(doc, req, revision);
+                } catch (const TransactionError&) {
+                    throw;
                 } catch (const std::exception& err) {
-                    throw TransactionError("create", err.what(), TransactionError::Partial{.created = created, .landed = {}});
+                    throw TransactionError("create", err.what(), {.created = created, .landed = landed});
                 }
             }
         } else if (!doc.isNew && !doc.plan.tabsToAdd.empty()) {
@@ -401,12 +594,7 @@ inline std::optional<PhaseReport> createPhase(
                         .parentTabId = parentTabId,
                     };
                     auto req = reconcile::RequestBuilder::documentTabAdd(tab.title, addOpts);
-                    auto response = clientBatchUpdate(opts.client, doc.docId, {req}, revision);
-                    if (response.contains("writeControl") && response["writeControl"].is_object() &&
-                        response["writeControl"].contains("requiredRevisionId") &&
-                        response["writeControl"]["requiredRevisionId"].is_string()) {
-                        revision = response["writeControl"]["requiredRevisionId"].template get<std::string>();
-                    }
+                    auto response = send(doc, req, revision);
                     std::string tabId;
                     if (response.contains("replies") && response["replies"].is_array() &&
                         !response["replies"].template get<slimr::Json::array_t>().empty()) {
@@ -421,6 +609,9 @@ inline std::optional<PhaseReport> createPhase(
                             }
                         }
                     }
+                    if (tabId.empty()) {
+                        throw model::CoreError("operationFailed", "A tab was created but its ID was not returned; do not replay this creation.");
+                    }
                     real[tab.tabId] = tabId;
                     std::string prefix = "new_tab_";
                     if (tab.tabId.starts_with(prefix)) {
@@ -432,22 +623,18 @@ inline std::optional<PhaseReport> createPhase(
                             ids[ordinal - 1] = tabId;
                         }
                     }
-                    report.docs.push_back(PhaseDocReport{
-                        .docId = doc.docId,
-                        .landed = true,
-                        .requestCount = 1,
-                        .revisionAfter = revision,
-                    });
+                } catch (const TransactionError&) {
+                    throw;
                 } catch (const std::exception& err) {
-                    throw TransactionError("create", err.what(), TransactionError::Partial{.created = created, .landed = {}});
+                    throw TransactionError("create", err.what(), {.created = created, .landed = landed});
                 }
             }
         }
     }
     if (!report.docs.empty()) {
-        phases.push_back(report);
         return report;
     }
+    phases.pop_back();
     return std::nullopt;
 }
 
@@ -457,7 +644,7 @@ inline void phaseRun(
     std::string_view phase,
     const std::vector<PlannedDoc>& docs,
     const std::vector<std::string>& created,
-    const std::vector<std::string>& landed,
+    std::vector<std::string>& landed,
     Fn&& run
 ) {
     PhaseReport report{.docs = {}, .phase = std::string(phase)};
@@ -473,10 +660,35 @@ inline void phaseRun(
                 receipt.landed = true;
                 receipt.requestCount = result.requestCount;
                 receipt.revisionAfter = result.revisionAfter;
+                receipt.outcome = "confirmed";
+                if (std::find(landed.begin(), landed.end(), doc.docId) == landed.end()) landed.push_back(doc.docId);
                 phases.back().docs.push_back(std::move(receipt));
             }
+        } catch (const TransactionError& err) {
+            receipt.error = err.causeMessage;
+            receipt.requestCount += err.landedRequestCount;
+            receipt.landed = receipt.requestCount > 0;
+            receipt.revisionAfter = err.revisionAfter;
+            receipt.outcome = err.partial.unknown.empty()
+                ? (receipt.landed ? "confirmed" : "notSent") : "unknown";
+            receipt.unknownRequestCount = err.unknownRequestCount;
+            if (receipt.landed && std::find(landed.begin(), landed.end(), doc.docId) == landed.end()) {
+                landed.push_back(doc.docId);
+            }
+            const int confirmed = receipt.requestCount;
+            phases.back().docs.push_back(std::move(receipt));
+            TransactionError failure(std::string(phase), err.causeMessage,
+                {.created = created, .landed = landed, .unknown = err.partial.unknown},
+                err.tabIndex, confirmed);
+            failure.unknownRequestCount = err.unknownRequestCount;
+            failure.revisionAfter = err.revisionAfter;
+            throw failure;
         } catch (const std::exception& err) {
             receipt.error = err.what();
+            if (receipt.landed) {
+                receipt.outcome = "confirmed";
+                if (std::find(landed.begin(), landed.end(), doc.docId) == landed.end()) landed.push_back(doc.docId);
+            }
             phases.back().docs.push_back(std::move(receipt));
             throw TransactionError(std::string(phase), err.what(), TransactionError::Partial{.created = created, .landed = landed});
         }
@@ -495,6 +707,7 @@ inline TransactionResult<T> transactionRun(
     std::set<std::string> affected;
     int attempts = 0;
     std::string phase = "planning";
+    if (!opts.client) throw model::CoreError("operationFailed", "A transaction requires a configured Docs client.");
 
     try {
         for (;;) {
@@ -579,7 +792,7 @@ inline TransactionResult<T> transactionRun(
             }
 
             phase = "create";
-            auto createReport = createPhase(plan, opts, ledger, created, phases);
+            auto createReport = createPhase(plan, opts, ledger, created, phases, landed);
             if (createReport.has_value()) {
                 attempts--;
                 continue;
@@ -600,7 +813,7 @@ inline TransactionResult<T> transactionRun(
                                 uri = req["replaceImage"]["uri"].template get<std::string>();
                             }
                             if (uri.starts_with(model::IMAGE_UPLOAD_SCHEME)) {
-                                pending.push_back(uri);
+                                if (std::find(pending.begin(), pending.end(), uri) == pending.end()) pending.push_back(uri);
                             }
                         }
                     }
@@ -649,9 +862,13 @@ inline TransactionResult<T> transactionRun(
                         .landed = true,
                         .requestCount = sent.requestCount,
                         .revisionAfter = sent.revisionAfter,
+                        .outcome = "confirmed",
                     });
                     landed.push_back(doc.docId);
-                } catch (const RevisionConflict&) {
+                } catch (const RevisionConflict& error) {
+                    phases.back().docs.push_back(PhaseDocReport{
+                        .docId = doc.docId, .error = error.what(), .outcome = "notSent",
+                    });
                     throw model::CoreError(
                         "staleBase",
                         "the document changed before this batch; export fresh and reapply only outstanding edits"
@@ -664,14 +881,22 @@ inline TransactionResult<T> transactionRun(
                         .docId = doc.docId,
                         .error = err.causeMessage,
                         .landed = !err.partial.landed.empty(),
-                        .requestCount = 0,
+                        .requestCount = err.landedRequestCount,
+                        .revisionAfter = err.revisionAfter,
+                        .outcome = err.partial.unknown.empty()
+                            ? (err.landedRequestCount > 0 ? "confirmed" : "notSent") : "unknown",
+                        .unknownRequestCount = err.unknownRequestCount,
                     });
-                    throw TransactionError(
+                    TransactionError failure(
                         "content",
                         err.causeMessage,
-                        TransactionError::Partial{.created = created, .landed = landed},
-                        err.tabIndex
+                        TransactionError::Partial{.created = created, .landed = landed, .unknown = err.partial.unknown},
+                        err.tabIndex,
+                        err.landedRequestCount
                     );
+                    failure.unknownRequestCount = err.unknownRequestCount;
+                    failure.revisionAfter = err.revisionAfter;
+                    throw failure;
                 } catch (const std::exception& err) {
                     phases.back().docs.push_back(PhaseDocReport{
                         .docId = doc.docId,
@@ -718,8 +943,8 @@ inline TransactionResult<T> transactionRun(
                 phase = "footnotes";
                 phaseRun(phases, "footnotes", withFootnotes, created, landed, [&](const PlannedDoc& doc, auto&&) {
                     auto json = clientGetDocument(opts.client, doc.docId);
-                    if (revisions[doc.docId].has_value() && json.contains("revisionId") &&
-                        json["revisionId"].is_string() &&
+                    if (!revisions[doc.docId] || !json.contains("revisionId") ||
+                        !json["revisionId"].is_string() ||
                         json["revisionId"].template get<std::string>() != *revisions[doc.docId]) {
                         throw model::CoreError("concurrentEdits", "the document changed after content landed; footnote text was not sent");
                     }
@@ -791,8 +1016,8 @@ inline TransactionResult<T> transactionRun(
                 for (const auto& doc : plan.docs) {
                     finals[doc.docId] = doc.input.final;
                     auto json = clientGetDocument(opts.client, doc.docId);
-                    if (revisions[doc.docId].has_value() && json.contains("revisionId") &&
-                        json["revisionId"].is_string() &&
+                    if (!revisions[doc.docId] || !json.contains("revisionId") ||
+                        !json["revisionId"].is_string() ||
                         json["revisionId"].template get<std::string>() != *revisions[doc.docId]) {
                         throw model::CoreError("concurrentEdits", "the document changed after content landed; links were not sent");
                     }
@@ -816,10 +1041,8 @@ inline TransactionResult<T> transactionRun(
             // Verification phase
             phase = "verification";
             std::vector<DocVerification> verifications;
+            std::map<std::string, slimr::Json> documents;
             for (const auto& doc : plan.docs) {
-                bool sentSomething = !doc.plan.contentRequests.empty() || !doc.plan.tabOps.empty() || !doc.plan.pendingLinks.empty();
-                if (!sentSomething) continue;
-
                 auto json = clientGetDocument(opts.client, doc.docId);
                 auto tIds = getTabIds(doc.docId);
                 newHeadingIds(doc, json, tIds, headingIds);
@@ -831,6 +1054,7 @@ inline TransactionResult<T> transactionRun(
                 };
                 auto checked = verify(doc, json, revisions[doc.docId], resolved);
                 verifications.push_back(checked);
+                documents.emplace(doc.docId, std::move(json));
 
                 if (checked.status == "mismatch") {
                     std::string diffsMsg;
@@ -852,6 +1076,7 @@ inline TransactionResult<T> transactionRun(
                 .phases = std::move(phases),
                 .refused = false,
                 .verification = std::move(verifications),
+                .documents = std::move(documents),
             };
         }
     } catch (TransactionError& err) {

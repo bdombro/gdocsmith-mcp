@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include <cmath>
+#include <set>
 
 namespace gdocsmith::lens {
 
@@ -31,6 +32,7 @@ struct CellBorder {
 };
 
 struct CellDeclaration {
+    std::set<std::string> resets;
     std::optional<std::string> backgroundColor;
     std::optional<CellBorder> borderBottom;
     std::optional<CellBorder> borderLeft;
@@ -44,7 +46,7 @@ struct CellDeclaration {
 
     bool operator==(const CellDeclaration& other) const = default;
     bool empty() const {
-        return !backgroundColor && !borderBottom && !borderLeft && !borderRight && !borderTop &&
+        return resets.empty() && !backgroundColor && !borderBottom && !borderLeft && !borderRight && !borderTop &&
                !contentAlignment && !paddingBottom && !paddingLeft && !paddingRight && !paddingTop;
     }
 };
@@ -101,6 +103,9 @@ inline CellDeclaration cellDeclarationExport(const slimr::Json& style) {
 
 inline slimr::Json cellDeclarationPatch(const CellDeclaration& declaration) {
     slimr::Json patch = slimr::json_obj();
+    for (const auto& field : declaration.resets) {
+        patch[field] = field.starts_with("padding") ? dimensionFromPt(DEFAULT_PADDING) : slimr::Json(nullptr);
+    }
     if (declaration.backgroundColor) {
         patch["backgroundColor"] = colorOptionalFromHex(*declaration.backgroundColor);
     }

@@ -2,6 +2,7 @@
 
 #include "emulator/emulate.hpp"
 #include "emulator/types.hpp"
+#include "lens/named_ranges.hpp"
 #include "model/api_facts.hpp"
 #include "model/equivalence.hpp"
 #include "model/errors.hpp"
@@ -766,15 +767,13 @@ inline void positionedDeletes(const TabModel& o, const TabModel& f, ReconcileCon
     }
 }
 
-inline const Block* blockFindConst(const TabModel& tab, std::string_view key) {
-    for (const auto& b : tab.blocks) {
+inline const Block* blockFindConst(const std::vector<Block>& blocks, std::string_view key) {
+    for (const auto& b : blocks) {
         if (b.key == key) return &b;
-    }
-    for (const auto& table : tablesDeep(tab.blocks)) {
-        for (const auto& row : table.rows) {
-            for (const auto& cell : row.cells) {
-                for (const auto& b : cell.blocks) {
-                    if (b.key == key) return &b;
+        if (b.is_table()) {
+            for (const auto& row : b.as_table().rows) {
+                for (const auto& cell : row.cells) {
+                    if (const auto* found = blockFindConst(cell.blocks, key)) return found;
                 }
             }
         }
@@ -782,31 +781,18 @@ inline const Block* blockFindConst(const TabModel& tab, std::string_view key) {
     return nullptr;
 }
 
+inline const Block* blockFindConst(const TabModel& tab, std::string_view key) {
+    return blockFindConst(tab.blocks, key);
+}
+
 inline int rangeEdgeIndex(const TabModel& tab, const Layout& layout, std::string_view key, int offset) {
-    const Block* found = blockFindConst(tab, key);
-    auto it = layout.blockRanges.find(std::string(key));
-    if (!found || !found->is_paragraph() || it == layout.blockRanges.end()) {
-        throw CoreError("internal", std::format("named range edge in a missing paragraph {}", key));
-    }
-    int start = it->second.start;
-    auto syms = paragraphSymbols(found->as_paragraph());
-    std::vector<Sym> visible;
-    for (const auto& s : syms) {
-        if (!symHidden(s)) visible.push_back(s);
-    }
-    int sum = 0;
-    int limit = std::min(offset, static_cast<int>(visible.size()));
-    for (int i = 0; i < limit; ++i) {
-        if (visible[i].is_char()) {
-            sum += codePointUtf16Units(visible[i].ch);
-        } else if (visible[i].is_atom()) {
-            sum += visible[i].atom->length;
-        }
-    }
-    return start + sum;
+    return lens::rangeEdgeIndex(tab, layout, NamedRangeDef::Edge{std::string(key), offset});
 }
 
 inline void namedRangesReconcile(const TabModel& o, const TabModel& f, ReconcileContext& ctx) {
+    for (const auto& range : f.namedRanges) {
+        if (range.expect || range.create) (void)lens::namedRangeExpected(f, range);
+    }
     std::set<std::string> kept;
     for (const auto& range : f.namedRanges) kept.insert(range.namedRangeId);
     for (const auto& range : o.namedRanges) {
@@ -824,6 +810,8 @@ inline void namedRangesReconcile(const TabModel& o, const TabModel& f, Reconcile
         const auto& create = *range.create;
         int startIndex = rangeEdgeIndex(f, layout, create.start.key, create.start.offset);
         int endIndex = rangeEdgeIndex(f, layout, create.end.key, create.end.offset);
+        if (startIndex >= endIndex)
+            throw CoreError("unsupportedSyntax", "named range would be empty or reversed");
         ctx.requests.push_back(
             RequestBuilder::namedRangeCreate(range.name, startIndex, endIndex, ctx.tabId)
         );
@@ -897,13 +885,21 @@ inline void tabReconcile(const TabModel& o, const TabModel& f, ReconcileContext&
         }
     }
     if (!documentFields.empty()) {
+        auto payload = pick(f.documentStyle, documentFields);
+        if (payload.contains("documentSize") && !payload.contains("pageSize")) {
+            payload["pageSize"] = payload["documentSize"];
+            payload.get<slimr::Json::object_t>().erase("documentSize");
+            for (auto& field : documentFields) {
+                if (field == "documentSize") field = "pageSize";
+            }
+        }
         std::string fieldsJoined;
         for (size_t i = 0; i < documentFields.size(); ++i) {
             if (i > 0) fieldsJoined += ",";
             fieldsJoined += documentFields[i];
         }
         ctx.requests.push_back(RequestBuilder::updateDocumentStyle(RequestBuilder::UpdateDocumentStyleOpts{
-            .documentStyle = pick(f.documentStyle, documentFields),
+            .documentStyle = std::move(payload),
             .fields = fieldsJoined,
             .tabId = ctx.tabId
         }));

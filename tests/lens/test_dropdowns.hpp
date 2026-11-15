@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lens/dropdowns.hpp"
+#include "lens/atom_put.hpp"
 #include "lens/json_helper.hpp"
 #include "test.hpp"
 
@@ -56,6 +57,59 @@ TEST_CASE("dropdownListsOf extracts lists and option IDs") {
     CHECK(optionIdOf(defs["kix.status"], "Todo") == std::optional<std::string>("opt.1"));
     CHECK(optionIdOf(defs["kix.status"], "Done") == std::optional<std::string>("opt.2"));
     CHECK(!optionIdOf(defs["kix.status"], "Missing").has_value());
+}
+
+TEST_CASE("source dropdown create select and explicit keys preserve provider option IDs") {
+    model::TabModel tab;
+    tab.dropdownDefinitions["list-1"] = slimr::Json::object_t{
+        {"dropdownDefinitionProperties", slimr::Json::object_t{
+            {"title", "Status"}, {"options", slimr::Json::array_t{
+                slimr::Json::object_t{{"displayValue", "Todo"}, {"optionId", "provider-todo"}},
+                slimr::Json::object_t{{"displayValue", "Done"}, {"optionId", "provider-done"}}
+            }}}}
+    };
+    model::EditContext context;
+    model::EditTarget target{context, tab};
+    AtomPutReport report;
+    const auto created = atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=list-1 option=Done")}, {}, report);
+    REQUIRE(created.create);
+    CHECK(created.create->definitionId == "list-1");
+    CHECK(created.create->optionId == "provider-done");
+    model::Atom existing{.key = "chip", .type = "dropdown", .raw = slimr::Json::object_t{
+        {"dropdown", slimr::Json::object_t{
+            {"dropdownId", "provider-chip"}, {"dropdownProperties", slimr::Json::object_t{
+                {"dropdownDefinitionId", "list-1"}, {"selectedOptionId", "provider-todo"}, {"displayValue", "Todo"}}}}}
+    }};
+    TokenRef before{.kind = "dropdown", .attrs = directiveAttrsParse("id=chip list=list-1"), .label = "Todo"};
+    auto after = before;
+    after.label = "Done";
+    after.attrs.values.emplace_back("option", "Done");
+    CHECK(atomTokenIdentity(before) == atomTokenIdentity(after));
+    atomTokenKeep(existing, before, after, tab, {});
+    CHECK(existing.key == "chip");
+    REQUIRE(existing.raw);
+    CHECK((*existing.raw)["dropdown"]["dropdownId"] == slimr::Json("provider-chip"));
+    CHECK((*existing.raw)["dropdown"]["dropdownProperties"]["selectedOptionId"] == slimr::Json("provider-done"));
+    CHECK_THROWS_AS(atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=Status option=Done")}, {}, report), model::CoreError);
+    tab.dropdownDefinitions["list-2"] = tab.dropdownDefinitions["list-1"];
+    tab.dropdownDefinitions["list-2"]["dropdownDefinitionProperties"]["title"] = "list-1";
+    tab.dropdownDefinitions["list-2"]["dropdownDefinitionProperties"]["options"][1]["optionId"] = "other-done";
+    CHECK_THROWS_AS(atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=Status option=Done")}, {}, report), model::CoreError);
+    const auto collision = atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=list-1 option=Done")}, {}, report);
+    REQUIRE(collision.create);
+    CHECK(collision.create->definitionId == "list-1");
+    CHECK(collision.create->optionId == "provider-done");
+    AtomPutOptions options;
+    options.createdDropdownIds = {{"new-list", "list-2"}, {"list-1", "list-2"}};
+    const auto alias = atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=new-list option=Done")}, options, report);
+    REQUIRE(alias.create);
+    CHECK(alias.create->definitionId == "list-2");
+    CHECK(alias.create->optionId == "other-done");
+    const auto precedence = atomTokenCreate(target, TokenRef{.kind = "dropdown", .attrs = directiveAttrsParse("list=list-1 option=Done")}, options, report);
+    REQUIRE(precedence.create);
+    CHECK(precedence.create->definitionId == "list-1");
+    after.attrs.values.back().second = "Missing";
+    CHECK_THROWS_AS(atomTokenKeep(existing, before, after, tab, {}), model::CoreError);
 }
 
 } // namespace gdocsmith::lens::test

@@ -1,7 +1,7 @@
 #pragma once
 
 /* MCP app wiring: tool registration (export, import, file, status) and the guide resource.
- * Business logic lives in engine/*; this file only adapts Google clients, serializes calls per
+ * Business logic lives in the engine headers; this file only adapts Google clients, serializes calls per
  * document and shapes bounded, agent-facing results (the same for CLI and MCP). */
 
 #include "api.hpp"
@@ -34,7 +34,7 @@
 
 namespace gdocsmith {
 
-inline constexpr std::string_view GDOCSMITH_VERSION = "4.0.0";
+inline constexpr std::string_view GDOCSMITH_VERSION = "4.0.1";
 
 inline constexpr std::string_view MCP_INSTRUCTIONS =
     "Use gdocsmith for all Google Docs reading and editing, not other Google tools. Before the first export or import, "
@@ -423,7 +423,10 @@ inline slimr::Json file_export(
             options.imagesDownload = true;
             std::vector<std::string> ids;
             for (const auto& item : v.get<slimr::Json::array_t>()) {
-                if (item.is_string()) ids.push_back(item.get<std::string>());
+                if (!item.is_string()) {
+                    throw model::CoreError("unsupportedSyntax", "imagesDownload IDs must be strings.");
+                }
+                ids.push_back(item.get<std::string>());
             }
             options.imageIds = std::move(ids);
         }
@@ -444,6 +447,19 @@ inline slimr::Json file_export(
 
     engine::FileServices services;
     services.root = engine::artifactRoot();
+    try {
+        services.apiUser = drive.userEmailGet();
+    } catch (const std::exception& e) {
+        warnings.push_back(std::string("Authenticated user email could not be determined: ") + e.what());
+    }
+    services.imageDownload = [&docs](const std::string& uri) {
+        auto bytes = docs.imageDownload(uri);
+        const auto info = image_info(bytes);
+        if (!info) {
+            throw model::CoreError("operationFailed", "Downloaded image is not PNG, JPEG or GIF.");
+        }
+        return engine::DownloadedImage{.bytes = std::move(bytes), .extension = info->type};
+    };
     engine::ExportWritten written = engine::exportModel(model, comments, services, options, plainText);
 
     slimr::Json out = slimr::Json::object_t{};
@@ -463,14 +479,83 @@ inline slimr::Json file_export(
 }
 
 /** Imports an edited document file; every failure states whether writes may have landed. */
-inline slimr::Json file_import(const ImportInput& in) {
+inline slimr::Json file_import(const ImportInput& in, const HttpTransport& transport = nullptr,
+                              const GwsRunner& runner = nullptr, bool remoteEnabled = false) {
     engine::ImportInput engineInput;
     engineInput.path = in.path.get();
     engineInput.newDocStyleBaseline = in.newDocStyleBaseline.get();
     engineInput.allow = in.allow.get().value_or(std::vector<std::string>{});
 
-    engine::FileServices services;
+    DocsClient docs(transport, runner);
+    DriveClient drive(transport, runner);
+    engine::ImportServices services;
     services.root = engine::artifactRoot();
+    auto mutation = [](auto&& send) -> slimr::Json {
+        try { return send(); }
+        catch (const GoogleApiError& error) {
+            if (error.status >= 400 && error.status < 500 && error.status != 408 && error.status != 429) {
+                const std::string message = error.what();
+                const bool revision = message.find("revision") != std::string::npos ||
+                                      message.find("Revision") != std::string::npos;
+                throw model::CoreError(revision ? "concurrentEdits" : "remoteRejected", message);
+            }
+            throw;
+        }
+    };
+    if (remoteEnabled) {
+        try {
+            services.apiUser = drive.userEmailGet();
+        } catch (const std::exception&) {
+        }
+        services.getDocument = [&docs](const std::string& id) { return docs.getDocument(id); };
+        services.getFileMetadata = [&drive](const std::string& id) { return drive.getFile(id, "id,name"); };
+        services.createDocument = [&docs, &mutation](const std::string& title) {
+            return mutation([&] { return docs.createDocument(title); });
+        };
+        services.deleteFile = [&drive, &mutation](const std::string& id) {
+            mutation([&] { drive.deleteFile(id); return slimr::Json::object_t{}; });
+        };
+        services.imagesUpload = [&drive](const std::string& name, const std::vector<DocxImage>& images) {
+            return drive.imagesUpload(name, images);
+        };
+        services.fetchImage = [&transport](const std::string& uri) {
+            const HttpCall request{.url = uri};
+            const auto response = transport ? transport(request) : default_curl_transport(request);
+            if (response.status < 200 || response.status >= 300) {
+                throw std::runtime_error("HTTP " + std::to_string(response.status));
+            }
+            return response.body;
+        };
+        services.batchUpdate = [&docs, &mutation](const std::string& id, const std::vector<slimr::Json>& requests,
+                                                  const std::optional<std::string>& revision) {
+            return mutation([&] { return docs.batchUpdate(id, requests, revision); });
+        };
+        services.commentsList = [&drive](const std::string& id) {
+            std::vector<engine::DriveComment> comments;
+            for (const auto& comment : drive.commentsList(id)) comments.push_back(to_engine_comment(comment));
+            return comments;
+        };
+        services.textExport = [&drive](const std::string& id) { return drive.textExport(id); };
+        services.rename = [&drive, &mutation](const std::string& id, const std::string& title) {
+            auto response = mutation([&] {
+                return drive.updateFile(id, slimr::Json::object_t{{"name", title}});
+            });
+            return response.contains("name") && response["name"].is_string()
+                ? response["name"].get<std::string>() : "";
+        };
+        services.commentSend = [&drive, &mutation](const std::string& id, const engine::CommentAction& action) {
+            return mutation([&]() -> slimr::Json {
+                const auto thread = action.id.value_or("");
+                if (action.kind == "create") return drive.commentCreate(id, action.text.value_or(""));
+                if (action.kind == "edit") return drive.commentUpdate(id, thread, action.text.value_or(""));
+                if (action.kind == "delete") { drive.commentDelete(id, thread); return slimr::Json::object_t{}; }
+                if (action.kind == "replyEdit") return drive.replyUpdate(id, thread, action.replyId.value_or(""), action.text.value_or(""));
+                if (action.kind == "replyDelete") { drive.replyDelete(id, thread, action.replyId.value_or("")); return slimr::Json::object_t{}; }
+                return drive.commentReply(id, thread, action.text,
+                    action.kind == "reply" ? std::nullopt : std::make_optional(action.kind));
+            });
+        };
+    }
 
     std::string doc = document_key_of_file(in.path.get());
     try {
@@ -635,7 +720,8 @@ inline slimr::Json file_operate(
 
 inline slimr::PluginApp make_gdocsmith_app(
     HttpTransport transport = nullptr,
-    GwsRunner runner = nullptr
+    GwsRunner runner = nullptr,
+    bool remoteImportEnabled = true
 ) {
     slimr::PluginApp app("gdocsmith-mcp", std::string(GDOCSMITH_VERSION));
     app.description = "Google Docs file editing and review workflows";
@@ -665,7 +751,7 @@ inline slimr::PluginApp make_gdocsmith_app(
 
     app.tool<ExportInput>(
         "export",
-        "Export a Google Doc to a local markdown file for reading or editing.",
+        "Export a Google Doc to a local partial Markdown view, with optional image downloads. Rich content preservation is incomplete; this is not a faithful backup.",
         exportAnn,
         [transport, runner](const ExportInput& in) -> slimr::McpResult {
             const std::string key = detail::document_key(in.doc.get());
@@ -676,12 +762,14 @@ inline slimr::PluginApp make_gdocsmith_app(
 
     app.tool<ImportInput>(
         "import",
-        "Apply an edited v3 markdown file to Google Docs with minimal changes and automatic verification.",
+        remoteImportEnabled
+            ? "Import an edited document file through revision-locked guarded writes and authoritative verification."
+            : "Validate an edited document file. Remote import is unavailable: returns failure without sending changes or replacing input files.",
         writeAnn,
-        [](const ImportInput& in) -> slimr::McpResult {
+        [transport, runner, remoteImportEnabled](const ImportInput& in) -> slimr::McpResult {
             const std::string key = detail::document_key_of_file(in.path.get());
             return detail::document_serialized(key, [&]() -> slimr::McpResult {
-                return detail::command_result(detail::file_import(in));
+                return detail::command_result(detail::file_import(in, transport, runner, remoteImportEnabled));
             });
         });
 

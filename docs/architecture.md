@@ -1,38 +1,103 @@
 # Architecture
 
-V3 exposes file workflows over the model-first content engine. Commands validate inputs and delegate; the lens, engine and reconciler own editing decisions.
+The native C++26 app exposes four file-oriented tools: `export`, `import`,
+`file` and `status`. The read-only Node reference is available at
+`../gdocsmith-node` (`gdocsmith` 3.0.20); availability is not parity proof.
 
 | Layer | Responsibility |
 | --- | --- |
-| commands | Four strict tool/CLI contracts (export, import, file, status) and bounded results |
-| lens | Document envelope, tab boundaries, styles, tokens and link binding |
-| engine | Fresh models, planning, guards, lifecycle and verification |
-| model | Paragraph/table/list mutations and structural invariants |
-| reconcile | Minimal Google requests with character-level paragraph diffs |
-| emulator | Offline request execution checked against recorded Google behavior |
-
-## Agent Guidance
-
-The MCP server carries all agent guidance; there is no skill. It serves [docs/agent-guide.md](agent-guide.md) as the `gdocsmith://guide` resource, and its instructions tell agents to read that resource before the first export or import and name export's `doc` argument.
-
-- One source: a separately installed skill could be skipped or drift from the server it describes. The resource always matches the running server, including `npx` installs that have no plugin.
-- Parity: on the hard `full-edit` E2E case (2026-10-05, 3 runs per cell), the resource matched an installed skill on Claude Code (3/3 passed each, no failed calls) and Cursor (2/3 passed each, failing the same check; one recovered syntax error).
-- The `doc` hint matters for Cursor, which defers tool schemas: without it, Cursor sometimes called export with a guessed argument before reading the guide. A pointer in the tool descriptions did not prevent that.
+| app / API | Strict tool contracts, per-document queue, injected Docs/Drive transport |
+| lens | Markdown envelope, rich body projection/rendering and atomic typed putback |
+| engine | Fresh models, sessions, planning, guards, phased transactions, readback and artifacts |
+| model | Typed document state, preserved metadata, identity and structural invariants |
+| reconcile | Minimal requests, ordered back-to-front within content batches |
+| emulator | Offline request execution and deterministic regression evidence |
 
 ## Import
 
-Read and freeze the local file, parse its comment and suggestion blocks, fetch the document and review state, and assert the exported revision. Comment blocks become Drive actions sent after content; suggestion blocks are checked against a fresh render and their `reject` flags applied before each tab's markdown is written. Every existing tab has a line describing its complete desired content, structure, or deletion. New tabs/documents are planned virtually before creation. Resolve authored links against the complete final document, preserving unchanged existing link identity where correspondence is known.
+The real import path runs through `fileImport`, typed session putback and
+`transactionRun`, not a direct-write shortcut. **The public app factory defaults
+to `remoteImportEnabled = true`.** The earlier bounded implementation was
+accepted at 19:21Z on 2026-11-13. Current parity work changes those inputs:
+that acceptance is historical, not a current source freeze or final runtime gate.
 
-Reconcile, emulate and guard before sending. Track sends in memory. Bind created IDs through responses; every Docs batch uses requiredRevisionId and chains the resulting revision. Import never rebases a stale file or automatically replays a conflicted mutation.
+Import freezes the local input, loads authoritative
+Docs/Drive state, validates its revision and original export when present,
+plans/emulates/guards before sends, chains required revisions through Docs
+batches, resolves provider-created IDs and reads back authoritative state.
+No-op imports read back without mutations. Drive title/comment actions follow
+content; multi-service phases are not an atomic transaction or automatic rollback.
 
-Fetch final state and compare it with the planned model, accounting for documented API normalization. A newer revision makes verification inconclusive. Disagreement is an error even when writes landed. Successful verification produces the next export before retiring an unchanged app-owned input.
+Existing public scope includes rich body/tab/document/comment operations.
+Independently reviewed lens/helper additions cover declarations/resets,
+table geometry/layout/directional merges, supported atom intent, internal URL
+projection, unlinked heading deletion and nonconflicting review-adjacent edits.
+Auth, dropdown, new-tab and rollback-boundary scopes now have independent
+acceptance. Broader segment/review/image lifecycle remains qualified.
+Both source-grounded fixture corrections now pass full fresh Debug/Release:
+398/398 cases and 6,521/6,521 assertions each, zero failures/skips.
+Fresh test builds/test-TU tidy and shared 151/151 original, 172/172 target,
+70/70 controls passed. App/adapter builds/lint and isolated MCP passes were
+retained only after exact input/binary identity verification. Qualification is
+bounded: 250 raw leaves/206 groups and foreign-error/test-transfer/platform/raw
+interchange residuals remain unaccepted; no broader parity/release acceptance.
+See [features](features.md) for precise
+platform, raw-envelope and unsupported distinctions. Refusal is never permission
+to discard opaque content; `allow` cannot override an unsupported operation.
 
-## Preserved Knowledge
+## Export and artifacts
 
-The engine retains Unicode/code-point versus UTF-16 handling, newline ownership, heading identity on splits/merges, list inheritance/spacing, table API ordering, link chrome and opaque-object preservation. Existing model, reconciler, emulator, property and conformance tests remain the primary regression evidence.
+Export combines rich content with identities and document/review context:
+non-body content, complete settings/styles, merged-table topology and actual
+suggestion before/after context/markers are encoded. Unsupported contexts remain
+unchanged. Temporary URLs are stripped; representation is not proof of write
+capability. Export is not a standalone restorable backup or full parity claim.
+Private image downloads do not prove provider upload/recreation/readback.
 
-There is no persistent document cache or public step layer. Internal model handles remain useful for deterministic planning and conformance tests, not as a second agent API.
+Canonical revision artifacts are `export.md` (working copy) and
+`export.orig.md` (recorded original), as verified against Node. Re-export
+preserves local edits. No migration, deletion or renaming of user work is required.
+If recovery's normal working file contains local edits, the enabled importer can
+return a separate private `export.remote.<unique>.md` snapshot rather than
+misrepresent that edited file as fresh cloud state.
 
-## Verification Limits
+## Guards and verification
 
-Stable Drive comments expose quotes and threads, not complete native anchor attachment guarantees. Native suggestion and anchored-comment requests require Developer Preview; suggestion rejects use stable-API moves instead. The legacy semantic comparator does not by itself establish all named-range, preserve-only metadata or review-state guarantees. Do not infer full proof from a successful body comparison or an offline test alone.
+Named-range single-body-span marker tracking and UTF-16 edge prediction have
+scoped independent approval. Managed marker removal is explicit intent;
+unmanaged loss remains guarded. Unknown/touching/destructive structural effects
+refuse unwaivably; proven-safe later-table edits can proceed. Multi-span,
+non-body and unresolved created-ID verification can remain inconclusive, never
+fabricated matches. `allow` waives classified losses only, not unsupported edits.
+
+Receipts distinguish confirmed requests from unknown attempts. Failure can follow
+landed writes; verification mismatch/inconclusive is not success. Stale,
+concurrent, partial, unknown or unverified results preserve input and seek a
+fresh recovery export. Never replay creates, copies or comments blindly.
+Independent core review has closed the same-revision partial-comment recovery,
+comment outcome/readback and authoritative recovery-title findings. This is
+historical scoped approval; current bounded qualification passed, while broader
+parity/raw-difference acceptance remains open.
+
+## Agent guidance and evidence
+
+The app serves [agent-guide.md](agent-guide.md) as `gdocsmith://guide`, including
+executable-relative Homebrew `pkgshare` lookup. Guidance describes the running
+build's gates, not a separately installed skill or a Node runtime requirement.
+
+The earlier bounded enabled-source Debug ASan/fatal-UBSan and Release suites each passed
+**308 tests / 5,302 assertions, zero skipped**. App/full-test clang-tidy and
+default-release MCP `2026-07-28` stdio/ephemeral HTTP passed, with unchanged
+source/binary hashes across that historical validation. These are not current
+parity-build counts; the current source-bound qualification above supersedes them.
+
+The real default public CLI passed synthetic create and actual body edit
+(`applied/complete/match`), authoritative export text match, exact no-op
+(`unchanged/none/match`), stale original-revision refusal (`staleBase/none`),
+and guarded delete followed by export not-found. Both consented synthetic
+documents were deleted; cleanup was confirmed. No existing documents were used.
+
+This live smoke does not cover representative images, rich non-body content or
+review mutation. Offline tests remain regression evidence for those paths;
+historical Node experiments are not new C++ live validation. No blanket Node
+parity or standalone restorable-backup/recreation claim is made.

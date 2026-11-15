@@ -31,7 +31,7 @@ TEST_SUITE("emulator::emulate_tables") {
         CHECK(tbl["tableRows"].get<slimr::Json::array_t>()[0]["tableCells"].get<slimr::Json::array_t>().size() == 3);
     }
 
-    TEST_CASE("insertTableRow, insertTableColumn, deleteTableRow, deleteTableColumn") {
+    TEST_CASE("insertTableRow and deleteTableRow") {
         slimr::Json doc = make_simple_doc({"before"});
         // Insert 2x2 table at index 7 (inside "before\n")
         auto res1 = requests_emulate(doc, {
@@ -75,6 +75,42 @@ TEST_SUITE("emulator::emulate_tables") {
         const auto& tbl3 = res3.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
                                .get<slimr::Json::array_t>()[2]["table"];
         CHECK(tbl3["rows"].as<int>() == 2);
+    }
+
+    TEST_CASE("insertTableColumn right and deleteTableColumn mutate both rows") {
+        const auto doc = make_simple_doc({"before"});
+        const auto initial = requests_emulate(doc, {
+            slimr::Json::object_t{{"insertTable", slimr::Json::object_t{
+                {"columns", 2}, {"rows", 2},
+                {"location", slimr::Json::object_t{{"index", 7}}}
+            }}}
+        });
+        const auto& initial_content = initial.json["tabs"].get<slimr::Json::array_t>()[0]
+            ["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
+        REQUIRE(initial_content[2].contains("table"));
+        const auto start = initial_content[2]["startIndex"];
+        const auto location = slimr::Json::object_t{
+            {"columnIndex", 0}, {"tableStartLocation", slimr::Json::object_t{{"index", start}}}
+        };
+        // Independent source rows: each request starts from the original 2x2 table.
+        for (const bool insert : {true, false}) {
+            const auto request = insert
+                ? slimr::Json(slimr::Json::object_t{{"insertTableColumn", slimr::Json::object_t{
+                    {"insertRight", true}, {"tableCellLocation", location}
+                }}})
+                : slimr::Json(slimr::Json::object_t{{"deleteTableColumn", slimr::Json::object_t{
+                    {"tableCellLocation", location}
+                }}});
+            const auto result = requests_emulate(initial.json, {request});
+            const auto& table = result.json["tabs"].get<slimr::Json::array_t>()[0]
+                ["documentTab"]["body"]["content"].get<slimr::Json::array_t>()[2]["table"];
+            const size_t expected_columns = insert ? 3 : 1;
+            CHECK(table["columns"].as<size_t>() == expected_columns);
+            const auto& rows = table["tableRows"].get<slimr::Json::array_t>();
+            REQUIRE(rows.size() == 2);
+            CHECK(rows[0]["tableCells"].get<slimr::Json::array_t>().size() == expected_columns);
+            CHECK(rows[1]["tableCells"].get<slimr::Json::array_t>().size() == expected_columns);
+        }
     }
 
     TEST_CASE("mergeTableCells and unmergeTableCells") {

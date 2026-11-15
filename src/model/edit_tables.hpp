@@ -22,6 +22,90 @@ struct EditTableSpec {
     std::vector<std::vector<std::vector<SymSpec>>> rows; // [row][col][syms]
 };
 
+inline CellModel tableCellCreate(EditContext& context, const CellModel* inherit = nullptr) {
+    CellModel cell;
+    cell.key = context.keys.next("n");
+    cell.style = inherit ? inherit->style : make_table_cell_style_default();
+    cell.style["rowSpan"] = 1;
+    cell.style["columnSpan"] = 1;
+    auto paragraphStyle = make_table_cell_paragraph_style_default();
+    if (inherit && !inherit->blocks.empty() && inherit->blocks.back().is_paragraph()) {
+        paragraphStyle = inherit->blocks.back().as_paragraph().style;
+    }
+    cell.blocks.emplace_back(paragraphEmptyCreate(context.keys, paragraphStyle, context.stamp));
+    return cell;
+}
+
+inline void tableGeometrySet(EditTarget target, TableBlock& table,
+                             const std::vector<std::optional<int>>& rows,
+                             const std::vector<std::optional<int>>& columns) {
+    if (rows.empty() || columns.empty()) throw CoreError("unsupportedSyntax", "A table needs at least one cell.");
+    const auto original = table;
+    table.columns.clear();
+    for (size_t c = 0; c < columns.size(); ++c) {
+        const auto& column = columns[c];
+        if (column) table.columns.push_back(original.columns.at(*column));
+        else {
+            auto props = model::make_json_object();
+            if (!table.columns.empty()) props = table.columns.back().props;
+            else {
+                const auto ref = std::find_if(columns.begin() + static_cast<std::ptrdiff_t>(c + 1), columns.end(),
+                                              [](const auto& value) { return value.has_value(); });
+                if (ref != columns.end()) props = original.columns.at(**ref).props;
+                else props = original.columns.front().props;
+            }
+            table.columns.push_back({.key = target.ctx.keys.next("n"), .props = std::move(props)});
+        }
+    }
+    table.rows.clear();
+    for (size_t r = 0; r < rows.size(); ++r) {
+        const auto& row = rows[r];
+        RowModel next;
+        if (row) next = original.rows.at(*row);
+        else {
+            next.key = target.ctx.keys.next("n");
+            if (!table.rows.empty()) next.style = table.rows.back().style;
+            else {
+                const auto ref = std::find_if(rows.begin() + static_cast<std::ptrdiff_t>(r + 1), rows.end(),
+                                              [](const auto& value) { return value.has_value(); });
+                next.style = ref == rows.end() ? make_table_row_style_default() : original.rows.at(**ref).style;
+            }
+        }
+        next.cells.clear();
+        for (size_t c = 0; c < columns.size(); ++c) {
+            const auto& column = columns[c];
+            if (row && column) next.cells.push_back(original.rows.at(*row).cells.at(*column));
+            else {
+                const CellModel* inherit = nullptr;
+                if (!row && !table.rows.empty()) inherit = &table.rows.back().cells[c];
+                else if (row && !next.cells.empty()) inherit = &next.cells.back();
+                else {
+                    const auto refRow = row ? row : [&]() -> std::optional<int> {
+                        const auto found = std::find_if(rows.begin() + static_cast<std::ptrdiff_t>(r + 1), rows.end(),
+                                                        [](const auto& value) { return value.has_value(); });
+                        return found == rows.end() ? std::nullopt : *found;
+                    }();
+                    const auto refColumn = column ? column : [&]() -> std::optional<int> {
+                        const auto found = std::find_if(columns.begin() + static_cast<std::ptrdiff_t>(c + 1), columns.end(),
+                                                        [](const auto& value) { return value.has_value(); });
+                        return found == columns.end() ? std::nullopt : *found;
+                    }();
+                    if (refRow && refColumn) inherit = &original.rows.at(*refRow).cells.at(*refColumn);
+                }
+                next.cells.push_back(tableCellCreate(target.ctx, inherit));
+            }
+        }
+        table.rows.push_back(std::move(next));
+    }
+    for (size_t r = 0; r < original.rows.size(); ++r) for (size_t c = 0; c < original.rows[r].cells.size(); ++c) {
+        if (std::find(rows.begin(), rows.end(), std::optional<int>{static_cast<int>(r)}) == rows.end() ||
+            std::find(columns.begin(), columns.end(), std::optional<int>{static_cast<int>(c)}) == columns.end()) {
+            for (const auto& block : original.rows[r].cells[c].blocks) tombstonesAdd(target, block);
+        }
+    }
+    table.stamp = target.ctx.stamp;
+}
+
 inline std::string tableCreate(
     EditTarget& target,
     int index,

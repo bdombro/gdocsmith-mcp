@@ -9,12 +9,15 @@
 #include "model/test_object_ids.hpp"
 #include "model/test_lists.hpp"
 #include "model/test_layout.hpp"
+#include "model/test_corpus.hpp"
 #include "model/test_from_json.hpp"
 #include "model/test_equivalence.hpp"
+#include "model/test_foundation_assertions.hpp"
 
 // Phase 2: In-Memory Emulator & Conformance tests
 #include "emulator/test_emulate.hpp"
 #include "emulator/test_emulate_structure.hpp"
+#include "emulator/test_dropdown_definition_update.hpp"
 #include "emulator/test_emulate_tables.hpp"
 #include "emulator/test_fake_google.hpp"
 #include "emulator/test_conformance.hpp"
@@ -38,10 +41,11 @@
 #include "engine/test_guard.hpp"
 #include "engine/test_export.hpp"
 #include "engine/test_import.hpp"
-// NOTE(B3): test_transaction.hpp is blocked on B4 — src/engine/transaction.hpp does not
-// compile yet (undefined DocPhaseReceipt/TransactionErrorReceipts/linkRequests/verify/
-// VerifyResolvedOptions). Uncomment once B4 fixes the transaction runner.
-// #include "engine/test_transaction.hpp"
+#include "engine/test_import_structure.hpp"
+#include "engine/test_import_errors.hpp"
+#include "engine/test_import_review_writes.hpp"
+#include "engine/test_import_styles.hpp"
+#include "engine/test_transaction.hpp"
 
 // Phase 6: API client tests
 #include "api/test_api.hpp"

@@ -114,6 +114,34 @@ TEST_SUITE("emulator::emulate_structure") {
         CHECK(res_del.json["tabs"].get<slimr::Json::array_t>().size() == 1);
     }
 
+    TEST_CASE("indexed parent and child tab insertion preserves tab identity and order") {
+        auto parent = requests_emulate(make_simple_doc({"original"}), {
+            slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
+                {"tabProperties", slimr::Json::object_t{
+                    {"title", "Parent"}, {"index", int64_t{0}}
+                }}
+            }}}
+        });
+        auto parent_id = parent.replies[0]["addDocumentTab"]["tabProperties"]["tabId"].get<std::string>();
+        auto child = requests_emulate(parent.json, {
+            slimr::Json::object_t{{"addDocumentTab", slimr::Json::object_t{
+                {"tabProperties", slimr::Json::object_t{
+                    {"title", "Child"}, {"parentTabId", parent_id}, {"index", int64_t{0}}
+                }}
+            }}}
+        });
+        const auto& roots = child.json["tabs"].get<slimr::Json::array_t>();
+        REQUIRE(roots.size() == 2);
+        CHECK(roots[0]["tabProperties"]["tabId"].get<std::string>() == parent_id);
+        CHECK(roots[1]["tabProperties"]["tabId"].get<std::string>() == "t.0");
+        CHECK(doc_plain_text(child.json, 1) == "original\n");
+        const auto& children = roots[0]["childTabs"].get<slimr::Json::array_t>();
+        REQUIRE(children.size() == 1);
+        CHECK(children[0]["tabProperties"]["parentTabId"].get<std::string>() == parent_id);
+        CHECK(children[0]["tabProperties"]["tabId"] ==
+              child.replies[0]["addDocumentTab"]["tabProperties"]["tabId"]);
+    }
+
     TEST_CASE("updateDocumentStyle applies dotted field paths") {
         slimr::Json doc = make_simple_doc({"a"});
         std::vector<slimr::Json> reqs = {

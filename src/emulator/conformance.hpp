@@ -326,9 +326,11 @@ inline std::vector<std::string> conformance_compare(const ConformanceFixture& fx
         diffs.push_back(std::string("parse error: ") + e.what());
     }
 
-    if (fx.replies.has_value()) {
+    {
         slimr::Json::array_t exp_reps;
-        for (const auto& r : *fx.replies) exp_reps.push_back(r);
+        if (fx.replies) {
+            for (const auto& r : *fx.replies) exp_reps.push_back(r);
+        }
         slimr::Json live_shape = reply_shape(exp_reps);
 
         slimr::Json::array_t act_reps;

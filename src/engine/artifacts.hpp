@@ -9,6 +9,7 @@
 #include <fcntl.h>
 
 #include <chrono>
+#include <atomic>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -16,6 +17,7 @@
 #include <filesystem>
 #include <fstream>
 #include <mutex>
+#include <map>
 #include <optional>
 #include <regex>
 #include <sstream>
@@ -80,6 +82,7 @@ struct WriteAttempt {
     std::string outcome = "pending"; // "pending" | "confirmed" | "rejected" | "unknown"
     int requestCount = 0;
     std::optional<std::string> revision;
+    std::optional<slimr::Json> receipt;
 
     bool operator==(const WriteAttempt&) const = default;
 };
@@ -273,14 +276,21 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "import path must be absolute");
     }
 
-    int fd = open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
+    struct InputFd {
+        int value = -1;
+        ~InputFd() { if (value >= 0) close(value); }
+        InputFd(const InputFd&) = delete;
+        InputFd& operator=(const InputFd&) = delete;
+        explicit InputFd(int descriptor) : value(descriptor) {}
+    } descriptor(open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC));
+    const int fd = descriptor.value;
     if (fd < 0) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "cannot open import file: " + path);
     }
 
     struct stat before{};
-    if (fstat(fd, &before) != 0 || !S_ISREG(before.st_mode) || before.st_size > static_cast<off_t>(DOCUMENT_FILE_BYTES_MAX)) {
-        close(fd);
+    if (fstat(fd, &before) != 0 || !S_ISREG(before.st_mode) || before.st_size < 0 ||
+        before.st_size > static_cast<off_t>(DOCUMENT_FILE_BYTES_MAX)) {
         throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "import requires a regular file no larger than 16 MiB");
     }
 
@@ -290,7 +300,6 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
         ssize_t n = read(fd, bytes.data() + total, bytes.size() - total);
         if (n < 0) {
             if (errno == EINTR) continue;
-            close(fd);
             throw model::CoreError(std::string(model::error_codes::UNSUPPORTED_SYNTAX), "failed reading import file");
         }
         if (n == 0) break;
@@ -298,11 +307,9 @@ inline FileInputSnapshot inputFileRead(const std::string& path) {
     }
 
     struct stat after{};
-    if (fstat(fd, &after) != 0 || before.st_mtime != after.st_mtime || before.st_size != after.st_size || bytes.size() > DOCUMENT_FILE_BYTES_MAX) {
-        close(fd);
+    if (fstat(fd, &after) != 0 || total != bytes.size() || before.st_mtime != after.st_mtime || before.st_size != after.st_size || bytes.size() > DOCUMENT_FILE_BYTES_MAX) {
         throw model::CoreError(std::string(model::error_codes::STALE_BASE), "the import file changed while it was being read");
     }
-    close(fd);
 
     char realPathBuf[PATH_MAX]{};
     std::string canonicalPath = path;
@@ -402,6 +409,7 @@ inline bool inputFileChanged(const FileInputSnapshot& input) {
 
 class WriteTracker {
 public:
+    std::optional<std::string> failureCode;
     std::map<std::string, std::string> revisions;
     std::map<std::string, slimr::Json> documents;
     std::vector<WriteAttempt> writes;

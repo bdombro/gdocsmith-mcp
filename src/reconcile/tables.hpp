@@ -399,6 +399,10 @@ inline void stylesEmit(
         JsonObject colBefore = (c < state.columns.size()) ? state.columns[c] : make_json_object();
         auto fields = changedFields(colBefore, col.props, {});
         if (fields.empty()) continue;
+        if (col.props.contains("widthType") && col.props["widthType"] == JsonObject("EVENLY_DISTRIBUTED") &&
+            !col.props.contains("width") && std::find(fields.begin(), fields.end(), "width") == fields.end()) {
+            fields.push_back("width");
+        }
         if (std::find(fields.begin(), fields.end(), "width") != fields.end() &&
             std::find(fields.begin(), fields.end(), "widthType") == fields.end()) {
             fields.push_back("widthType");

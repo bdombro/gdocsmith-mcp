@@ -7,6 +7,46 @@ using namespace gdocsmith::emulator;
 using namespace gdocsmith::emulator::test_util;
 
 TEST_SUITE("emulator::requests_emulate") {
+    TEST_CASE("insertText at paragraph start inherits next style and empty paragraph has empty style") {
+        for (const bool empty : {false, true}) {
+            auto doc = make_simple_doc({empty ? "" : "b"});
+            if (!empty) {
+                doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
+                    .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>()[0]
+                    ["textRun"]["textStyle"] = slimr::Json::object_t{{"italic", true}};
+            }
+            const auto result = requests_emulate(doc, {
+                slimr::Json::object_t{{"insertText", slimr::Json::object_t{
+                    {"location", slimr::Json::object_t{{"index", 1}}}, {"text", empty ? "x" : "a"}
+                }}}
+            });
+            CHECK(doc_plain_text(result.json) == (empty ? "x\n" : "ab\n"));
+            const auto& elements = result.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
+                .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
+            REQUIRE_FALSE(elements.empty());
+            const slimr::Json expected = empty ? slimr::Json(slimr::Json::object_t{})
+                : slimr::Json(slimr::Json::object_t{{"italic", true}});
+            CHECK(elements[0]["textRun"]["textStyle"] == expected);
+        }
+    }
+
+    TEST_CASE("newline at list paragraph start copies the bullet to both halves") {
+        auto doc = make_simple_doc({"ab"});
+        const slimr::Json bullet = slimr::Json::object_t{{"listId", "kix.l1"}, {"nestingLevel", 1}};
+        doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
+            .get<slimr::Json::array_t>()[1]["paragraph"]["bullet"] = bullet;
+        const auto result = requests_emulate(doc, {
+            slimr::Json::object_t{{"insertText", slimr::Json::object_t{
+                {"location", slimr::Json::object_t{{"index", 1}}}, {"text", "\n"}
+            }}}
+        });
+        const auto& content = result.json["tabs"].get<slimr::Json::array_t>()[0]
+            ["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
+        REQUIRE(content.size() == 3);
+        CHECK(content[1]["paragraph"]["bullet"] == bullet);
+        CHECK(content[2]["paragraph"]["bullet"] == bullet);
+    }
+
     TEST_CASE("insertText inherits style from the previous character in the same paragraph") {
         slimr::Json doc = make_simple_doc({"ab"});
         // Give 'ab' bold style
@@ -58,6 +98,8 @@ TEST_SUITE("emulator::requests_emulate") {
         CHECK(content[1]["paragraph"]["paragraphStyle"]["headingId"].get<std::string>() == "h.orig");
         CHECK(content[2]["paragraph"]["paragraphStyle"].contains("headingId"));
         CHECK(content[2]["paragraph"]["paragraphStyle"]["headingId"].get<std::string>() != "h.orig");
+        CHECK(content[1]["paragraph"]["paragraphStyle"]["namedStyleType"].get<std::string>() == "HEADING_1");
+        CHECK(content[2]["paragraph"]["paragraphStyle"]["namedStyleType"].get<std::string>() == "HEADING_1");
     }
 
     TEST_CASE("deleteContentRange merges paragraphs carrying original state") {
@@ -87,6 +129,9 @@ TEST_SUITE("emulator::requests_emulate") {
 
     TEST_CASE("updateTextStyle applies fields") {
         slimr::Json doc = make_simple_doc({"ab"});
+        doc["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
+            .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>()[0]
+            ["textRun"]["textStyle"] = slimr::Json::object_t{{"bold", true}, {"italic", true}};
         std::vector<slimr::Json> reqs = {
             slimr::Json::object_t{
                 {"updateTextStyle", slimr::Json::object_t{
@@ -103,6 +148,25 @@ TEST_SUITE("emulator::requests_emulate") {
         auto p_elems = res.json["tabs"].get<slimr::Json::array_t>()[0]["documentTab"]["body"]["content"]
                            .get<slimr::Json::array_t>()[1]["paragraph"]["elements"].get<slimr::Json::array_t>();
         CHECK(json_bool(p_elems[0]["textRun"]["textStyle"]["underline"]) == true);
+        CHECK(json_bool(p_elems[0]["textRun"]["textStyle"]["italic"]) == true);
+    }
+
+    TEST_CASE("deleteContentRange starting at paragraph start retains the following heading state") {
+        auto doc = make_simple_doc({"AAA", "BBB"});
+        auto& content = doc["tabs"].get<slimr::Json::array_t>()[0]
+            ["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
+        content[1]["paragraph"]["paragraphStyle"]["namedStyleType"] = "HEADING_1";
+        content[2]["paragraph"]["paragraphStyle"]["namedStyleType"] = "HEADING_2";
+        const auto result = requests_emulate(doc, {
+            slimr::Json::object_t{{"deleteContentRange", slimr::Json::object_t{
+                {"range", slimr::Json::object_t{{"startIndex", 1}, {"endIndex", 6}}}
+            }}}
+        });
+        CHECK(doc_plain_text(result.json) == "BB\n");
+        const auto& after = result.json["tabs"].get<slimr::Json::array_t>()[0]
+            ["documentTab"]["body"]["content"].get<slimr::Json::array_t>();
+        REQUIRE(after.size() == 2);
+        CHECK(after[1]["paragraph"]["paragraphStyle"]["namedStyleType"] == slimr::Json("HEADING_2"));
     }
 
     TEST_CASE("createParagraphBullets and deleteParagraphBullets") {

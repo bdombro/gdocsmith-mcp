@@ -4,6 +4,7 @@
 #include "engine/guard.hpp"
 #include "engine/load.hpp"
 #include "engine/session.hpp"
+#include "lens/links.hpp"
 #include "model/equivalence.hpp"
 #include "model/errors.hpp"
 #include "model/types.hpp"
@@ -163,6 +164,15 @@ inline std::vector<TabDiff> tabDiffs(const model::DocModel& original, const mode
 inline Plan planBuild(CoreSession& session) {
     std::vector<PlannedDoc> docs;
     std::map<std::string, std::vector<CommentAnchor>> anchors;
+    std::vector<model::DocModel> intentLinkSources;
+    for (const auto& [id, state] : session.docs) {
+        (void)id;
+        intentLinkSources.push_back(state.current);
+    }
+    for (auto& [id, state] : session.docs) {
+        (void)id;
+        lens::documentLinksResolve(state.current, intentLinkSources);
+    }
 
     for (auto& [docId, state] : session.docs) {
         std::vector<CommentAnchor> comments = session.commentAnchorsFor(state);
@@ -221,6 +231,8 @@ inline Plan planBuild(CoreSession& session) {
             .original = state.original,
             .plan = doc.plan,
             .tombstones = state.tombstones,
+            .managedNamedRangeIds = state.managedNamedRangeIds,
+            .imageRecreations = state.imageRecreations,
         });
     }
 

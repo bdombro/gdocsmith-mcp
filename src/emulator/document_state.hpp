@@ -126,7 +126,9 @@ inline AtomRawResult atom_from_raw_element(const slimr::Json& el) {
         slimr::Json payload = el[key];
         std::vector<std::string> del_ids;
         std::vector<std::string> ins_ids;
-        slimr::Json style = slimr::Json::object_t{};
+        // Null denotes absent atom style; an explicitly supplied {} must remain an object.
+        // Text-style mutations materialize an object themselves, including legitimate clears.
+        slimr::Json style{nullptr};
 
         if (payload.contains("suggestedDeletionIds") && payload["suggestedDeletionIds"].is_array()) {
             for (const auto& id : payload["suggestedDeletionIds"].get<slimr::Json::array_t>()) {

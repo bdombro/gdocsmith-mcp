@@ -1,0 +1,54 @@
+{
+  "target": {
+    "documentId": "synthetic-doc", "revisionId": "rev-1", "title": "Example",
+    "tabs": [{
+      "tabProperties": {"tabId": "t.0", "title": "Overview"},
+      "documentTab": {
+        "body": {"content": [
+          {"startIndex": 0, "endIndex": 1, "sectionBreak": {"sectionStyle": {}}},
+          {"startIndex": 1, "endIndex": 13, "paragraph": {
+            "elements": [
+              {"startIndex": 1, "endIndex": 12, "textRun": {"content": "Hello world", "textStyle": {}}},
+              {"startIndex": 12, "endIndex": 13, "textRun": {"content": "\n", "textStyle": {}}}
+            ], "paragraphStyle": {}
+          }}
+        ]},
+        "lists": {},
+        "namedStyles": {"styles": [
+          {"namedStyleType": "NORMAL_TEXT", "textStyle": {"fontSize": {"magnitude": 11, "unit": "PT"}, "weightedFontFamily": {"fontFamily": "Arial", "weight": 400}}, "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"}}
+        ]}
+      }
+    }]
+  },
+  "source": {
+    "documentId": "synthetic-source", "revisionId": "rev-1", "title": "Image source",
+    "tabs": [{
+      "tabProperties": {"tabId": "t.0", "title": "Source"},
+      "documentTab": {
+        "body": {"content": [
+          {"startIndex": 0, "endIndex": 1, "sectionBreak": {"sectionStyle": {}}},
+          {"startIndex": 1, "endIndex": 6, "paragraph": {
+            "elements": [
+              {"startIndex": 1, "endIndex": 2, "inlineObjectElement": {"inlineObjectId": "kix.seed-image"}},
+              {"startIndex": 2, "endIndex": 5, "textRun": {"content": "Pic", "textStyle": {}}},
+              {"startIndex": 5, "endIndex": 6, "textRun": {"content": "\n", "textStyle": {}}}
+            ], "paragraphStyle": {}
+          }}
+        ]},
+        "lists": {},
+        "namedStyles": {"styles": [
+          {"namedStyleType": "NORMAL_TEXT", "textStyle": {"fontSize": {"magnitude": 11, "unit": "PT"}, "weightedFontFamily": {"fontFamily": "Arial", "weight": 400}}, "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"}}
+        ]},
+        "inlineObjects": {
+          "kix.seed-image": {
+            "objectId": "kix.seed-image",
+            "inlineObjectProperties": {"embeddedObject": {
+              "imageProperties": {"contentUri": "https://synthetic.googleusercontent.invalid/source-image"},
+              "size": {"height": {"magnitude": 50, "unit": "PT"}, "width": {"magnitude": 100, "unit": "PT"}}
+            }}
+          }
+        }
+      }
+    }]
+  }
+}
