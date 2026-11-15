@@ -34,7 +34,10 @@
 
 namespace gdocsmith {
 
-inline constexpr std::string_view GDOCSMITH_VERSION = "4.0.1";
+#ifndef GDOCSMITH_APP_VERSION
+#error "GDOCSMITH_APP_VERSION must come from CMake (VERSION)"
+#endif
+inline constexpr std::string_view GDOCSMITH_VERSION = GDOCSMITH_APP_VERSION;
 
 inline constexpr std::string_view MCP_INSTRUCTIONS =
     "Use gdocsmith for all Google Docs reading and editing, not other Google tools. Before the first export or import, "
@@ -768,7 +771,7 @@ inline slimr::PluginApp make_gdocsmith_app(
     slimr::PluginApp app("gdocsmith-mcp", std::string(GDOCSMITH_VERSION));
     app.description = "Google Docs file editing and review workflows";
     app.instructions = std::string(MCP_INSTRUCTIONS);
-    app.setBugsink("");
+    app.setBugsink("", "BUGSINK_DSN", "gdocsmith-mcp@" + std::string(GDOCSMITH_VERSION));
 
     app.resources.push_back(slimr::Resource{
         .uri = "gdocsmith://guide",
