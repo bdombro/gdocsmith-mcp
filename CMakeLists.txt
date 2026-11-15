@@ -4,7 +4,10 @@ if(CMAKE_HOST_APPLE AND NOT CMAKE_OSX_SYSROOT)
         OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND_ERROR_IS_FATAL ANY)
 endif()
-project(gdocsmith_mcp LANGUAGES CXX)
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" GDOCSMITH_MCP_VERSION LIMIT_COUNT 1)
+string(STRIP "${GDOCSMITH_MCP_VERSION}" GDOCSMITH_MCP_VERSION)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION")
+project(gdocsmith_mcp VERSION "${GDOCSMITH_MCP_VERSION}" LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,6 +27,11 @@ if(APPLE)
     find_library(COREFOUNDATION_FRAMEWORK CoreFoundation REQUIRED)
     target_link_libraries(app_options INTERFACE "${COREFOUNDATION_FRAMEWORK}")
 endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    string(APPEND CMAKE_REQUIRED_FLAGS " -stdlib=libc++")
+    target_compile_options(app_options INTERFACE -stdlib=libc++)
+    target_link_options(app_options INTERFACE -stdlib=libc++ $<$<CONFIG:Release>:-static-libstdc++>)
+endif()
 target_compile_options(app_options INTERFACE -ftrivial-auto-var-init=zero)
 check_cxx_source_compiles("
 #include <version>
@@ -38,6 +46,7 @@ if(NOT HAVE_LIBCPP_HARDENING)
     message(FATAL_ERROR "Use a Clang/libc++ toolchain supporting FAST hardening")
 endif()
 target_compile_definitions(app_options INTERFACE
+    GDOCSMITH_APP_VERSION="${PROJECT_VERSION}"
     _LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST)
 if(ENABLE_SANITIZERS)
     target_compile_options(app_options INTERFACE

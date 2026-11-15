@@ -5,14 +5,14 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const [executable, expected] = process.argv.slice(2);
-assert(executable && expected, "Usage: test-mcp.mjs <executable> <comma-separated-tools>");
+assert(executable && expected, "Usage: test-mcp.ts <executable> <comma-separated-tools>");
 const binary = path.resolve(executable);
 const expectedTools = expected.split(",").filter(Boolean);
 const temporary = mkdtempSync(path.join(tmpdir(), "mcp-july-conformance-"));
 
 const JULY_VERSION = "2026-07-28";
 
-function isolatedEnv() {
+function isolatedEnv(): Record<string, string> {
   return {
     HOME: temporary,
     PATH: "/usr/bin:/bin",
@@ -23,7 +23,7 @@ function isolatedEnv() {
   };
 }
 
-function rpcRequest(id, method, params = {}) {
+function rpcRequest(id: number, method: string, params: Record<string, unknown> = {}) {
   return {
     jsonrpc: "2.0",
     id,
@@ -38,7 +38,7 @@ function rpcRequest(id, method, params = {}) {
   };
 }
 
-function assertDiscoverResult(resp, label) {
+function assertDiscoverResult(resp: any, label: string): string {
   assert(resp?.result, `${label}: missing server/discover result`);
   assert.equal(resp.result.resultType, "complete", `${label}: missing resultType=complete on discover`);
   assert.deepEqual(resp.result.supportedVersions, [JULY_VERSION], `${label}: server must support only ${JULY_VERSION}`);
@@ -48,11 +48,11 @@ function assertDiscoverResult(resp, label) {
   return serverName;
 }
 
-function assertToolsListResult(resp, label) {
+function assertToolsListResult(resp: any, label: string): Map<string, any> {
   assert(Array.isArray(resp?.result?.tools), `${label}: missing tools array`);
   assert.equal(resp.result.resultType, "complete", `${label}: missing resultType=complete on tools/list`);
   assert(typeof resp.result.ttlMs === "number" && resp.result.ttlMs >= 0, `${label}: missing CacheableResult.ttlMs on tools/list`);
-  const tools = new Map(resp.result.tools.map(tool => [tool.name, tool]));
+  const tools = new Map<string, any>(resp.result.tools.map((tool: any) => [tool.name, tool]));
   for (const name of expectedTools) {
     assert(tools.has(name), `${label}: missing tool: ${name}`);
     assert.equal(tools.get(name).inputSchema?.type, "object", `${label}: invalid schema: ${name}`);
@@ -60,8 +60,8 @@ function assertToolsListResult(resp, label) {
   return tools;
 }
 
-async function runStdioSession(messages) {
-  const child = spawn(binary, ["mcp"], {
+async function runStdioSession(messages: unknown[]): Promise<Map<number, any>> {
+  const child = spawn(binary, ["--skip-checks", "mcp"], {
     cwd: temporary,
     env: isolatedEnv(),
     stdio: ["pipe", "pipe", "pipe"],
@@ -82,12 +82,12 @@ async function runStdioSession(messages) {
     }
     child.stdin.end();
 
-    const code = await new Promise((resolve, reject) => {
+    const code = await new Promise<number | null>((resolve, reject) => {
       child.once("error", reject);
       child.once("close", c => resolve(c));
     });
     assert.equal(code, 0, `Stdio server exited ${code}; stderr: ${stderr}`);
-    const responses = new Map();
+    const responses = new Map<number, any>();
     for (const line of stdout.split("\n")) {
       const trimmed = line.trim();
       if (!trimmed) continue;
@@ -100,25 +100,25 @@ async function runStdioSession(messages) {
   }
 }
 
-async function runHttpChecks() {
-  const child = spawn(binary, ["http", "--host", "127.0.0.1", "--port", "0", "--allow-ephemeral-port"], {
+async function runHttpChecks(): Promise<{ serverName: string; toolCount: number }> {
+  const child = spawn(binary, ["--skip-checks", "http", "--host", "127.0.0.1", "--port", "0"], {
     cwd: temporary,
     env: isolatedEnv(),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
   let stderr = "";
-  const endpointPromise = new Promise((resolve, reject) => {
+  const endpointPromise = new Promise<string>((resolve, reject) => {
     const timer = setTimeout(() => {
       reject(new Error(`Timed out waiting for HTTP server startup; stderr: ${stderr}`));
     }, 10000);
 
     child.stderr.setEncoding("utf8").on("data", chunk => {
       stderr += chunk;
-      const match = /listening on (http:\/\/127\.0\.0\.1:\d+\/mcp)/.exec(stderr);
+      const match = /listening on (http:\/\/(?:127\.0\.0\.1|0\.0\.0\.0):\d+\/mcp)/.exec(stderr);
       if (match?.[1]) {
         clearTimeout(timer);
-        resolve(match[1]);
+        resolve(match[1].replace("http://0.0.0.0:", "http://127.0.0.1:"));
       }
     });
     child.once("error", err => {
@@ -137,7 +137,7 @@ async function runHttpChecks() {
     const getResp = await fetch(endpoint, { method: "GET" });
     assert.equal(getResp.status, 405, `HTTP GET ${endpoint} should return 405`);
 
-    const postMcp = async (method, body) => {
+    const postMcp = async (method: string, body: unknown) => {
       const resp = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -169,7 +169,7 @@ async function runHttpChecks() {
     assert.equal(legacyInit.status, 404, "HTTP legacy initialize must return 404");
     assert.equal(legacyInit.json?.error?.code, -32601, "HTTP legacy initialize must fail with -32601");
 
-    const exitPromise = new Promise((resolve, reject) => {
+    const exitPromise = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve, reject) => {
       const killTimer = setTimeout(() => {
         child.kill("SIGKILL");
         reject(new Error("HTTP server did not exit cleanly on SIGTERM"));
