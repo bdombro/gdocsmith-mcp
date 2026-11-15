@@ -14,7 +14,18 @@
 int main(int argc, char *argv[]) {
     // Over stdio the server runs in the agent's workspace, so working copies go under <cwd>/.gdocsmith;
     // otherwise (HTTP service, CLI) they live in the private per-user temp root.
-    if (argc > 1 && std::strcmp(argv[1], "mcp") == 0) {
+    bool isMcpMode = false;
+    if (argv != nullptr) {
+        for (int i = 1; i < argc; ++i) {
+            if (argv[i] == nullptr)
+                continue;
+            if (std::strcmp(argv[i], "--skip-checks") == 0)
+                continue;
+            isMcpMode = (std::strcmp(argv[i], "mcp") == 0);
+            break;
+        }
+    }
+    if (isMcpMode) {
         std::error_code ec;
         auto cwd = std::filesystem::current_path(ec);
         if (!ec)
