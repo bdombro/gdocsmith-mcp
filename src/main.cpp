@@ -14,8 +14,7 @@
 #include <utility>
 #include <vector>
 
-/* Entry point. One binary, three surfaces (all share make_gdocsmith_app):
- *   gdocsmith-mcp mcp                         stdio MCP server (NDJSON)
+/* Entry point. One binary, two surfaces (all share make_gdocsmith_app):
  *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 0.0.0.0:10007)
  *   gdocsmith-mcp <tool> ['{"doc":"..."}']    narrow JSON CLI (export, import, file, status)
  */
@@ -53,35 +52,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    bool isMcpMode = false;
-    for (size_t i = 1; i < filteredArgv.size(); ++i) {
-        if (std::strcmp(filteredArgv[i], "--skip-checks") == 0)
-            continue;
-        isMcpMode = (std::strcmp(filteredArgv[i], "mcp") == 0);
-        break;
-    }
-
     std::unique_ptr<app_log::LogFileGuard> logGuard;
     if (logFile.has_value()) {
-        if (isMcpMode) {
-            std::cerr << "--log-file cannot be used with mcp stdio mode\n";
-            return 1;
-        }
         auto opened = app_log::LogFileGuard::open(*logFile);
         if (!opened) {
             std::cerr << opened.error() << "\n";
             return 1;
         }
         logGuard = std::move(*opened);
-    }
-
-    // Over stdio the server runs in the agent's workspace, so working copies go under <cwd>/.gdocsmith;
-    // otherwise (HTTP service, CLI) they live in $(brew --prefix)/var/gdocsmith-mcp.
-    if (isMcpMode) {
-        std::error_code ec;
-        auto cwd = std::filesystem::current_path(ec);
-        if (!ec)
-            gdocsmith::engine::artifactWorkspaceSet(cwd.string());
     }
 
     auto app = gdocsmith::make_gdocsmith_app();

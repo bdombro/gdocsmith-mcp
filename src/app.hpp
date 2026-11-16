@@ -55,6 +55,10 @@ struct StatusInput {
     slimr::OptField<std::optional<bool>, "Emit JSON."> json{false};
 };
 
+struct StatusOutput {
+    slimr::Field<std::string, "gdocsmith-mcp version."> version;
+};
+
 struct ExportInput {
     slimr::Field<std::string, "Google Docs ID or canonical document URL."> doc;
     slimr::OptField<std::optional<bool>, "Also write resolved comments' blocks; needed to reopen one."> commentsIncludeResolved{false};
@@ -62,6 +66,15 @@ struct ExportInput {
                     "Also download Drive-hosted images into the export folder to look at them: true for all, or a list of image ids. "
                     "Returned as images (id to file path).">
         imagesDownload;
+};
+
+struct ExportOutput {
+    slimr::Field<std::string, "Absolute path to the exported markdown file."> exportPath;
+    slimr::Field<std::vector<std::string>, "Non-fatal warnings from export."> warnings;
+    slimr::OptField<std::optional<int64_t>, "1-based line number of the comments section."> commentsLine;
+    slimr::OptField<std::optional<int64_t>, "1-based line number of the suggestions section."> suggestionsLine;
+    slimr::OptField<std::optional<std::map<std::string, std::string>>, "Downloaded image paths keyed by image ID."> images;
+    slimr::OptField<std::optional<std::string>, "Directory containing downloaded images."> imagesDir;
 };
 
 struct ImportInput {
@@ -422,7 +435,7 @@ inline engine::DriveComment to_engine_comment(const DriveComment &c) {
 }
 
 /** Fresh full-document export with comment blocks, written to the export folder (port of fileExport). */
-inline slimr::Json file_export(
+inline ExportOutput file_export(
     const ExportInput &in,
     const HttpTransport &transport,
     const GwsRunner &runner) {
@@ -490,23 +503,23 @@ inline slimr::Json file_export(
     };
     engine::ExportWritten written = engine::exportModel(model, comments, services, options, plainText);
 
-    slimr::Json out = slimr::Json::object_t{};
+    ExportOutput out;
     if (written.commentsLine)
-        out["commentsLine"] = static_cast<int64_t>(*written.commentsLine);
-    out["exportPath"] = written.exportPath;
+        out.commentsLine = static_cast<int64_t>(*written.commentsLine);
+    out.exportPath = written.exportPath;
     if (written.images) {
-        slimr::Json::object_t images;
+        std::map<std::string, std::string> images;
         for (const auto &[id, path] : *written.images)
             images[id] = path;
-        out["images"] = std::move(images);
+        out.images = std::move(images);
     }
     if (written.imagesDir)
-        out["imagesDir"] = *written.imagesDir;
+        out.imagesDir = *written.imagesDir;
     if (written.suggestionsLine)
-        out["suggestionsLine"] = static_cast<int64_t>(*written.suggestionsLine);
+        out.suggestionsLine = static_cast<int64_t>(*written.suggestionsLine);
     std::vector<std::string> allWarnings = written.warnings;
     allWarnings.insert(allWarnings.end(), warnings.begin(), warnings.end());
-    out["warnings"] = strings_json(allWarnings);
+    out.warnings = std::move(allWarnings);
     return out;
 }
 
@@ -790,19 +803,18 @@ inline slimr::PluginApp make_gdocsmith_app(
         "status",
         "Show the app version without making Google calls.",
         readOnlyAnn,
-        [](const StatusInput &) -> slimr::McpResult {
-            slimr::Json out = slimr::Json::object_t{{"version", std::string(GDOCSMITH_VERSION)}};
-            return detail::command_result(std::move(out));
+        [](const StatusInput &) -> StatusOutput {
+            return StatusOutput{.version = std::string(GDOCSMITH_VERSION)};
         });
 
     app.tool<ExportInput>(
         "export",
         "Export a Google Doc to a local partial Markdown view, with optional image downloads. Rich content preservation is incomplete; this is not a faithful backup.",
         exportAnn,
-        [transport, runner](const ExportInput &in) -> slimr::McpResult {
+        [transport, runner](const ExportInput &in) -> ExportOutput {
             const std::string key = detail::document_key(in.doc.get());
-            return detail::document_serialized(key, [&]() -> slimr::McpResult {
-                return detail::command_result(detail::file_export(in, transport, runner));
+            return detail::document_serialized(key, [&]() -> ExportOutput {
+                return detail::file_export(in, transport, runner);
             });
         });
 

@@ -27,7 +27,7 @@ After setup, ask your agent:
 - Export rich Markdown with identities and review context; edit supported rich intent with explicit guards and unsupported-operation refusals.
 - Import supported changes through revision-locked, guarded transactions and authoritative readback; preserve intended edits during failure recovery.
 - Copy complex documents losslessly when unsupported objects must be preserved.
-- Standalone ARM64 macOS and x64 Linux binary exposing CLI, stdio MCP, and Streamable HTTP (`0.0.0.0:10007`); no Node/V8 runtime.
+- Standalone ARM64 macOS and x64 Linux binary exposing CLI and Streamable HTTP (`0.0.0.0:10007`); no Node/V8 runtime.
 
 ## Install
 
@@ -100,7 +100,7 @@ Or in `.mcp.json`:
 ```
 
 Use either an explicit server entry or a plugin manifest, not both. Alternative
-client schemas and stdio configuration are in [development](docs/development.md).
+client schemas are in [development](docs/development.md).
 
 ## Workflow
 
@@ -111,7 +111,7 @@ client schemas and stdio configuration are in [development](docs/development.md)
 
 ## Tools & CLI Commands
 
-Every tool is exposed over MCP (`gdocsmith-mcp mcp` or `gdocsmith-mcp http`) and on the CLI (`gdocsmith-mcp <tool> ['{"arg":"val"}']`). The MCP server also serves the complete syntax and safety specification as the `gdocsmith://guide` resource (readable via `resources/read` or the `mcp_resource_read` tool). When installed via Homebrew, `docs/agent-guide.md` is installed into `pkgshare` and resolved relative to the executable.
+Every tool is exposed over Streamable HTTP (`gdocsmith-mcp http`) and on the CLI (`gdocsmith-mcp <tool> ['{"arg":"val"}']`). The MCP server also serves the complete syntax and safety specification as the `gdocsmith://guide` resource (readable via `resources/read` or the `mcp_resource_read` tool). When installed via Homebrew, `docs/agent-guide.md` is installed into `pkgshare` and resolved relative to the executable.
 
 | Tool | Mutating | Description |
 | --- | --- | --- |
@@ -177,7 +177,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 - **Recovery:** Never retry creates, copies or comments blindly after an unknown outcome. Inspect authoritative cloud state and reapply only outstanding intent to a fresh export; do not overwrite a revision to bypass a conflict.
 - **Work directory precedence (`src/engine/artifacts.hpp`):**
   1. `$GDOCSMITH_WORK_DIR` if set
-  2. `<workspace>/.gdocsmith` (for stdio `mcp` in a workspace, created `0700` with a `0600` `.gitignore` containing `*\n`)
+  2. `<workspace>/.gdocsmith` (when inside a workspace, created `0700` with a `0600` `.gitignore` containing `*\n`)
   3. `$(brew --prefix)/var/gdocsmith-mcp` (`0700`, used by HTTP services and CLI runs outside a workspace)
   All file writes use atomic temporary-file-and-rename, snapshots are checked with SHA-256, and locally edited `export.md` files are preserved with a warning on re-export.
 - **Per-document FIFO serialization:** Concurrent tool calls targeting the same `docId` are serialized in-process while different documents run in parallel.

@@ -501,7 +501,7 @@ TEST_CASE("public import defaults to injected Docs and Drive through revision-lo
         arguments["newDocStyleBaseline"] = "account";
     if (approved)
         arguments["allow"] = slimr::Json::array_t{"commentChanges"};
-    auto result = tool->handler(arguments, slimr::RequestContext{});
+    auto result = slimr::serve_result_to_mcp_result(tool->handler(arguments, slimr::RequestContext{}));
     REQUIRE(!result.content.empty());
     const auto parsed = slimr::parse_json<slimr::Json>(result.content.front().text);
     REQUIRE(parsed);

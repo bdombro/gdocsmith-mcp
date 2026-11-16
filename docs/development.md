@@ -11,7 +11,9 @@ is not evidence that a runner/platform/client has passed.
 
 ## App Architecture
 
-The standalone MCP server (stdio + Streamable HTTP) and JSON CLI are implemented in native C++26 on the `slimr-*` libraries; Google API access uses `libcurl`.
+## App Architecture
+
+The standalone MCP server (Streamable HTTP) and JSON CLI are implemented in native C++26 on the `slimr-*` libraries.
 
 ```text
 plugins/gdocsmith-mcp/
@@ -27,7 +29,7 @@ plugins/gdocsmith-mcp/
 │   └── workflows/{test,release}.yml # PR/manual test workflow and tag/formula release workflow
 ├── scripts/
 │   ├── doctor.sh                   # Tooling, C++26, LLVM_BIN, VCPKG_ROOT, and Linux linger checks
-│   ├── test-mcp.ts                 # Bun stdio + ephemeral HTTP MCP 2026-07-28 conformance check
+│   ├── test-mcp.ts                 # Bun ephemeral HTTP MCP 2026-07-28 conformance check
 │   ├── release.ts                  # Release version bump, changelog promotion, commit/tag/gh-release
 │   └── formula-shared.ts           # Formula/changelog parsing and SHA-256 helpers
 ├── .clang-format / .clang-tidy     # Formatting and static-analysis config (llvm@23)
@@ -35,7 +37,7 @@ plugins/gdocsmith-mcp/
 ├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:10007/mcp)
 ├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:10007/mcp)
 ├── src/
-│   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), Streamable HTTP (`http`), and `--log-file`
+│   ├── main.cpp                    # Standalone CLI, Streamable HTTP (`http`), and `--log-file`
 │   ├── log_file.hpp                # Stdout/stderr redirect and 10 MiB rotation (`<path>` -> `<path>.1`)
 │   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
 │   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `cpp-httplib`, in-memory OAuth token manager
@@ -66,27 +68,13 @@ plugins/gdocsmith-mcp/
 
 ## Transports & MCP `2026-07-28`
 
-`gdocsmith-mcp` implements the MCP **`2026-07-28`** specification over both stdio and Streamable HTTP:
+`gdocsmith-mcp` implements the MCP **`2026-07-28`** specification over Streamable HTTP:
 
 - **Breaking change (`2026-07-28`):** Session initialization (`initialize`), `notifications/initialized`, `MCP-Session-Id` headers, and SSE `GET`/`DELETE` streams are removed. Clients discover capabilities via `server/discover`, list tools via `tools/list`, read `gdocsmith://guide` via `resources/read` (or the fallback `mcp_resource_read` tool), and invoke tools via `tools/call`. On HTTP `POST /mcp`, callers must send `MCP-Protocol-Version: 2026-07-28` (and `Accept: application/json`), plus `Mcp-Method` (and `Mcp-Name` on `tools/call`). Calling `initialize` returns `-32601 Method not found`.
 - **Streamable HTTP (default `0.0.0.0:10007`):**
   ```bash
   ./build/bin/gdocsmith-mcp http --port 20007
   # Dev endpoint: http://127.0.0.1:20007/mcp
-  ```
-- **Stdio MCP (`mcp`):**
-  ```json
-  {
-    "mcpServers": {
-      "gdocsmith-mcp": {
-        "command": "/absolute/path/to/gdocsmith-mcp",
-        "args": ["mcp"],
-        "env": {
-          "GWS_PROFILE": "default"
-        }
-      }
-    }
-  }
   ```
 - **HTTP client configuration:**
   ```json
@@ -117,7 +105,7 @@ just test "<filter>"   # Build test target and run matching doctest cases
 just build             # Optimized IPO Release binary at build/bin/gdocsmith-mcp (no tests)
 just fmt               # Format C++ sources and justfile
 just lint              # Format check + clang-tidy
-just test-mcp          # Bun stdio + ephemeral HTTP MCP 2026-07-28 conformance check
+just test-mcp          # Bun ephemeral HTTP MCP 2026-07-28 conformance check
 just upgrade-deps      # Pull vcpkg, update registry baselines, and run tests
 just release patch     # Trigger release.yml (test -> build -> tag -> GitHub release) and pull
 just clean             # Remove build/ only; leaves user data untouched
