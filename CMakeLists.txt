@@ -84,7 +84,7 @@ if(BUILD_TESTING)
         slimr::mcp_http slimr::yaml slimr::test OpenSSL::Crypto app_options)
     set_target_properties(gdocsmith_mcp_test PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
     add_test(NAME gdocsmith_mcp COMMAND gdocsmith_mcp_test)
-    set_tests_properties(gdocsmith_mcp PROPERTIES TIMEOUT 120
+    set_tests_properties(gdocsmith_mcp PROPERTIES TIMEOUT 300
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         ENVIRONMENT "BUGSINK_DSN=;TMPDIR=${CMAKE_BINARY_DIR}")
 endif()

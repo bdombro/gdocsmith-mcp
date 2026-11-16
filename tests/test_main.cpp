@@ -1,4 +1,6 @@
 #define SLIMR_TEST_MAIN
+// doctest >=2.4.12 falls back to __LINE__ on Clang >=22, colliding across included test headers.
+#define DOCTEST_COUNTER __COUNTER__
 #include "test.hpp"
 
 #include "test_log_file.hpp"

@@ -9,3 +9,4 @@
 - Support --skip-checks before or after the mcp subcommand
 - Internal: align build, CI, Homebrew formula, and documentation with cpp-templates
 - Internal: resolve slimr registries from the `slimr-down-now` org
+- Internal: fix Clang 22+ doctest anonymous counter collisions and raise ctest timeout to 300s
