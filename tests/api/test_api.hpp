@@ -619,6 +619,14 @@ TEST_CASE("image downloads use bearer URLs without forwarding Google credentials
                          "Image download transport failed.", model::CoreError);
 }
 
+TEST_CASE("CLI runs the status tool") {
+    auto app = gdocsmith::make_gdocsmith_app();
+    char arg0[] = "gdocsmith-mcp";
+    char arg1[] = "status";
+    char *argv[] = {arg0, arg1, nullptr};
+    CHECK(app.run(2, argv) == 0);
+}
+
 TEST_SUITE("api::document_id") {
     TEST_CASE("extracts document ID from URLs and bare IDs") {
         using namespace gdocsmith;
