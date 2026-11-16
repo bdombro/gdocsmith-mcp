@@ -13,7 +13,7 @@ jobs:
       - uses: extractions/setup-just@v3
       - id: p
         run: |
-          runners="$(just --evaluate platforms | jq -Rc 'split(" ") | map(select(length > 0) | {macos: "macos-15", linux: "ubuntu-24.04"}[.] // error("unknown platform: \(.)"))')"
+          runners="$(just --evaluate platforms | jq -Rc 'split(" ") | map(select(length > 0) | {macos: "macos-26", linux: "ubuntu-24.04"}[.] // error("unknown platform: \(.)"))')"
           echo "runners=$runners" >> "$GITHUB_OUTPUT"
 
   test:

@@ -86,18 +86,7 @@ export function detectRepo(repoRoot: string): RepoInfo {
         .sort()
     : [];
 
-  const kinds: RepoKind[] = [];
-  if (formulas.length > 0) kinds.push("formula");
-  if (casks.length > 0) kinds.push("cask");
-  if (ports.length > 0) kinds.push("library");
-
-  if (kinds.length !== 1) {
-    throw new Error(
-      `Cannot determine repo kind in ${repoRoot} (found Formula=${formulas.length}, Casks=${casks.length}, ports=${ports.length}).`,
-    );
-  }
-
-  if (kinds[0] === "formula") {
+  if (formulas.length > 0) {
     if (formulas.length !== 1) {
       throw new Error(`Expected exactly 1 Formula/*.rb file, found ${formulas.length}.`);
     }
@@ -105,12 +94,18 @@ export function detectRepo(repoRoot: string): RepoInfo {
     return { kind: "formula", name, rubyPath: join(formulaDir, formulas[0]) };
   }
 
-  if (kinds[0] === "cask") {
+  if (casks.length > 0) {
     if (casks.length !== 1) {
       throw new Error(`Expected exactly 1 Casks/*.rb file, found ${casks.length}.`);
     }
     const name = casks[0].slice(0, -".rb".length);
     return { kind: "cask", name, rubyPath: join(caskDir, casks[0]) };
+  }
+
+  if (ports.length === 0) {
+    throw new Error(
+      `Cannot determine repo kind in ${repoRoot} (found Formula=${formulas.length}, Casks=${casks.length}, ports=${ports.length}).`,
+    );
   }
 
   if (ports.length === 1) {

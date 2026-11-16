@@ -11,6 +11,7 @@ log := `brew --prefix` + "/var/log/" + formula + ".log"
 llvm := env("LLVM_BIN", `brew --prefix llvm@23` + "/bin")
 cxx := env("CXX", if os() == "macos" { "/usr/bin/clang++" } else { llvm + "/clang++" })
 triplet := replace(replace(arch(), "aarch64", "arm64"), "x86_64", "x64") + if os() == "macos" { "-osx" } else { "-linux" }
+deps_env := if os() == "linux" { "CC=\"" + llvm + "/clang\" CXX=\"" + cxx + "\" LIBCXX_DIR=\"$(dirname \"$(\"" + cxx + "\" -print-file-name=libc++.so)\")\" " } else { "" }
 discover := '{"jsonrpc":"2.0","id":1,"method":"server/discover","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}'
 
 _:
@@ -62,7 +63,7 @@ daemon-stop:
 
 # Install vcpkg dependencies into build/deps
 deps:
-    vcpkg install --x-wait-for-lock --triplet={{ triplet }} --x-install-root=build/deps
+    {{ deps_env }}vcpkg install --x-wait-for-lock --overlay-triplets=triplets --triplet={{ triplet }} --x-install-root=build/deps
 
 # Check required tools, C++26 support and env vars, printing fixes
 doctor:
