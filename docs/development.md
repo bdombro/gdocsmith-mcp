@@ -38,7 +38,7 @@ plugins/gdocsmith-mcp/
 │   ├── main.cpp                    # Standalone CLI, stdio (`mcp`), Streamable HTTP (`http`), and `--log-file`
 │   ├── log_file.hpp                # Stdout/stderr redirect and 10 MiB rotation (`<path>` -> `<path>.1`)
 │   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
-│   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `curl.hpp`, in-memory OAuth token manager
+│   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `cpp-httplib`, in-memory OAuth token manager
 │   ├── model/                      # Google Docs JSON <-> DocModel AST
 │   ├── diff/                       # Myers diff and unified output
 │   ├── lens/                       # Extended Markdown envelope
@@ -58,7 +58,7 @@ plugins/gdocsmith-mcp/
 
 - **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `0.0.0.0:10007`), `gdocsmith://guide` resource registration, `--version`, `--skip-checks`, and narrow JSON CLI.
 - **`<yaml.hpp>` (`slimr-yaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
-- **`<curl.hpp>` (`slimr-curl`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
+- **`cpp-httplib` (`httplib::Client`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
 - **`<json.hpp>` (`slimr-json`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
 - **`<bugsink.hpp>` (`slimr-bugsink`):** Optional error reporting configured with `BUGSINK_DSN` and `release` (`gdocsmith-mcp@<VERSION>`).
 - **`<test.hpp>` (`slimr-test`):** Unit, CLI, and `McpHttpServer` test suite compiled with `-fsanitize=address,undefined`.

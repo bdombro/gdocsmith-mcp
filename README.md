@@ -184,7 +184,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 
 ## Authentication
 
-- Credentials are obtained locally via `gws auth export --unmasked` (using your host `gws` CLI profile) and exchanged in memory against `https://oauth2.googleapis.com/token` over `slimr::curl`. Access tokens stay in process memory and are never written to disk.
+- Credentials are obtained locally via `gws auth export --unmasked` (using your host `gws` CLI profile) and exchanged in memory against `https://oauth2.googleapis.com/token` over `cpp-httplib`. Access tokens stay in process memory and are never written to disk.
 - `gdocsmith-mcp` does **not** run a persistent HTTP Google token broker database, accept external Google OAuth tokens over HTTP, or enable MCP OAuth (`oauth.enabled = false`).
 - Because `brew services` runs under `launchd` or `systemd` without shell profiles, [`Formula/gdocsmith-mcp.rb`](Formula/gdocsmith-mcp.rb) sets `PATH` to `#{HOMEBREW_PREFIX}/bin:/usr/bin:/bin` and sources `$(brew --prefix)/etc/gdocsmith-mcp/env` (`chmod 600`, `KEY=VALUE` pairs) before starting the server.
 

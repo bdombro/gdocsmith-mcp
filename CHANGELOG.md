@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Internal: replace `slimr-curl` with `cpp-httplib` (`httplib::Client`) and upgrade `slimr-mcp` to v0.1.3 / `slimr-bugsink` to v0.1.2
+
 - Internal: switch macOS builds to llvm@23 with static libc++ and hidden symbol exports
 - Embed VERSION into binary (--version / status) and tag Bugsink events with gdocsmith-mcp@<version>
 - Bind HTTP server to 0.0.0.0:10007 by default (pass --host 127.0.0.1 for loopback-only)

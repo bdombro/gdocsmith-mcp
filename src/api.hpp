@@ -1,15 +1,16 @@
 #pragma once
 
-#include "curl.hpp"
 #include "json.hpp"
 #include "model/errors.hpp"
 
+#include <httplib.h>
 #include <poll.h>
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <chrono>
 #include <condition_variable>
@@ -52,19 +53,91 @@ struct HttpCallResponse {
 using HttpTransport = std::function<HttpCallResponse(const HttpCall &)>;
 using GwsRunner = std::function<std::string(const std::vector<std::string> &args)>;
 
-inline HttpCallResponse default_curl_transport(const HttpCall &req) {
-    slimr::HttpRequest r;
-    r.method = req.method;
-    r.url = req.url;
-    r.headers = req.headers;
-    r.body = req.body;
-    r.timeoutMs = req.timeoutMs;
-    auto resp = slimr::request(r);
-    return HttpCallResponse{
-        .status = resp.status,
-        .headers = std::move(resp.headers),
-        .body = std::move(resp.body),
-    };
+inline HttpCallResponse default_http_transport(const HttpCall &req) {
+    const std::string_view urlView(req.url);
+    const auto schemeEnd = urlView.find("://");
+    if (schemeEnd == std::string_view::npos) {
+        throw std::runtime_error("HTTP request failed: invalid URL");
+    }
+    const auto authorityStart = schemeEnd + 3;
+    const auto pathStart = urlView.find_first_of("/?#", authorityStart);
+    const std::string baseUrl(urlView.substr(0, pathStart));
+
+    std::string pathAndQuery = "/";
+    if (pathStart != std::string_view::npos) {
+        auto rest = urlView.substr(pathStart);
+        if (const auto frag = rest.find('#'); frag != std::string_view::npos) {
+            rest = rest.substr(0, frag);
+        }
+        if (rest.starts_with('?')) {
+            pathAndQuery = "/" + std::string(rest);
+        } else if (!rest.empty()) {
+            pathAndQuery = std::string(rest);
+        }
+    }
+
+    httplib::Client cli(baseUrl);
+    if (!cli.is_valid()) {
+        throw std::runtime_error("HTTP request failed: invalid URL");
+    }
+
+    const long timeoutMs = std::max(1L, req.timeoutMs);
+    const time_t sec = timeoutMs / 1000;
+    const time_t usec = (timeoutMs % 1000) * 1000;
+    cli.set_connection_timeout(sec, usec);
+    cli.set_read_timeout(sec, usec);
+    cli.set_write_timeout(sec, usec);
+
+    httplib::Headers hdrs;
+    std::string contentType;
+    for (const auto &[k, v] : req.headers) {
+        std::string lower;
+        lower.reserve(k.size());
+        for (const unsigned char ch : k) {
+            lower.push_back(static_cast<char>(std::tolower(ch)));
+        }
+        if (lower == "content-type") {
+            contentType = v;
+        } else {
+            hdrs.emplace(k, v);
+        }
+    }
+
+    httplib::Result res;
+    if (req.method == "GET") {
+        res = cli.Get(pathAndQuery, hdrs);
+    } else if (req.method == "POST") {
+        res = cli.Post(pathAndQuery, hdrs, req.body, contentType);
+    } else if (req.method == "PUT") {
+        res = cli.Put(pathAndQuery, hdrs, req.body, contentType);
+    } else if (req.method == "PATCH") {
+        res = cli.Patch(pathAndQuery, hdrs, req.body, contentType);
+    } else if (req.method == "DELETE") {
+        if (req.body.empty() && contentType.empty()) {
+            res = cli.Delete(pathAndQuery, hdrs);
+        } else {
+            res = cli.Delete(pathAndQuery, hdrs, req.body, contentType);
+        }
+    } else {
+        throw std::runtime_error("HTTP request failed: unsupported method " + req.method);
+    }
+
+    if (!res) {
+        throw std::runtime_error("HTTP request failed: " + httplib::to_string(res.error()));
+    }
+
+    HttpCallResponse out;
+    out.status = res->status;
+    out.body = std::move(res->body);
+    for (const auto &[k, v] : res->headers) {
+        std::string lower;
+        lower.reserve(k.size());
+        for (const unsigned char ch : k) {
+            lower.push_back(static_cast<char>(std::tolower(ch)));
+        }
+        out.headers[lower] = v;
+    }
+    return out;
 }
 
 namespace detail {
@@ -262,7 +335,7 @@ struct TokenRefresh {
 inline std::shared_ptr<TokenRefresh> g_pending_refresh;
 
 inline std::string url_encode(std::string_view sv) {
-    return slimr::url_encode(sv);
+    return httplib::encode_uri_component(std::string(sv));
 }
 
 } // namespace detail
@@ -337,7 +410,7 @@ inline CachedToken access_token_refresh(
         if (transport) {
             res = transport(req);
         } else {
-            res = default_curl_transport(req);
+            res = default_http_transport(req);
         }
     } catch (const std::exception &error) {
         throw std::runtime_error("Google OAuth token refresh failed: " + std::string(error.what()));
@@ -906,7 +979,7 @@ inline HttpCallResponse google_api_fetch(
     const std::string &body = "",
     const std::map<std::string, std::string> &customHeaders = {},
     const std::string &targetId = "") {
-    auto fn = transport ? transport : default_curl_transport;
+    auto fn = transport ? transport : default_http_transport;
     std::string token = valid_access_token_get(false, transport, runner);
 
     std::map<std::string, std::string> headers = customHeaders;
@@ -963,7 +1036,7 @@ inline HttpCallResponse fetch_with_retry(
     const std::map<std::string, std::string> &customHeaders = {},
     const std::string &targetId = "",
     const FetchRetryOptions &options = {}) {
-    auto fn = transport ? transport : default_curl_transport;
+    auto fn = transport ? transport : default_http_transport;
     long backoff = options.backoffMs;
     int maxAttempts = std::max(1, options.retries);
     std::string lastError;
@@ -1041,7 +1114,7 @@ class DocsClient {
         request.url = contentUri;
         HttpCallResponse response;
         try {
-            response = transport ? transport(request) : default_curl_transport(request);
+            response = transport ? transport(request) : default_http_transport(request);
         } catch (const std::exception &) {
             // Transport diagnostics may contain the credential-bearing URL.
             throw model::CoreError("operationFailed", "Image download transport failed.");

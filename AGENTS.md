@@ -93,7 +93,7 @@ with implemented behavior; do not claim unverified release or client support.
 | `src/engine/load.hpp`, `guard.hpp`, `plan.hpp` | Loading a document into a `DocModel` (`docLoad`) and resolving comment anchors, request-origin guards (`allow` gates), emulator-checked plans, and per-tab unified diffs | Direct HTTP I/O |
 | `src/engine/session.hpp`, `transaction.hpp`, `flush.hpp` | In-memory document session (`DocHandle`/`TabHandle`), phased create/update/comment transactions, and flushing pending requests | Markdown parsing or rendering |
 | `src/engine/export.hpp`, `import.hpp` | Export orchestration (`exportModel`) and the import pipeline (stale-base check, reconcile, write, verify, re-export) | Own network transport |
-| `src/api.hpp` | `DocsClient` & `DriveClient` over `curl.hpp`, `exec_gws` RAII fd/spawn handling, in-memory OAuth token exchange via `gws auth export --unmasked` | Persist OAuth tokens to disk |
+| `src/api.hpp` | `DocsClient` & `DriveClient` over `cpp-httplib`, `exec_gws` RAII fd/spawn handling, in-memory OAuth token exchange via `gws auth export --unmasked` | Persist OAuth tokens to disk |
 | `tests/` | Header-only suites under `tests/{model,diff,lens,reconcile,emulator,engine,api}/` and `tests/test_log_file.hpp` combined by `tests/test_main.cpp`; conformance fixtures live in `tests/fixtures/conformance/` | Hit live Google Docs APIs in `just test` |
 | `scripts/doctor.sh` | Required tools, `LLVM_BIN`, `VCPKG_ROOT`, C++26 compile check, and Linux `enable-linger` check | Modify host state |
 | `scripts/test-mcp.ts` | Isolated stdio (`--skip-checks mcp`) + ephemeral HTTP (`--skip-checks http --host 127.0.0.1 --port 0`) MCP `2026-07-28` test | Hit live Google APIs |

@@ -5,7 +5,9 @@
     "openssl",
     {
       "name": "slimr-mcp",
-      "features": ["http"]
+      "features": [
+        "http"
+      ]
     },
     "slimr-yaml",
     "slimr-test"

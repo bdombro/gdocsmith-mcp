@@ -553,7 +553,7 @@ inline slimr::Json file_import(const ImportInput &in, const HttpTransport &trans
         };
         services.fetchImage = [&transport](const std::string &uri) {
             const HttpCall request{.url = uri};
-            const auto response = transport ? transport(request) : default_curl_transport(request);
+            const auto response = transport ? transport(request) : default_http_transport(request);
             if (response.status < 200 || response.status >= 300) {
                 throw std::runtime_error("HTTP " + std::to_string(response.status));
             }
