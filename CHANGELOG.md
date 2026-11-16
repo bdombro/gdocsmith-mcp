@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Internal: pin `slimr-mcp` v0.2.0 and `slimr-serve` v0.1.1 from `slimr-down-now` registries and remove temporary `overlay-ports`
 - Migrate `status` and `export` handlers to `slimr-serve` typed `OutputStruct` schemas (`outputSchema`), and drop `<bin> mcp` stdio mode
 - Fix direct CLI tool calls (`<bin> <tool> '{...}'`), disabled by default since `slimr-mcp` v0.1.4
 - Internal: replace `slimr-curl` with `cpp-httplib` (`httplib::Client`) and upgrade `slimr-mcp` to v0.1.3 / `slimr-bugsink` to v0.1.2
