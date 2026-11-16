@@ -105,10 +105,10 @@ plugins/gdocsmith-mcp/
 
 Prerequisites (`just doctor` checks all of them):
 
-- **macOS:** Xcode Command Line Tools (`/usr/bin/clang++` with C++26 + libc++ FAST hardening), Homebrew `llvm@23`, `cmake`, `ninja`, `just`, `bun`, `gh`, `jq`, and bootstrapped `vcpkg` (`VCPKG_ROOT` set).
+- **macOS:** Homebrew `llvm@23` (`clang++` with `-stdlib=libc++`, static `libc++` in Release builds), `cmake`, `ninja`, `just`, `bun`, `gh`, `jq`, and bootstrapped `vcpkg` (`VCPKG_ROOT` set).
 - **Linux (`ubuntu-24.04`):** Homebrew on Linux (`llvm@23` provides `clang++` with `-stdlib=libc++`, static libc++ in Release builds), `ninja`, `just`, `bun`, `gh`, `jq`, bootstrapped `vcpkg`, and `sudo loginctl enable-linger "$USER"` for `brew services`.
 
-Set `LLVM_BIN` to override the `$(brew --prefix llvm@23)/bin` path used by `just fmt` and `just lint`. Set `CXX` before first configure to override the compiler.
+Set `LLVM_BIN` to override the `$(brew --prefix llvm@23)/bin` path used by `just configure`, `just deps`, `just fmt`, and `just lint`. Set `CXX` before first configure to override the compiler.
 
 ```bash
 just doctor            # Verify tools, C++26 compiler, LLVM_BIN, VCPKG_ROOT, and Linux linger
