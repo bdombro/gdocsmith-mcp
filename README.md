@@ -178,7 +178,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 - **Work directory precedence (`src/engine/artifacts.hpp`):**
   1. `$GDOCSMITH_WORK_DIR` if set
   2. `<workspace>/.gdocsmith` (when inside a workspace, created `0700` with a `0600` `.gitignore` containing `*\n`)
-  3. `$(brew --prefix)/var/gdocsmith-mcp` (`0700`, used by HTTP services and CLI runs outside a workspace)
+  3. `$(brew --prefix)/var/gdocsmith-mcp` (`0700`, used when running outside a workspace)
   All file writes use atomic temporary-file-and-rename, snapshots are checked with SHA-256, and locally edited `export.md` files are preserved with a warning on re-export.
 - **Per-document FIFO serialization:** Concurrent tool calls targeting the same `docId` are serialized in-process while different documents run in parallel.
 

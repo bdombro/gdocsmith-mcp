@@ -223,7 +223,7 @@ plugins/gdocsmith-mcp/
 - **`cpp-httplib` (`httplib::Client`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
 - **`<json.hpp>` (`slimr-json`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
 - **`<bugsink.hpp>` (`slimr-bugsink`):** Optional error reporting configured with `BUGSINK_DSN` and `release` (`gdocsmith-mcp@<VERSION>`).
-- **`<test.hpp>` (`slimr-test`):** Unit, CLI, and `McpHttpServer` test suite compiled with `-fsanitize=address,undefined`.
+- **`<test.hpp>` (`slimr-test`):** Unit and `McpHttpServer` test suite compiled with `-fsanitize=address,undefined`.
 - **OpenSSL / C++26 Standard Library:** Portable SHA-256 file integrity checks (`<openssl/evp.h>`), `<filesystem>`, `<mutex>`.
 
 ## Transports & MCP `2026-07-28`
