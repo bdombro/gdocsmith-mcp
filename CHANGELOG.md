@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## v4.1.2 - 2026-11-17
+
+- feat: align with cpp-templates and slimr-mcp v0.2.2 (#1)
+  * feat: use VCPKG_OVERLAY_PORTS and guard release
+  * chore: align CI/CD and contributing docs with cpp-templates
+  * docs: maintainer setup for release App, secrets, rulesets
+  * docs: soft alignment marker and release-bot contributing docs
+  * feat: server-only CLI and /tools HTTP surface
+  tests/api/test_api.hpp: convert CLI status test to HTTP POST /tools/status, POST /mcp, and per-tool CLI rejection since per-tool CLI dispatch was removed.
+  * docs: remove remaining per-tool CLI wording
+  * chore: bump slimr-serve v0.3.1 and slimr-mcp v0.2.2 baselines
+- chore: slow gh run watch polling to 30s
+
 - Remove per-tool CLI dispatch and root tool routes; serve tool endpoints under `/tools/<name>` and `/tools/openapi.json` by default
 
 ## v4.1.1 - 2026-11-17

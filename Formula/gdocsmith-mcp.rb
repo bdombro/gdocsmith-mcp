@@ -1,16 +1,16 @@
 class GdocsmithMcp < Formula
   desc "Google Docs file editing and review MCP server"
   homepage "https://github.com/bdombro/gdocsmith-mcp"
-  version "4.1.1"
+  version "4.1.2"
 
   on_macos do
-    url "https://github.com/bdombro/gdocsmith-mcp/releases/download/v4.1.1/gdocsmith-mcp-arm64-macos.tar.gz"
-    sha256 "67817450f0353424de48d5044300d4ac37cd66644e356f74bc5958791dd5cf16"
+    url "https://github.com/bdombro/gdocsmith-mcp/releases/download/v4.1.2/gdocsmith-mcp-arm64-macos.tar.gz"
+    sha256 "e2c3e7343ee6c77bca97aad172775ab192d0c08e5dda7554fdaa6702602bc3c8"
   end
 
   on_linux do
-    url "https://github.com/bdombro/gdocsmith-mcp/releases/download/v4.1.1/gdocsmith-mcp-x64-linux.tar.gz"
-    sha256 "1c4ac8efa16e52ecc608ecb09bb2f9304753ae317e3e2ac75f3fc6262aa811fc"
+    url "https://github.com/bdombro/gdocsmith-mcp/releases/download/v4.1.2/gdocsmith-mcp-x64-linux.tar.gz"
+    sha256 "8c6c99c905cb5132099296d437083050120e1f29221dd64ec2fc12fccf35bc1c"
   end
 
   def install
