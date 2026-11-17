@@ -785,7 +785,6 @@ inline slimr::PluginApp make_gdocsmith_app(
     app.description = "Google Docs file editing and review workflows";
     app.instructions = std::string(MCP_INSTRUCTIONS);
     app.setBugsink("", "BUGSINK_DSN", "gdocsmith-mcp@" + std::string(GDOCSMITH_VERSION));
-    app.allowCliTools = true;
 
     app.resources.push_back(slimr::Resource{
         .uri = "gdocsmith://guide",

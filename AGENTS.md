@@ -2,7 +2,7 @@
 
 Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin repository.
 
-`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` Streamable HTTP on `127.0.0.1:10007`) and CLI built on `slimr-*` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
+`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` Streamable HTTP on `127.0.0.1:10007`, `/mcp` and `/tools/*`) built on `slimr-*` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
 
 <!-- cpp-templates:begin -->
 <!-- cpp-templates:commit c746b02c9f5b17b63c4921e6adff7fa8c5f6dc37 -->
@@ -96,7 +96,7 @@ with implemented behavior; do not claim unverified release or client support.
 | `src/api.hpp` | `DocsClient` & `DriveClient` over `cpp-httplib`, `exec_gws` RAII fd/spawn handling, in-memory OAuth token exchange via `gws auth export --unmasked` | Persist OAuth tokens to disk |
 | `tests/` | Header-only suites under `tests/{model,diff,lens,reconcile,emulator,engine,api}/` and `tests/test_log_file.hpp` combined by `tests/test_main.cpp`; conformance fixtures live in `tests/fixtures/conformance/` | Hit live Google Docs APIs in `just test` |
 | `scripts/doctor.sh` | Required tools, `LLVM_BIN`, `VCPKG_ROOT`, C++26 compile check, and Linux `enable-linger` check | Modify host state |
-| `scripts/test-mcp.ts` | Ephemeral HTTP (`--skip-checks http --host 127.0.0.1 --port 0`) MCP `2026-07-28` test | Hit live Google APIs |
+| `scripts/test-mcp.ts` | Ephemeral HTTP (`--skip-checks http --host 127.0.0.1 --port 0`) MCP `2026-07-28` and `/tools/*` test | Hit live Google APIs |
 | `scripts/release.ts`, `scripts/formula-shared.ts` | CI release version bump, changelog promotion, formula update, tag, and GitHub release | Embed secrets |
 | `Formula/gdocsmith-mcp.rb` | Homebrew formula (macOS/Linux `on_macos`/`on_linux`, `service do` sourcing `etc/gdocsmith-mcp/env` + `--log-file`, `pkgshare` docs, `--version` + `discover` `test do`) | Embed secrets or run `git add -A` |
 | `.cursor-plugin/` & `.claude-plugin/` | Cursor and Claude HTTP plugin manifests (`http://127.0.0.1:10007/mcp`) | Include shell scripts or credentials |

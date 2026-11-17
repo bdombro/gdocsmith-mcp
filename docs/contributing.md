@@ -173,7 +173,7 @@ Run the direct binary on a separate dev port:
 
 ## App Architecture
 
-The standalone MCP server (Streamable HTTP) and JSON CLI are implemented in native C++26 on the `slimr-*` libraries.
+The standalone MCP server (Streamable HTTP) is implemented in native C++26 on the `slimr-*` libraries.
 
 ```text
 plugins/gdocsmith-mcp/
@@ -197,7 +197,7 @@ plugins/gdocsmith-mcp/
 ├── .cursor-plugin/plugin.json      # Cursor plugin manifest (HTTP 127.0.0.1:10007/mcp)
 ├── .claude-plugin/                 # Claude plugin & marketplace manifests (HTTP 127.0.0.1:10007/mcp)
 ├── src/
-│   ├── main.cpp                    # Standalone CLI, Streamable HTTP (`http`), and `--log-file`
+│   ├── main.cpp                    # Standalone server entrypoint (`http`), `--version`, and `--log-file`
 │   ├── log_file.hpp                # Stdout/stderr redirect and 10 MiB rotation (`<path>` -> `<path>.1`)
 │   ├── app.hpp                     # `gdocsmith::make_gdocsmith_app()`, tool adapters, `gdocsmith://guide` resource
 │   ├── api.hpp                     # Docs v1 & Drive v3 REST clients over `cpp-httplib`, in-memory OAuth token manager
@@ -218,7 +218,7 @@ plugins/gdocsmith-mcp/
 
 ### Libraries Used
 
-- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `127.0.0.1:10007`), `gdocsmith://guide` resource registration, `--version`, `--skip-checks`, and narrow JSON CLI.
+- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `127.0.0.1:10007`, `/mcp` and `/tools/*`), `gdocsmith://guide` resource registration, `--version`, and `--skip-checks`.
 - **`<yaml.hpp>` (`slimr-yaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
 - **`cpp-httplib` (`httplib::Client`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
 - **`<json.hpp>` (`slimr-json`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.

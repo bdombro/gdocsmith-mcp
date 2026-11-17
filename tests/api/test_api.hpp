@@ -5,6 +5,8 @@
 #include "model/test_docs.hpp"
 #include "test.hpp"
 
+#include <mcp_http.hpp>
+
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -619,12 +621,39 @@ TEST_CASE("image downloads use bearer URLs without forwarding Google credentials
                          "Image download transport failed.", model::CoreError);
 }
 
-TEST_CASE("CLI runs the status tool") {
+TEST_CASE("HTTP /mcp and /tools/status run status and reject per-tool CLI") {
     auto app = gdocsmith::make_gdocsmith_app();
+
     char arg0[] = "gdocsmith-mcp";
     char arg1[] = "status";
     char *argv[] = {arg0, arg1, nullptr};
-    CHECK(app.run(2, argv) == 0);
+    CHECK(app.run(2, argv) != 0);
+
+    slimr::McpHttpServer server(app, slimr::HttpServerOptions{.host = "127.0.0.1", .port = 0});
+    REQUIRE(server.start());
+
+    httplib::Client client("127.0.0.1", server.boundPort());
+
+    auto toolsRes = client.Post("/tools/status", "{}", "application/json");
+    REQUIRE(toolsRes);
+    CHECK(toolsRes->status == 200);
+    auto toolsJson = slimr::parse_json<slimr::Json>(toolsRes->body);
+    REQUIRE(toolsJson.has_value());
+    CHECK((*toolsJson)["version"].get<std::string>() == gdocsmith::GDOCSMITH_VERSION);
+
+    httplib::Headers mcpHeaders = {
+        {"Accept", "application/json, text/event-stream"},
+        {"MCP-Protocol-Version", "2026-07-28"},
+        {"Mcp-Method", "tools/call"},
+        {"Mcp-Name", "status"},
+    };
+    const std::string mcpBody = R"({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"status","arguments":{},"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}})";
+    auto mcpRes = client.Post("/mcp", mcpHeaders, mcpBody, "application/json");
+    REQUIRE(mcpRes);
+    CHECK(mcpRes->status == 200);
+    auto mcpJson = slimr::parse_json<slimr::Json>(mcpRes->body);
+    REQUIRE(mcpJson.has_value());
+    CHECK((*mcpJson)["result"]["structuredContent"]["version"].get<std::string>() == gdocsmith::GDOCSMITH_VERSION);
 }
 
 TEST_SUITE("api::document_id") {
