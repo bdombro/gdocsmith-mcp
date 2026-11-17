@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Change default HTTP bind from `0.0.0.0:10007` to `127.0.0.1:10007` (pass `--host 0.0.0.0` to expose) via `slimr-serve` v0.3.0
+- Serve OpenAPI 3.1.0 spec at `GET /openapi.json` and `--openapi` CLI flag via `slimr-serve` v0.3.0 / `slimr-mcp` v0.2.1
+- Internal: update `scripts/test-mcp.ts` to verify `GET /openapi.json` and document overlay-port dev workflow in `docs/development.md`
+
 ## v4.1.0 - 2026-11-16
 
 - Internal: pin `slimr-mcp` v0.2.0 and `slimr-serve` v0.1.1 from `slimr-down-now` registries and remove temporary `overlay-ports`

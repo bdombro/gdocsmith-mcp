@@ -2,7 +2,7 @@
 
 Written for: AI coding agents working in the `gdocsmith-mcp` C++26 plugin repository.
 
-`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` Streamable HTTP on `0.0.0.0:10007`) and CLI built on `slimr-*` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
+`gdocsmith-mcp` is a C++26 MCP plugin (`2026-07-28` Streamable HTTP on `127.0.0.1:10007`) and CLI built on `slimr-*` for safe, revision-locked Google Docs editing through local extended Markdown and YAML files.
 
 <!-- cpp-templates:begin -->
 ## Tooling alignment
@@ -107,6 +107,6 @@ with implemented behavior; do not claim unverified release or client support.
 2. **Revision locking:** `import` must compare frontmatter `revision` against the live document's `revisionId` and validate `export.orig.md` when present. If stale (`staleBase`), refuse writes and export fresh remote state. The public factory defaults to `remoteImportEnabled=true`; scoped reviews and final runtime gates are parent-accepted. The synthetic live smoke covered create/body-edit/export/no-op/stale refusal/delete, not every rich-content or review capability.
 3. **Sharing & deletion guards:** `file` action `delete` requires `allow: ["delete"]`. `file` action `grant` requires `allow: ["share"]`, and must unconditionally refuse `anyone` (public), `domain`, or `owner` permission grants.
 4. **Preserve local edits on re-export:** The canonical files are `exports/<docId>/<revId>/export.md` (working copy) and `export.orig.md` (recorded original), matching the available read-only `../gdocsmith-node` reference. Re-export must not clobber edited `export.md`. Recovery must return fresh remote content, not relabel an edited working copy as authoritative. No migration or cleanup of user files.
-5. **Auth boundary:** Keep `oauth.enabled = false` (`0.0.0.0:10007` single-user mode); never add a persistent HTTP Google token broker database or mix MCP bearer tokens with Google access tokens.
+5. **Auth boundary:** Keep `oauth.enabled = false` (`127.0.0.1:10007` single-user mode); never add a persistent HTTP Google token broker database or mix MCP bearer tokens with Google access tokens.
 6. **Capability boundary:** Supported body-rich edits, tab operations, `namedStyleSets` / `cellStyles` declaration edits, and Drive comment actions do not imply atom mutation, merged/resized-table editing, non-body editing, or protected review edits. Preserve unchanged metadata and refuse unsupported changes before sends. `allow` cannot override an unsupported operation.
 7. **Unknown outcomes:** Never replay creates, copies or comments blindly. Preserve edited inputs, report confirmed/partial/unknown writes honestly, and require authoritative readback before verified success. Offline tests are not live Google proof or full-parity evidence.

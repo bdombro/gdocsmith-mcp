@@ -15,7 +15,7 @@
 #include <vector>
 
 /* Entry point. One binary, two surfaces (all share make_gdocsmith_app):
- *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 0.0.0.0:10007)
+ *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 127.0.0.1:10007)
  *   gdocsmith-mcp <tool> ['{"doc":"..."}']    narrow JSON CLI (export, import, file, status)
  */
 int main(int argc, char *argv[]) {

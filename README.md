@@ -27,7 +27,7 @@ After setup, ask your agent:
 - Export rich Markdown with identities and review context; edit supported rich intent with explicit guards and unsupported-operation refusals.
 - Import supported changes through revision-locked, guarded transactions and authoritative readback; preserve intended edits during failure recovery.
 - Copy complex documents losslessly when unsupported objects must be preserved.
-- Standalone ARM64 macOS and x64 Linux binary exposing CLI and Streamable HTTP (`0.0.0.0:10007`); no Node/V8 runtime.
+- Standalone ARM64 macOS and x64 Linux binary exposing CLI and Streamable HTTP (`127.0.0.1:10007`); no Node/V8 runtime.
 
 ## Install
 
@@ -61,7 +61,7 @@ brew services restart gdocsmith-mcp
 brew services stop gdocsmith-mcp
 ```
 
-The HTTP server binds `0.0.0.0:10007` (`http://127.0.0.1:10007/mcp` locally)
+The HTTP server binds `127.0.0.1:10007` (`http://127.0.0.1:10007/mcp`; pass `--host 0.0.0.0` to expose)
 and writes rotated logs to `$(brew --prefix)/var/log/gdocsmith-mcp.log`
 (rotates to `gdocsmith-mcp.log.1` at 10 MiB). To run in the foreground instead,
 use `gdocsmith-mcp http` (or `./build/bin/gdocsmith-mcp http` from a source

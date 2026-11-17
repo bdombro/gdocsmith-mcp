@@ -58,7 +58,7 @@ plugins/gdocsmith-mcp/
 
 ### Libraries Used
 
-- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `0.0.0.0:10007`), `gdocsmith://guide` resource registration, `--version`, `--skip-checks`, and narrow JSON CLI.
+- **`<mcp.hpp>`, `<mcp_http.hpp>` & `<reflect.hpp>` (`slimr-mcp`, `slimr-reflect`):** Typed MCP `2026-07-28` tool definitions, compile-time JSON Schema generation, Streamable HTTP transport (default `127.0.0.1:10007`), `gdocsmith://guide` resource registration, `--version`, `--skip-checks`, and narrow JSON CLI.
 - **`<yaml.hpp>` (`slimr-yaml`):** Frontmatter parsing (`parse_frontmatter`) and `comments.yaml` / `suggestions.yaml` serialization (`to_yaml`, `parse_yaml`).
 - **`cpp-httplib` (`httplib::Client`):** Direct HTTPS calls to Google Docs API v1, Drive API v3, and Google OAuth2 token endpoint.
 - **`<json.hpp>` (`slimr-json`):** Google Docs JSON AST parsing and `batchUpdate` payload serialization.
@@ -71,7 +71,7 @@ plugins/gdocsmith-mcp/
 `gdocsmith-mcp` implements the MCP **`2026-07-28`** specification over Streamable HTTP:
 
 - **Breaking change (`2026-07-28`):** Session initialization (`initialize`), `notifications/initialized`, `MCP-Session-Id` headers, and SSE `GET`/`DELETE` streams are removed. Clients discover capabilities via `server/discover`, list tools via `tools/list`, read `gdocsmith://guide` via `resources/read` (or the fallback `mcp_resource_read` tool), and invoke tools via `tools/call`. On HTTP `POST /mcp`, callers must send `MCP-Protocol-Version: 2026-07-28` (and `Accept: application/json`), plus `Mcp-Method` (and `Mcp-Name` on `tools/call`). Calling `initialize` returns `-32601 Method not found`.
-- **Streamable HTTP (default `0.0.0.0:10007`):**
+- **Streamable HTTP (default `127.0.0.1:10007`):**
   ```bash
   ./build/bin/gdocsmith-mcp http --port 20007
   # Dev endpoint: http://127.0.0.1:20007/mcp
@@ -114,6 +114,20 @@ just clean             # Remove build/ only; leaves user data untouched
 Debug and Release graphs live in `build/cmake/Debug/` and `build/cmake/Release/`; only Release binaries are emitted to `build/bin/`. For local development without touching the installed Homebrew service (`10007`), run `./build/bin/gdocsmith-mcp http --port 20007`.
 
 `just test-mcp` isolates HOME/XDG directories under a temporary folder, passes `--skip-checks`, clears credentials, disables error reporting, and cleans up afterward without calling live Google APIs. Note: `just parity <run_id> <node>` runs offline Node-vs-C++ engine differential checks against a prebuilt `ParityChecks` adapter.
+
+## Develop against an unreleased lib
+
+Add `"overlay-ports"` to the consumer's `vcpkg-configuration.json`, then run `just test` or `just build` as usual (add one entry per unreleased lib):
+
+```json
+{
+  "overlay-ports": [
+    "<relative path to ~/dev/slimr/<name>/ports/slimr-<name>>"
+  ]
+}
+```
+
+Remove `"overlay-ports"` and bump the registry baseline once the lib is released. Never commit or release with `overlay-ports` set.
 
 ## Qualification History
 
