@@ -36,7 +36,7 @@ brew tap bdombro/gdocsmith-mcp https://github.com/bdombro/gdocsmith-mcp
 brew install bdombro/gdocsmith-mcp/gdocsmith-mcp
 ```
 
-Note: check [releases](https://github.com/bdombro/gdocsmith-mcp/releases) for published binaries before running `brew install`; if no release is published yet, build from source per [development](docs/development.md).
+Note: check [releases](https://github.com/bdombro/gdocsmith-mcp/releases) for published binaries before running `brew install`; if no release is published yet, build from source per [contributing](docs/contributing.md).
 
 ## Configure Google Access and Local Editing
 
@@ -100,7 +100,7 @@ Or in `.mcp.json`:
 ```
 
 Use either an explicit server entry or a plugin manifest, not both. Alternative
-client schemas are in [development](docs/development.md).
+client schemas are in [contributing](docs/contributing.md).
 
 ## Workflow
 
@@ -208,7 +208,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 
 ## Documentation
 
-- [Development](docs/development.md) — source builds, tests, linting, releases, and architecture
+- [Contributing](docs/contributing.md) — source builds, tests, linting, PR/release flow, and architecture
 - [Architecture](docs/architecture.md) — engine internals and module boundaries
 - [Features & limits](docs/features.md) — supported Docs elements and refusals
 - [Agent guide](docs/agent-guide.md) — complete file syntax (`gdocsmith://guide`)

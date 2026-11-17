@@ -1,15 +1,68 @@
-# gdocsmith-mcp: Developer Reference
+# gdocsmith-mcp: Contributing
 
-User installation, configuration and compatibility status are in the
-[README](../README.md). This reference preserves implementation details,
-alternative transport schemas and validation commands. A client configuration
-example is not a claim of verified July/OAuth interoperability.
+User installation and configuration are in [README.md](../README.md). This reference preserves implementation details, alternative transport schemas, and validation commands. A client configuration example is not a claim of verified July/OAuth interoperability.
 
-Dependencies resolve directly from the pinned `slimr-down-now/*` vcpkg git
-registries in `vcpkg-configuration.json` (no local overlays). CI configuration
-is not evidence that a runner/platform/client has passed.
+Dependencies resolve directly from the pinned `slimr-down-now/*` vcpkg git registries in `vcpkg-configuration.json` (no local overlays). CI configuration is not evidence that a runner/platform/client has passed.
 
-## App Architecture
+<!-- cpp-templates:begin -->
+## Contents
+
+- [Develop and test](#develop-and-test)
+- [Unreleased libraries](#unreleased-libraries)
+- [Rules](#rules)
+- [PR, CI, and release flow](#pr-ci-and-release-flow)
+- [Dependency bumps](#dependency-bumps)
+
+## Develop and test
+
+```bash
+just doctor
+just test
+just lint
+```
+
+Iterate on a single doctest case with `just test "<case>"` (Debug build with ASan + UBSan, `BUGSINK_DSN=""`). For `homebrew-mcp` repos, run `just test-mcp` as well.
+
+## Unreleased libraries
+
+vcpkg reads extra port dirs from `VCPKG_OVERLAY_PORTS`, and an overlay wins over the registry. Point it at a dir of symlinks, one per unreleased lib; manifests never change:
+
+```sh
+mkdir -p ~/.vcpkg/overlays/dev
+ln -s ~/dev/slimr/<lib>/ports/slimr-<lib> ~/.vcpkg/overlays/dev/slimr-<lib>
+export VCPKG_OVERLAY_PORTS=~/.vcpkg/overlays/dev
+just test
+```
+
+Remove the symlink (or `unset VCPKG_OVERLAY_PORTS`) to build against the released lib again. Keep the export out of shell startup files.
+
+## Rules
+
+- Never push directly to `main`; all changes land through squash-merged pull requests.
+- PRs touch no release files (`VERSION`, `CHANGELOG.md`, `versions/`, `Formula/*.rb`, `Casks/*.rb`).
+- Write the PR title (plus optional body) as the changelog entry; squash-merge turns it into one commit on `main`.
+- Sanitize everything (no secrets, tokens, DSNs, or personal data in commits, logs, or docs).
+- Run `just test` (ASan + UBSan) and `just lint` before opening or updating a PR.
+
+## PR, CI, and release flow
+
+- Every PR runs `test.yml`: a `gate` job skips macOS/Linux builds on docs-only PRs, and a single `ci` summary job gates merge.
+- Merging to `main` triggers `release.yml` (one release at a time). It collects squash commits since the last tag (skipping docs-only ranges), picks the bump from merged PR labels (`patch` default, or `release:minor` / `release:major`; agents must ask before adding labels), writes `VERSION`/`vcpkg.json`, `CHANGELOG.md` (and `vcpkg x-add-version` for libraries), commits as the GitHub App, tags `vX.Y.Z`, and publishes the GitHub Release (plus assets and `Formula/*.rb` / `Casks/*.rb` updates).
+- Pre-releases are a known option (tag/channel), not currently built.
+
+## Dependency bumps
+
+Bump a library baseline in `vcpkg-configuration.json` only when a bug fix, new API, or security fix requires it; otherwise wait for the next `just upgrade-deps`.
+<!-- cpp-templates:end -->
+
+## Repository tips
+
+Run the direct binary on a separate dev port:
+
+```bash
+./build/bin/gdocsmith-mcp http --port 20007
+# Dev endpoint: http://127.0.0.1:20007/mcp
+```
 
 ## App Architecture
 
@@ -107,7 +160,6 @@ just fmt               # Format C++ sources and justfile
 just lint              # Format check + clang-tidy
 just test-mcp          # Bun ephemeral HTTP MCP 2026-07-28 conformance check
 just upgrade-deps      # Pull vcpkg, update registry baselines, and run tests
-just release patch     # Trigger release.yml (test -> build -> tag -> GitHub release) and pull
 just clean             # Remove build/ only; leaves user data untouched
 ```
 
@@ -115,19 +167,6 @@ Debug and Release graphs live in `build/cmake/Debug/` and `build/cmake/Release/`
 
 `just test-mcp` isolates HOME/XDG directories under a temporary folder, passes `--skip-checks`, clears credentials, disables error reporting, and cleans up afterward without calling live Google APIs. Note: `just parity <run_id> <node>` runs offline Node-vs-C++ engine differential checks against a prebuilt `ParityChecks` adapter.
 
-## Develop against an unreleased lib
-
-vcpkg reads extra port dirs from `VCPKG_OVERLAY_PORTS`, and an overlay wins over the registry. Point it at a dir of symlinks, one per unreleased lib; manifests never change:
-
-```sh
-mkdir -p ~/.vcpkg/overlays/dev
-ln -s ~/dev/slimr/<name>/ports/slimr-<name> ~/.vcpkg/overlays/dev/slimr-<name>
-export VCPKG_OVERLAY_PORTS=~/.vcpkg/overlays/dev
-just test
-```
-
-Remove the symlink (or `unset VCPKG_OVERLAY_PORTS`) to build against the released lib again. Keep the export out of shell startup files. `just release` refuses to run while `VCPKG_OVERLAY_PORTS` is set.
-
 ## Qualification History
 
-Prior qualification runs on the C++26 engine verified `447` doctest cases (now extended with log rotation tests), isolated stdio/HTTP MCP discovery, and offline parity vectors; CI workflows (`test.yml` and `release.yml`) run on `macos-15` and `ubuntu-24.04` on pull requests or manual `just release` dispatch. Local macOS validation is not Linux execution evidence.
+Prior qualification runs on the C++26 engine verified `447` doctest cases (now extended with log rotation tests), isolated stdio/HTTP MCP discovery, and offline parity vectors; CI workflows (`test.yml` and `release.yml`) run on `macos-26` and `ubuntu-24.04` on pull requests and merges to `main`. Local macOS validation is not Linux execution evidence.
