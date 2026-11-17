@@ -7,7 +7,7 @@
  ▀▀                                        
 ```
 
-An MCP server and CLI for Google Docs workflows through local, extended Markdown + YAML files.
+An MCP server for Google Docs workflows through local, extended Markdown + YAML files.
 
 Compared with generic Google connectors and raw API wrappers, the file-based workflow gives agents room to do complex edits while keeping changes focused: less context bloat, fewer round trips, and fewer accidental overwrites.
 
@@ -27,7 +27,7 @@ After setup, ask your agent:
 - Export rich Markdown with identities and review context; edit supported rich intent with explicit guards and unsupported-operation refusals.
 - Import supported changes through revision-locked, guarded transactions and authoritative readback; preserve intended edits during failure recovery.
 - Copy complex documents losslessly when unsupported objects must be preserved.
-- Standalone ARM64 macOS and x64 Linux binary exposing CLI and Streamable HTTP (`127.0.0.1:10007`); no Node/V8 runtime.
+- Standalone ARM64 macOS and x64 Linux binary exposing Streamable HTTP (`127.0.0.1:10007`); no Node/V8 runtime.
 
 ## Install
 
@@ -36,7 +36,7 @@ brew tap bdombro/gdocsmith-mcp https://github.com/bdombro/gdocsmith-mcp
 brew install bdombro/gdocsmith-mcp/gdocsmith-mcp
 ```
 
-Note: check [releases](https://github.com/bdombro/gdocsmith-mcp/releases) for published binaries before running `brew install`; if no release is published yet, build from source per [development](docs/development.md).
+Note: check [releases](https://github.com/bdombro/gdocsmith-mcp/releases) for published binaries before running `brew install`; if no release is published yet, build from source per [contributing](docs/contributing.md).
 
 ## Configure Google Access and Local Editing
 
@@ -100,7 +100,7 @@ Or in `.mcp.json`:
 ```
 
 Use either an explicit server entry or a plugin manifest, not both. Alternative
-client schemas are in [development](docs/development.md).
+client schemas are in [contributing](docs/contributing.md).
 
 ## Workflow
 
@@ -109,9 +109,9 @@ client schemas are in [development](docs/development.md).
 3. **Edit locally:** Modify the Markdown file using your standard file-editing tools.
 4. **Import:** Pass the absolute edited path to `import`; inspect `status`, `writeState`, `verification` and warnings. Use the returned working file after verified success. The supported subset is bounded; see [features and limits](docs/features.md) and the [agent guide](docs/agent-guide.md).
 
-## Tools & CLI Commands
+## Tools & HTTP Endpoints
 
-Every tool is exposed over Streamable HTTP (`gdocsmith-mcp http`) and on the CLI (`gdocsmith-mcp <tool> ['{"arg":"val"}']`). The MCP server also serves the complete syntax and safety specification as the `gdocsmith://guide` resource (readable via `resources/read` or the `mcp_resource_read` tool). When installed via Homebrew, `docs/agent-guide.md` is installed into `pkgshare` and resolved relative to the executable.
+Every tool is exposed over Streamable HTTP (`POST /mcp`) and as a direct HTTP endpoint (`POST /tools/<name>`, enabled by default alongside `GET /tools/openapi.json` and `GET /tools/schema`). The MCP server also serves the complete syntax and safety specification as the `gdocsmith://guide` resource (readable via `resources/read` or the `mcp_resource_read` tool). When installed via Homebrew, `docs/agent-guide.md` is installed into `pkgshare` and resolved relative to the executable.
 
 | Tool | Mutating | Description |
 | --- | --- | --- |
@@ -120,20 +120,20 @@ Every tool is exposed over Streamable HTTP (`gdocsmith-mcp http`) and on the CLI
 | `file` | Yes | Manage Drive files: `copy`, `trash`, `delete` (requires `allow: ["delete"]`), or manage sharing permissions (`grant` requires `allow: ["share"]`; public `anyone`, `domain`, and ownership transfers are unconditionally refused). |
 | `status` | No | Returns plugin version (`4.0.1` / `VERSION`) without calling Google APIs. |
 
-### CLI Examples
+### HTTP Debugging (`curl`)
 
 ```bash
 # Export a Google Doc to local Markdown
-gdocsmith-mcp export '{"doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"}'
+curl -X POST http://127.0.0.1:10007/tools/export -H "Content-Type: application/json" -d '{"doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"}'
 
 # Import supported local edits with revision locking and readback
-gdocsmith-mcp import '{"path":"/absolute/path/to/workspace/.gdocsmith/exports/example-doc/rev1/export.md"}'
+curl -X POST http://127.0.0.1:10007/tools/import -H "Content-Type: application/json" -d '{"path":"/absolute/path/to/workspace/.gdocsmith/exports/example-doc/rev1/export.md"}'
 
 # Copy a Google Doc losslessly in Drive
-gdocsmith-mcp file '{"action":"copy","doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms","title":"Copy of RFC"}'
+curl -X POST http://127.0.0.1:10007/tools/file -H "Content-Type: application/json" -d '{"action":"copy","doc":"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms","title":"Copy of RFC"}'
 
 # Check version/status
-gdocsmith-mcp status
+curl -X POST http://127.0.0.1:10007/tools/status -H "Content-Type: application/json" -d '{}'
 gdocsmith-mcp --version
 ```
 
@@ -178,7 +178,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 - **Work directory precedence (`src/engine/artifacts.hpp`):**
   1. `$GDOCSMITH_WORK_DIR` if set
   2. `<workspace>/.gdocsmith` (when inside a workspace, created `0700` with a `0600` `.gitignore` containing `*\n`)
-  3. `$(brew --prefix)/var/gdocsmith-mcp` (`0700`, used by HTTP services and CLI runs outside a workspace)
+  3. `$(brew --prefix)/var/gdocsmith-mcp` (`0700`, used when running outside a workspace)
   All file writes use atomic temporary-file-and-rename, snapshots are checked with SHA-256, and locally edited `export.md` files are preserved with a warning on re-export.
 - **Per-document FIFO serialization:** Concurrent tool calls targeting the same `docId` are serialized in-process while different documents run in parallel.
 
@@ -208,7 +208,7 @@ Draft content with **bold**, *italic*, ~~strikethrough~~, `inline code`, and [li
 
 ## Documentation
 
-- [Development](docs/development.md) — source builds, tests, linting, releases, and architecture
+- [Contributing](docs/contributing.md) — source builds, tests, linting, PR/release flow, and architecture
 - [Architecture](docs/architecture.md) — engine internals and module boundaries
 - [Features & limits](docs/features.md) — supported Docs elements and refusals
 - [Agent guide](docs/agent-guide.md) — complete file syntax (`gdocsmith://guide`)

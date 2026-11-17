@@ -5,6 +5,7 @@
     "openssl",
     {
       "name": "slimr-mcp",
+      "version>=": "0.2.2",
       "features": [
         "http"
       ]

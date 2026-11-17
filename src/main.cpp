@@ -14,9 +14,8 @@
 #include <utility>
 #include <vector>
 
-/* Entry point. One binary, two surfaces (all share make_gdocsmith_app):
- *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP server at /mcp (default 127.0.0.1:10007)
- *   gdocsmith-mcp <tool> ['{"doc":"..."}']    narrow JSON CLI (export, import, file, status)
+/* Entry point (shares make_gdocsmith_app):
+ *   gdocsmith-mcp http [--host --port ...]    Streamable HTTP MCP (/mcp) and /tools/<name> server (default 127.0.0.1:10007)
  */
 int main(int argc, char *argv[]) {
     std::optional<std::string> logFile;
@@ -29,10 +28,6 @@ int main(int argc, char *argv[]) {
             if (arg == nullptr)
                 continue;
             std::string_view sv(arg);
-            if (!sv.empty() && sv.front() == '{') {
-                filteredArgv.push_back(argv[i]);
-                continue;
-            }
             if (sv == "--log-file") {
                 if (i + 1 >= argc || argv[i + 1] == nullptr || argv[i + 1][0] == '\0') {
                     std::cerr << "Missing path for --log-file\n";

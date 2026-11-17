@@ -2,7 +2,7 @@
 
 /* MCP app wiring: tool registration (export, import, file, status) and the guide resource.
  * Business logic lives in the engine headers; this file only adapts Google clients, serializes calls per
- * document and shapes bounded, agent-facing results (the same for CLI and MCP). */
+ * document and shapes bounded, agent-facing results (shared by /mcp and /tools/<name>). */
 
 #include "api.hpp"
 #include "engine/artifacts.hpp"
@@ -785,7 +785,6 @@ inline slimr::PluginApp make_gdocsmith_app(
     app.description = "Google Docs file editing and review workflows";
     app.instructions = std::string(MCP_INSTRUCTIONS);
     app.setBugsink("", "BUGSINK_DSN", "gdocsmith-mcp@" + std::string(GDOCSMITH_VERSION));
-    app.allowCliTools = true;
 
     app.resources.push_back(slimr::Resource{
         .uri = "gdocsmith://guide",

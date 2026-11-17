@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove per-tool CLI dispatch and root tool routes; serve tool endpoints under `/tools/<name>` and `/tools/openapi.json` by default
+
 ## v4.1.1 - 2026-11-17
 
 - Change default HTTP bind from `0.0.0.0:10007` to `127.0.0.1:10007` (pass `--host 0.0.0.0` to expose) via `slimr-serve` v0.3.0
